@@ -18,21 +18,33 @@ foreach ($raw as $rawRow) {
     ];
 }
 
-$sumOverlap = 0;
-while ($patches !== []) {
-    $a = array_pop($patches);
-    foreach ($patches as $b) {
-        $sumOverlap += overlapSize($a, $b);
-    }
+$heatmap = [];
+$counter = 0;
+foreach ($patches as $patch) {
+    $heatmap = bringTheHeat($heatmap, $patch);
 }
 
-echo $sumOverlap;
+echo $counter;
 
 
-function overlapSize($a, $b)
+
+function bringTheHeat($map, $patch)
 {
-    $overlapX = max(0, min($a['right'],  $b['right'])  - max($a['left'], $b['left']));
-    $overlapY = max(0, min($a['bottom'], $b['bottom']) - max($a['top'],  $b['top']));
-    return $overlapX * $overlapY;
+    for ($x = $patch['left']; $x < $patch['right']; $x++) {
+        if (!isset($map[$x])) {
+            $map[$x] = [];
+        }
+
+        for ($y = $patch['top']; $y < $patch['bottom']; $y++) {
+            if (!isset($map[$x][$y])) {
+                $map[$x][$y] = 0;
+            } elseif (1 === $map[$x][$y]) {
+                ++$GLOBALS['counter'];
+            }
+            ++$map[$x][$y];
+        }
+    }
+
+    return $map;
 }
 
