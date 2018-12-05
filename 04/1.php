@@ -23,8 +23,6 @@ foreach ($input as $row) {
     $guards[$currentGuard][] = $row;
 }
 
-#print_r($guards);
-
 $sleepSums = [];
 
 foreach ($guards as $guardId => $sleepCycle) {
@@ -50,4 +48,32 @@ $keysLastSleepsLongest = array_keys($sleepSums);
 
 $longestSleeper = array_pop($keysLastSleepsLongest);
 
+$sleepmap = [];
+$cycle = $guards[$longestSleeper];
+while (count($cycle) > 0) {
+    $sleepRow = array_shift($cycle);
+    $wakeRow  = array_shift($cycle);
+
+    $out = [];
+    preg_match($regexFallsAsleep, $sleepRow, $out);
+    $sleepMinute = $out[1];
+
+    $out = [];
+    preg_match($regexWakesUp, $wakeRow, $out);
+    $wakeMinute = $out[1];
+
+    for ($i = $sleepMinute; $i < $wakeMinute; $i++) {
+        if (!isset($sleepmap[$i])) {
+            $sleepmap[$i] = 0;
+        }
+        ++$sleepmap[$i];
+    }
+}
+
+asort($sleepmap);
+
+$minutes = array_keys($sleepmap);
+$bestMinute = array_pop($minutes);
+
+echo $longestSleeper, ' x ', $bestMinute, ' = ', ($longestSleeper * $bestMinute);
 
