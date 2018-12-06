@@ -1,6 +1,10 @@
 <?php
 
 $input = file('in.txt');
+//$input = file('small.txt');
+
+$size = 500;
+//$size = 10;
 
 $coordinates = [];
 $counts = [];
@@ -17,33 +21,38 @@ $counts['x'] = 0;
 
 $map = [];
 
-for ($x = 0; $x < 500; $x++) {
+for ($x = 0; $x < $size; $x++) {
     $map[$x] = [];
-    for ($y = 0; $y < 500; $y++) {
+    for ($y = 0; $y < $size; $y++) {
         $distances = [];
         foreach ($coordinates as $id => $touple) {
-            $tdst = taxiDistance($x, $y, $touple['x'], $touple['y']);
-            if ($tdst !== 0) {
-                $distances[$id] = $tdst;
-            }
+            $distances[$id] = taxiDistance($x, $y, $touple['x'], $touple['y']);
         }
-        arsort($distances);
-        list($aId => $aDist, $bId => $bDist) = $distances;
+        asort($distances);
+        $aId       = key($distances);
+        $aDistance = current($distances);
+        $bDistance = next($distances);
 
-        $map[$x][$y] = $minCandidate;
+        #echo $bDistance; die();
+
+        if ($aDistance === $bDistance) {
+            $map[$x][$y] = 'x';
+        } else {
+            $map[$x][$y] = $aId;
+        }
     }
 }
 
 // find edges == infinites?!
 $edgeNumbers = [];
-for ($x = 0; $x < 500; $x++) {
+for ($x = 0; $x < $size; $x++) {
     $edgeNumbers[$map[$x][0]] = true;
-    $edgeNumbers[$map[$x][499]] = true;
+    $edgeNumbers[$map[$x][$size-1]] = true;
 }
 
-for ($y = 0; $y < 500; $y++) {
+for ($y = 0; $y < $size; $y++) {
     $edgeNumbers[$map[0][$y]] = true;
-    $edgeNumbers[$map[499][$y]] = true;
+    $edgeNumbers[$map[$size-1][$y]] = true;
 }
 
 #print_r($edgeNumbers);
@@ -58,6 +67,16 @@ foreach ($map as $x) {
 }
 
 arsort($counts);
+
+/*
+for ($y = 0; $y < $size; $y++) {
+    for ($x = 0; $x < $size; $x++) {
+        echo $map[$x][$y], "\t";
+    }
+    echo "\n";
+}
+*/
+
 
 foreach ($counts as $id => $count) {
     if (isset($edgeNumbers[$id])) {
