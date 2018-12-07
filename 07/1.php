@@ -10,8 +10,6 @@ class node {
     /** @var string */
     private $name;
 
-    /** @var bool */
-    private $completed = false;
 
     /**
      * node constructor.
@@ -21,6 +19,11 @@ class node {
     public function __construct($name)
     {
         $this->name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->name;
     }
 
     public function addParent(node $parent)
@@ -49,47 +52,37 @@ class node {
         return $this->children;
     }
 
-    public function haveAllParentsCompleted()
+    public function evaluateParents($solution)
     {
-        $completed = true;
+        $allParentsInSolution = true;
         foreach ($this->parents as $parent) {
-            $completed = $completed && $parent->isCompleted();
+            if (false === strpos($parent->getName(), $solution)) {
+                return false;
+            }
+            $allParentsInSolution = $allParentsInSolution && $parent->evaluateParents($solution);
+        }
+        return $allParentsInSolution;
+    }
+
+    public function evaluate($solution)
+    {
+        echo $solution, "\n";
+        // check for unfinished parents in solution string
+        if ($solution !== '' && false === $this->evaluateParents($solution)) {
+            return false; // this one has unfinished parents -> not a candidate
         }
 
-        return $completed;
-    }
+        if (strlen($solution) === 6) {
+            die($solution);
+        }
 
-    public function isCompleted()
-    {
-        return $this->completed && $this->haveAllParentsCompleted();
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setCompleted($completed = true)
-    {
-        $this->completed = $completed;
-    }
-}
-
-
-/**
- * @param node[] $all
- * @return boolean
- */
-function finished($all)
-{
-    foreach ($all as $item) {
-        if (!$item->haveAllParentsCompleted()) {
-            return false;
+        foreach ($this->children as $child) {
+            if ($child->evaluate($solution . $this->name)) {
+                $solution .= $this->name;
+            }
         }
     }
-    return true;
 }
-
 
 #$input = file('in.txt');
 $input = file('small.txt');
@@ -112,31 +105,6 @@ foreach ($input as $line) {
     $linear[$out[2]]->addParent($linear[$out[1]]);
 }
 
-//print_r($linear);
-
-$solution = '';
-while (strlen($solution) < count($linear)) {
-    foreach ($linear as $elem) {
-        if ($solution !== '' && false !== strpos($elem->getName(), $solution)) {
-            continue;
-        }
-
-        if ($elem->haveAllParentsCompleted()) {
-            echo ".";
-            $elem->setCompleted();
-            foreach ($elem->getChildren() as $child) {
-                echo "x";
-                if ($child->haveAllParentsCompleted() && ($solution === '' || false === strpos($elem->getName(), $solution))) {
-                    $solution .= $elem->getName();
-                    continue 2;
-                }
-            }
-            $elem->setCompleted(false);
-        }
-    }
+foreach ($linear as $step) {
+    $step->evaluate('');
 }
-
-echo $solution;
-
-
-
