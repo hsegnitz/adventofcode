@@ -10,7 +10,6 @@ class node {
     /** @var string */
     private $name;
 
-
     /**
      * node constructor.
      *
@@ -28,7 +27,7 @@ class node {
 
     public function addParent(node $parent)
     {
-        $this->parents[] = $parent;
+        $this->parents[$parent->getName()] = $parent;
         $parent->addChild($this);
     }
 
@@ -39,7 +38,7 @@ class node {
 
     public function addChild(node $child)
     {
-        $this->children[] = $child;
+        $this->children[$child->getName()] = $child;
     }
 
     public function hasChildren()
@@ -55,49 +54,53 @@ class node {
     public function evaluateParents($solution)
     {
         $allParentsInSolution = true;
+        ksort($this->parents);
         foreach ($this->parents as $parent) {
-            if (false === strpos($parent->getName(), $solution)) {
+            if (false === strpos($solution, $parent->getName())) {
                 return false;
             }
             $allParentsInSolution = $allParentsInSolution && $parent->evaluateParents($solution);
         }
+
         return $allParentsInSolution;
     }
 
-    public function evaluate($solution)
+    public function walk($solution)
     {
-        echo $solution, "\n";
+        echo $solution, " ", $this->name, " p ", implode('', array_keys($this->parents)), " c ", implode('', array_keys($this->children)), "\n";
         // check for unfinished parents in solution string
         if ($solution !== '' && false === $this->evaluateParents($solution)) {
-            return false; // this one has unfinished parents -> not a candidate
+            return $solution; // this one has unfinished parents -> not a candidate
         }
 
-        if (strlen($solution) === 6) {
-            die($solution);
-        }
-
+        $solution .= $this->name;
+        ksort($this->children);
         foreach ($this->children as $child) {
-            if ($child->evaluate($solution . $this->name)) {
-                $solution .= $this->name;
+            if (false === strpos($solution, $child->getName())) {
+                $solution = $child->walk($solution);
             }
         }
+
+        return $solution;
     }
 }
 
-#$input = file('in.txt');
-$input = file('small.txt');
+$input = file('in.txt');
+#$input = file('small.txt');
 
 $regex = '/Step (\w) must be finished before step (\w) can begin/';
 
 // build grid
 /** @var node[] $linear */
 $linear = [];
-foreach (range('A', 'F') as $key) {
+foreach (range('A', 'Z') as $key) {
     $linear[$key] = new node($key);
 }
 
-
-
+/*
+IBJTUWGFKDNVEYAOMPCHMCQRLSZX
+IBJTUWGFKDNVEYAHOMPCQRLSZX
+*/
 foreach ($input as $line) {
     $out = [];
     preg_match($regex, $line, $out);
@@ -105,6 +108,12 @@ foreach ($input as $line) {
     $linear[$out[2]]->addParent($linear[$out[1]]);
 }
 
+$rootNode = new node('-');
+
 foreach ($linear as $step) {
-    $step->evaluate('');
+    if (!$step->hasParents()) {
+        $step->addParent($rootNode);
+    }
 }
+
+echo "\n\n\n", $rootNode->walk('');
