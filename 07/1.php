@@ -75,9 +75,16 @@ class node {
 
         $solution .= $this->name;
         ksort($this->children);
-        foreach ($this->children as $child) {
-            if (false === strpos($solution, $child->getName())) {
-                $solution = $child->walk($solution);
+
+        //reset this loop over and over again for each succesfully evaluated child
+        while (false !== ($child = each($this->children))) {
+            if (false === strpos($solution, $child[1]->getName())) {
+                $oldLen = strlen($solution);
+                $solution = $child[1]->walk($solution);
+                if ($oldLen !== strlen($solution)) {
+                    unset($this->children[$child[1]->getName()]);
+                    reset($this->children);
+                }
             }
         }
 
