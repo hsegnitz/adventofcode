@@ -1,13 +1,17 @@
 <?php
 
+gc_disable();
+
+ini_set('memory_limit', '5G');
+
 // $numPlayers = 9; $marbles    = 25;
 // $numPlayers = 10; $marbles    = 1618;
 // $numPlayers = 13; $marbles    = 7999;
 // $numPlayers = 17; $marbles    = 1104;
 // $numPlayers = 21; $marbles    = 6111;
 // $numPlayers = 30; $marbles    = 5807;
- $numPlayers = 459; $marbles    = 71320;
-
+// $numPlayers = 459; $marbles    = 71320;
+$numPlayers = 459; $marbles    = 7132000;
 
 $scores = array_fill(0, $numPlayers, 0);
 
