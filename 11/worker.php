@@ -2,8 +2,8 @@
 
 function calcval($x, $y)
 {
-    //$input = 1308;
-    $input = 18;
+    $input = 1308;
+    //$input = 18;
 
     $rackId = $x + 10;
     $value = $rackId * $y;
