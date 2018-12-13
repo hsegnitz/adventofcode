@@ -206,7 +206,7 @@ function tick($trackMap, &$cartMap)
 
 $trackMap = [];
 
-foreach (file('small.txt') as $line) {
+foreach (file('in.txt') as $line) {
     $line = rtrim($line, "\n");
     $trackMap[] = str_split($line, 1);
 }
