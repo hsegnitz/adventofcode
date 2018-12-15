@@ -66,9 +66,11 @@ class unit
         #print_r($chosen);
 
         $possibleMoves = [];
+        $minDistance = PHP_INT_MAX;
         foreach ($this->freePointsAround($grid, $this->getX(), $this->getY()) as $possibleMove) {
-            $minDistance = PHP_INT_MAX;
-            $moveAndDistance = $this->determineReachablePoints($grid, [$possibleMove], $minDistance, $chosen);
+            $minDistanceMove = PHP_INT_MAX;
+            $moveAndDistance = $this->determineReachablePoints($grid, [$possibleMove], $minDistanceMove, $chosen);
+            $minDistance = min($minDistanceMove, $minDistance);
             $possibleMoves[] = $moveAndDistance[0];
         }
 
@@ -260,8 +262,10 @@ foreach (file('move2.txt') as $y => $row) {
 printGrid($grid);
 
 elf::$allUnits[0]->move($grid);
-
+goblin::$allUnits[0]->move($grid);
 printGrid($grid);
 
-
+elf::$allUnits[0]->move($grid);
+goblin::$allUnits[0]->move($grid);
+printGrid($grid);
 
