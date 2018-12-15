@@ -23,6 +23,8 @@ class unit
     {
         $enemies = ($this instanceof elf) ? goblin::$allUnits : elf::$allUnits;
 
+        // TODO: if there is an adjacent enemy, stand still.
+
         $unoccupiedPointsAroundEnemies = [];
         foreach ($enemies as $enemy) {
             $unoccupiedPointsAroundEnemies = array_merge($unoccupiedPointsAroundEnemies, $this->freePointsAround($grid, $enemy->getX(), $enemy->getY()));
@@ -32,29 +34,8 @@ class unit
         // $unoccupiedPointsAroundEnemies = array_unique($unoccupiedPointsAroundEnemies);
          #print_r($unoccupiedPointsAroundEnemies);
 
-        $reachable = [];
         $minDistance = PHP_INT_MAX;
-        foreach ($unoccupiedPointsAroundEnemies as $upae) {
-            $tempGrid = $grid;
-            $tempGrid[$this->getY()][$this->getX()] = '.'; // we need to make ourself a possible waypoint ;)
-            $waypoints = [$upae];
-            $distance = 0;
-            while ([] !== $waypoints) {
-                $newWaypoints = [];
-                foreach ($waypoints as $wp) {
-                    if ($wp['x'] == $this->getX() && $wp['y'] == $this->getY()) {
-                        $minDistance = min($minDistance, $distance);
-                        $upae['d'] = $distance;
-                        $reachable[] = $upae;
-                        break 2;
-                    }
-                    $newWaypoints = array_merge($newWaypoints, $this->freePointsAround($tempGrid, $wp['x'], $wp['y'], $tempGrid));
-                }
-                $distance++;
-                $waypoints = $newWaypoints;
-                #printGrid($tempGrid);
-            }
-        }
+        $reachable = $this->determineReachablePoints($grid, $unoccupiedPointsAroundEnemies, $minDistance, $this);
 
         $nearest = [];
         $minY = PHP_INT_MAX;
@@ -82,7 +63,40 @@ class unit
             }
         }
 
-        print_r($pos);
+        #print_r($chosen);
+
+        $possibleMoves = [];
+        foreach ($this->freePointsAround($grid, $this->getX(), $this->getY()) as $possibleMove) {
+            $minDistance = PHP_INT_MAX;
+            $moveAndDistance = $this->determineReachablePoints($grid, [$possibleMove], $minDistance, $chosen);
+            $possibleMoves[] = $moveAndDistance[0];
+        }
+
+        $moves = [];
+        foreach ($possibleMoves as $move) {
+            if ($move['d'] == $minDistance) {
+                $moves[] = $move;
+            }
+        }
+
+        if (count($moves) === 1) {
+            $wayToGo = $moves[0];
+        } elseif ($moves[0]['y'] < $moves[1]['y']) {
+            $wayToGo = $moves[0];
+        } elseif ($moves[0]['y'] > $moves[1]['y']) {
+            $wayToGo = $moves[1];
+        } elseif ($moves[0]['x'] < $moves[1]['x']) {
+            $wayToGo = $moves[0];
+        } else {
+            $wayToGo = $moves[1];
+        }
+
+        #print_r($wayToGo);
+
+        $grid[$wayToGo['y']][$wayToGo['x']] = $this;
+        $grid[$this->getY()][$this->getX()] = '.';
+        $this->posX = $wayToGo['x'];
+        $this->posY = $wayToGo['y'];
     }
 
     private function freePointsAround($grid, $x, $y, &$tempGrid = null)
@@ -125,6 +139,49 @@ class unit
     public function getY()
     {
         return $this->posY;
+    }
+
+    /**
+     * @param       $grid
+     * @param array $unoccupiedPointsAroundEnemies
+     * @param       $minDistance
+     * @return array
+     */
+    private function determineReachablePoints(&$grid, array $unoccupiedPointsAroundEnemies, &$minDistance, $target)
+    {
+        if ($target instanceof unit) {
+            $targetX = $target->getX();
+            $targetY = $target->getY();
+        } else {
+            $targetX = $target['x'];
+            $targetY = $target['y'];
+        }
+
+
+        $reachable = [];
+        foreach ($unoccupiedPointsAroundEnemies as $upae) {
+            $tempGrid = $grid;
+            $tempGrid[$targetY][$targetX] = '.'; // we need to make ourself a possible waypoint ;)
+            $waypoints = [$upae];
+            $distance = 0;
+            while ([] !== $waypoints) {
+                $newWaypoints = [];
+                foreach ($waypoints as $wp) {
+                    if ($wp['x'] == $targetX && $wp['y'] == $targetY) {
+                        $minDistance = min($minDistance, $distance);
+                        $upae['d'] = $distance;
+                        $reachable[] = $upae;
+                        break 2;
+                    }
+                    $newWaypoints = array_merge($newWaypoints, $this->freePointsAround($tempGrid, $wp['x'], $wp['y'], $tempGrid));
+                }
+                $distance++;
+                $waypoints = $newWaypoints;
+                #printGrid($tempGrid);
+            }
+        }
+
+        return $reachable;
     }
 }
 
@@ -180,7 +237,7 @@ function printGrid($grid)
 
 
 $grid = [];
-foreach (file('move.txt') as $y => $row) {
+foreach (file('move2.txt') as $y => $row) {
     if ('' === ($row = trim($row))) {
         continue;
     }
@@ -203,6 +260,8 @@ foreach (file('move.txt') as $y => $row) {
 printGrid($grid);
 
 elf::$allUnits[0]->move($grid);
+
+printGrid($grid);
 
 
 
