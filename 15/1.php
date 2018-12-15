@@ -23,10 +23,11 @@ class unit
     {
         $enemies = ($this instanceof elf) ? goblin::$allUnits : elf::$allUnits;
 
-        // TODO: if there is an adjacent enemy, stand still.
-
         $unoccupiedPointsAroundEnemies = [];
         foreach ($enemies as $enemy) {
+            if (1 === abs($this->posX - $enemy->getX()) + abs($this->posY - $enemy->getY())) {
+                return; // we do not move, as we are standing next to an enemy
+            }
             $unoccupiedPointsAroundEnemies = array_merge($unoccupiedPointsAroundEnemies, $this->freePointsAround($grid, $enemy->getX(), $enemy->getY()));
         }
 
@@ -259,6 +260,10 @@ foreach (file('move2.txt') as $y => $row) {
     }
 }
 
+printGrid($grid);
+
+elf::$allUnits[0]->move($grid);
+goblin::$allUnits[0]->move($grid);
 printGrid($grid);
 
 elf::$allUnits[0]->move($grid);
