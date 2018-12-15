@@ -25,22 +25,96 @@ class unit
 
         $unoccupiedPointsAroundEnemies = [];
         foreach ($enemies as $enemy) {
-            if ($grid[$enemy->getY()-1][$enemy->getX()] === '.') {
-                $unoccupiedPointsAroundEnemies[] = ['x' => $enemy->getX(), 'y' => $enemy->getY()-1];
-            }
-            if ($grid[$enemy->getY()][$enemy->getX()-1] === '.') {
-                $unoccupiedPointsAroundEnemies[] = ['x' => $enemy->getX()-1, 'y' => $enemy->getY()];
-            }
-            if ($grid[$enemy->getY()][$enemy->getX()+1] === '.') {
-                $unoccupiedPointsAroundEnemies[] = ['x' => $enemy->getX()+1, 'y' => $enemy->getY()];
-            }
-            if ($grid[$enemy->getY()+1][$enemy->getX()] === '.') {
-                $unoccupiedPointsAroundEnemies[] = ['x' => $enemy->getX(), 'y' => $enemy->getY()+1];
+            $unoccupiedPointsAroundEnemies = array_merge($unoccupiedPointsAroundEnemies, $this->freePointsAround($grid, $enemy->getX(), $enemy->getY()));
+        }
+
+        // might need to improve this
+        // $unoccupiedPointsAroundEnemies = array_unique($unoccupiedPointsAroundEnemies);
+         #print_r($unoccupiedPointsAroundEnemies);
+
+        $reachable = [];
+        $minDistance = PHP_INT_MAX;
+        foreach ($unoccupiedPointsAroundEnemies as $upae) {
+            $tempGrid = $grid;
+            $tempGrid[$this->getY()][$this->getX()] = '.'; // we need to make ourself a possible waypoint ;)
+            $waypoints = [$upae];
+            $distance = 0;
+            while ([] !== $waypoints) {
+                $newWaypoints = [];
+                foreach ($waypoints as $wp) {
+                    if ($wp['x'] == $this->getX() && $wp['y'] == $this->getY()) {
+                        $minDistance = min($minDistance, $distance);
+                        $upae['d'] = $distance;
+                        $reachable[] = $upae;
+                        break 2;
+                    }
+                    $newWaypoints = array_merge($newWaypoints, $this->freePointsAround($tempGrid, $wp['x'], $wp['y'], $tempGrid));
+                }
+                $distance++;
+                $waypoints = $newWaypoints;
+                #printGrid($tempGrid);
             }
         }
 
-        print_r($unoccupiedPointsAroundEnemies);
+        $nearest = [];
+        $minY = PHP_INT_MAX;
+        foreach ($reachable as $pos) {
+            if ($pos['d'] === $minDistance) {
+                $minY = min($minY, $pos['y']);
+                $nearest[] = $pos;
+            }
+        }
 
+        $topmost = [];
+        $minX = PHP_INT_MAX;
+        foreach ($nearest as $pos) {
+            if ($pos['y'] != $minY) {
+                continue;
+            }
+
+            $minX = min($minX, $pos['x']);
+            $topmost[] = $pos;
+        }
+
+        foreach ($topmost as $pos) {
+            if ($pos['x'] == $minX) {
+                $chosen = $pos;
+            }
+        }
+
+        print_r($pos);
+    }
+
+    private function freePointsAround($grid, $x, $y, &$tempGrid = null)
+    {
+        $freePoints = [];
+
+        if ($grid[$y-1][$x] === '.') {
+            $freePoints[] = ['x' => $x, 'y' => $y-1];
+            if (null !== $tempGrid) {
+                $tempGrid[$y-1][$x] = 'X';
+            }
+        }
+        if ($grid[$y][$x-1] === '.') {
+            $freePoints[] = ['x' => $x-1, 'y' => $y];
+            if (null !== $tempGrid) {
+                $tempGrid[$y][$x-1] = 'X';
+            }
+        }
+        if ($grid[$y][$x+1] === '.') {
+            $freePoints[] = ['x' => $x+1, 'y' => $y];
+            if (null !== $tempGrid) {
+                $tempGrid[$y][$x+1] = 'X';
+            }
+        }
+        if ($grid[$y+1][$x] === '.') {
+            $freePoints[] = ['x' => $x, 'y' => $y+1];
+            if (null !== $tempGrid) {
+                $tempGrid[$y+1][$x] = 'X';
+            }
+        }
+
+        return $freePoints;
     }
 
     public function getX()
