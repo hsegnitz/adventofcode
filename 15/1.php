@@ -25,8 +25,21 @@ class unit
 
         $unoccupiedPointsAroundEnemies = [];
         foreach ($enemies as $enemy) {
-            if ($grid[$enemy->getX()][$enemy->getY()-1])
+            if ($grid[$enemy->getY()-1][$enemy->getX()] === '.') {
+                $unoccupiedPointsAroundEnemies[] = ['x' => $enemy->getX(), 'y' => $enemy->getY()-1];
+            }
+            if ($grid[$enemy->getY()][$enemy->getX()-1] === '.') {
+                $unoccupiedPointsAroundEnemies[] = ['x' => $enemy->getX()-1, 'y' => $enemy->getY()];
+            }
+            if ($grid[$enemy->getY()][$enemy->getX()+1] === '.') {
+                $unoccupiedPointsAroundEnemies[] = ['x' => $enemy->getX()+1, 'y' => $enemy->getY()];
+            }
+            if ($grid[$enemy->getY()+1][$enemy->getX()] === '.') {
+                $unoccupiedPointsAroundEnemies[] = ['x' => $enemy->getX(), 'y' => $enemy->getY()+1];
+            }
         }
+
+        print_r($unoccupiedPointsAroundEnemies);
 
     }
 
@@ -92,30 +105,30 @@ function printGrid($grid)
 }
 
 
-
-
 $grid = [];
-foreach (file('in1.txt') as $num => $row) {
+foreach (file('move.txt') as $y => $row) {
     if ('' === ($row = trim($row))) {
         continue;
     }
 
-    $grid[$num] = [];
-    foreach (str_split($row) as $y => $char) {
+    $grid[$y] = [];
+    foreach (str_split($row) as $x => $char) {
         switch ($char) {
             case "E":
-                $grid[$num][] = new elf($num, $y);
+                $grid[$y][] = new elf($x, $y);
                 break;
             case "G":
-                $grid[$num][] = new goblin($num, $y);
+                $grid[$y][] = new goblin($x, $y);
                 break;
             default:
-                $grid[$num][] = $char;
+                $grid[$y][] = $char;
         }
     }
 }
 
-
 printGrid($grid);
+
+elf::$allUnits[0]->move($grid);
+
 
 
