@@ -1,5 +1,4 @@
 <?php
-
 class unit
 {
     const ATTACK_POWER = 3;
@@ -42,7 +41,7 @@ class unit
 
         // might need to improve this
         // $unoccupiedPointsAroundEnemies = array_unique($unoccupiedPointsAroundEnemies);
-         #print_r($unoccupiedPointsAroundEnemies);
+        #print_r($unoccupiedPointsAroundEnemies);
 
         $minDistance = PHP_INT_MAX;
         $reachable = $this->determineReachablePoints($grid, $unoccupiedPointsAroundEnemies, $minDistance, $this);
@@ -75,18 +74,13 @@ class unit
 
         #print_r($chosen);
 
-        if (!isset($chosen)) {
-            return;
-        }
-
         $possibleMoves = [];
         $minDistance = PHP_INT_MAX;
         foreach ($this->freePointsAround($grid, $this->getX(), $this->getY()) as $possibleMove) {
             $minDistanceMove = PHP_INT_MAX;
-            if ([] !== ($moveAndDistance = $this->determineReachablePoints($grid, [$possibleMove], $minDistanceMove, $chosen))) {
-                $minDistance = min($minDistanceMove, $minDistance);
-                $possibleMoves[] = $moveAndDistance[0];
-            }
+            $moveAndDistance = $this->determineReachablePoints($grid, [$possibleMove], $minDistanceMove, $chosen);
+            $minDistance = min($minDistanceMove, $minDistance);
+            $possibleMoves[] = $moveAndDistance[0];
         }
 
         $moves = [];
@@ -119,16 +113,16 @@ class unit
     public function attack(&$grid)
     {
         $adjacentTiles = [
-            $grid[$this->getY()]  [$this->getX()-1],
-            $grid[$this->getY()]  [$this->getX()+1],
-            $grid[$this->getY()-1][$this->getX()],
-            $grid[$this->getY()+1][$this->getX()],
+            $grid[$this->getX()]  [$this->getY()-1],
+            $grid[$this->getX()]  [$this->getY()+1],
+            $grid[$this->getX()-1][$this->getY()],
+            $grid[$this->getX()+1][$this->getY()],
         ];
 
         $enemies = [];
         $lowestHp = PHP_INT_MAX;
         foreach ($adjacentTiles as $tile) {
-            if ($tile instanceof unit && ! $tile instanceof static) {
+            if ($tile instanceof unit && ! $tile instanceof self) {
                 $lowestHp = min($lowestHp, $tile->getHitpoints());
                 $enemies[] = $tile;
             }
@@ -140,38 +134,26 @@ class unit
 
         usort($enemies, function (unit $a, unit $b) {
             if ($a->getHitpoints() < $b->getHitpoints()) {
+                return 1;
+            }
+            if ($a->getHitpoints() < $b->getHitpoints()) {
                 return -1;
             }
-            if ($a->getHitpoints() > $b->getHitpoints()) {
+            if ($a->getY() < $b->getY()) {
                 return 1;
             }
             if ($a->getY() < $b->getY()) {
                 return -1;
             }
-            if ($a->getY() > $b->getY()) {
+            if ($a->getX() < $b->getX()) {
                 return 1;
             }
             if ($a->getX() < $b->getX()) {
                 return -1;
             }
-            if ($a->getX() > $b->getX()) {
-                return 1;
-            }
             return 0;
         });
 
-        /** @var unit $victim */
-        $victim = $enemies[0];
-        $resultingHP = $victim->registerHit(self::ATTACK_POWER);
-
-        if ($resultingHP < 1) {
-            $grid[$victim->getY()][$victim->getX()] = '.';
-            if ($victim instanceof goblin) {
-                unset(goblin::$allUnits[$victim->getId()]);
-            } elseif ($victim instanceof elf) {
-                unset(elf::$allUnits[$victim->getId()]);
-            }
-        }
     }
 
     private function freePointsAround($grid, $x, $y, &$tempGrid = null)
@@ -266,8 +248,9 @@ class elf extends unit
     public static $allUnits = [];
     private static $instanceCount = 0;
 
-    public function __construct($posX, $posY)
+    public function __construct($posX, $posY, $hp = null)
     {
+        $this->hitPoints = $hp;
         $this->posX = $posX;
         $this->posY = $posY;
         $this->id = self::$instanceCount++;
@@ -280,136 +263,35 @@ class elf extends unit
     }
 }
 
-class goblin extends unit
-{
-    /** @var elf[] */
-    public static $allUnits = [];
-    private static $instanceCount = 0;
+$enemies = [
+    new elf(3, 2, 3),
+    new elf(2, 3, 2),
+    new elf(4, 3, 2),
+    new elf(3, 4, 2),
+];
 
-    public function __construct($posX, $posY)
-    {
-        $this->posX = $posX;
-        $this->posY = $posY;
-        $this->id = self::$instanceCount++;
-        self::$allUnits[$this->id] = $this;
+
+
+usort($enemies, function (unit $a, unit $b) {
+    if ($a->getHitpoints() < $b->getHitpoints()) {
+        return -1;
     }
-
-    public function __toString()
-    {
-        return 'G';
+    if ($a->getHitpoints() > $b->getHitpoints()) {
+        return 1;
     }
-}
-
-function printGrid($grid)
-{
-    foreach ($grid as $row) {
-        foreach ($row as $char) {
-            echo $char;
-        }
-        echo "\n";
+    if ($a->getY() < $b->getY()) {
+        return -1;
     }
-}
-
-/**
- * @param  $grid
- * @return boolean
- */
-function tick(&$grid)
-{
-    $seenElves   = [];
-    $seenGoblins = [];
-
-    $sizeY = count($grid);
-    $sizeX = count($grid[0]);
-
-    for ($y = 0; $y < $sizeY; $y++) {
-        for ($x = 0; $x < $sizeX; $x++) {
-            /** @var unit|string $unit */
-            $unit = $grid[$y][$x];
-            if (! $unit instanceof unit) {
-                continue;
-            }
-
-            if ($unit instanceof elf) {
-                if (isset($seenElves[$unit->getId()])) {
-                    continue;
-                }
-                $seenElves[$unit->getId()] = $unit;
-                $unit->move($grid);
-                $unit->attack($grid);
-                if (goblin::$allUnits === []) {
-                    return false;
-                }
-            }
-            if ($unit instanceof goblin) {
-                if (isset($seenGoblins[$unit->getId()])) {
-                    continue;
-                }
-                $seenGoblins[$unit->getId()] = $unit;
-                $unit->move($grid);
-                $unit->attack($grid);
-                if (elf::$allUnits === []) {
-                    return false;
-                }
-            }
-        }
+    if ($a->getY() > $b->getY()) {
+        return 1;
     }
-    return true;
-}
-
-
-$grid = [];
-foreach (file('in.txt') as $y => $row) {
-    if ('' === ($row = trim($row))) {
-        continue;
+    if ($a->getX() < $b->getX()) {
+        return -1;
     }
-
-    $grid[$y] = [];
-    foreach (str_split($row) as $x => $char) {
-        switch ($char) {
-            case "E":
-                $grid[$y][] = new elf($x, $y);
-                break;
-            case "G":
-                $grid[$y][] = new goblin($x, $y);
-                break;
-            default:
-                $grid[$y][] = $char;
-        }
+    if ($a->getX() > $b->getX()) {
+        return 1;
     }
-}
+    return 0;
+});
 
-$tick = 0;
-
-/* */
-
-while (tick($grid)) {
-    $tick++;
-    printGrid($grid);
-    #usleep(50000);
-    echo $tick, "\n";
-}
-
-//$tick++;
-
-if ([] === goblin::$allUnits) {
-    echo "\nelves won after round ", $tick, "\nscore: ";
-    $score = 0;
-    foreach (elf::$allUnits as $elf) {
-        $score += $elf->getHitpoints();
-    }
-    echo $score * $tick;
-}
-
-if ([] === elf::$allUnits) {
-    echo "\ngoblins won after round ", $tick, "\nscore: ";
-    $score = 0;
-    foreach (goblin::$allUnits as $elf) {
-        $score += $elf->getHitpoints();
-    }
-    echo $score * $tick;
-}
-
-// print_r(goblin::$allUnits);
-
-/* */
+print_r($enemies);
