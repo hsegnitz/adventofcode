@@ -56,6 +56,28 @@ class opcode
         'eqrr',
     ];
 
+    public static $candidates = [
+         0 => [],
+         1 => [],
+         2 => [],
+         3 => [],
+         4 => [],
+         5 => [],
+         6 => [],
+         7 => [],
+         8 => [],
+         9 => [],
+        10 => [],
+        11 => [],
+        12 => [],
+        13 => [],
+        14 => [],
+        15 => [],
+    ];
+
+    public static $translationTable = [];
+
+
     public static function addr(device $device, $A, $B, $C)
     {
         $device->setRegister(
@@ -210,18 +232,25 @@ class test
         $this->after        = new device($out[9], $out[10], $out[11], $out[12]);
     }
 
-    public function countMatchingOpcodes()
+    public function removeInvalidOpcodes()
     {
-        $numMatches = 0;
-        foreach (opcode::$instructionSet as $opcode) {
+        $remainingOpcodes = [];
+        #echo ' instructionCode: ', $this->instructions[0];
+        #print_r(opcode::$candidates[$this->instructions[0]]);
+        foreach (opcode::$candidates[$this->instructions[0]] as $opcode) {
             $in = clone $this->before;
             opcode::$opcode($in, (int)$this->instructions[1], (int)$this->instructions[2], (int)$this->instructions[3]);
 
             if ($in->equals($this->after)) {
-                ++$numMatches;
+                $remainingOpcodes[] = $opcode;
             }
         }
-        return $numMatches;
+
+        if ([] === $remainingOpcodes) {
+            throw new RuntimeException('there has to be always at least one left');
+        }
+
+        opcode::$candidates[$this->instructions[0]] = $remainingOpcodes;
     }
 
 }
@@ -233,13 +262,62 @@ foreach ($in as $i) {
     $tests[] = new test($i);
 }
 
-$numOverThree = 0;
-/** @var test $test */
-foreach ($tests as $test)
-{
-    if ($test->countMatchingOpcodes() >= 3 ) {
-        $numOverThree++;
-    }
+for ($i = 0; $i < 16; $i++) {
+    opcode::$candidates[$i] = opcode::$instructionSet;
 }
 
-echo $numOverThree;
+/** @var test $test */
+foreach ($tests as $num => $test)
+{
+    #echo 'test: ', $num;
+    #print_r(opcode::$candidates);
+    $test->removeInvalidOpcodes();
+    #echo "\n";
+}
+
+foreach (opcode::$candidates as $key => $values) {
+    echo $key, ': ', implode(',', $values), "\n";
+}
+
+while ([] !== opcode::$candidates) {
+    $newFixed = '';
+    $rest = [];
+    foreach (opcode::$candidates as $key => $candidateList) {
+        if ($newFixed === '' && count($candidateList) === 1) {
+            $newFixed = array_pop($candidateList);
+            opcode::$translationTable[$key] = $newFixed;
+        } else {
+            $rest[$key] = $candidateList;
+        }
+    }
+
+    opcode::$candidates = [];
+    foreach ($rest as $key => $list) {
+        opcode::$candidates[$key] = array_diff($list, [$newFixed]);
+    }
+
+    //debug
+    foreach (opcode::$candidates as $key => $values) {
+        echo $key, ': ', implode(',', $values), "\n";
+    }
+    print_r(opcode::$translationTable);
+}
+
+print_r(opcode::$translationTable);
+
+$pattern = '/(\d+) (\d+) (\d+) (\d+)/';
+
+$in = file('in2.txt');
+$start = new device(0, 0, 0, 0);
+foreach ($in as $key => $line) {
+    $out = [];
+    preg_match($pattern, $line, $out);
+
+    $opcode = opcode::$translationTable[(int)$out[1]];
+
+    opcode::$opcode($start, (int)$out[2], (int)$out[3], (int)$out[4]);
+
+    echo $key, ': ', $start->getRegister(0), ' ', $start->getRegister(1), ' ', $start->getRegister(2), ' ', $start->getRegister(3), "\n";
+}
+
+
