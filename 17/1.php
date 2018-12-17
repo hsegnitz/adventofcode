@@ -52,7 +52,7 @@ function output($map)
         echo "\n";
     }
     echo "\n";
-    usleep (500000);
+    #usleep (500000);
 }
 
 function trickleDown(&$map, $x, $y)
@@ -157,8 +157,19 @@ trickleDown($map, 500, 0);
 
 output($map);
 
+$count = 0;
+foreach ($map as $line => $row) {
+    foreach ($row as $col) {
+        if ('|' === $col || '~' === $col) {
+            ++$count;
+        }
+    }
 
+    if ($line == clayVein::$maxY) {
+        break;
+    }
+}
 
-
+echo $count, "\n\n";
 
 
