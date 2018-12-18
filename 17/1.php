@@ -213,14 +213,18 @@ trickleDown($map, 500, 0);
 
 output($map, true, 0, 0);
 
-$count = 0;
+$countAll = 0;
+$countStale = 0;
 foreach ($map as $line => $row) {
     if ($line < clayVein::$minY) {
         continue;
     }
     foreach ($row as $col) {
         if ('|' === $col || '~' === $col) {
-            ++$count;
+            ++$countAll;
+            if ('~' === $col) {
+                ++$countStale;
+            }
         }
     }
 
@@ -229,6 +233,7 @@ foreach ($map as $line => $row) {
     }
 }
 
-echo $count, "\n\n";
+echo $countAll,   "\n\n";
+echo $countStale, "\n\n";
 
 
