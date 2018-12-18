@@ -97,7 +97,7 @@ function countTiles($map)
 
 
 $map = [];
-foreach (file('small.txt') as $numRow => $row) {
+foreach (file('in.txt') as $numRow => $row) {
     $map[$numRow] = [];
     foreach (str_split(trim($row), 1) as $col => $char) {
         $map[$numRow][$col] = $char;
