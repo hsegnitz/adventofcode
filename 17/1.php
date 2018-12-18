@@ -43,23 +43,55 @@ class clayVein
     }
 }
 
-function output($map)
+$numOut = 0;
+
+function output($map, $last = false, $debugX, $debugY)
 {
-    foreach ($map as $row) {
-        foreach ($row as $col) {
-            echo $col;
-        }
-        echo "\n";
+    if ($GLOBALS['numOut']++ === 2001) {
+        die();
     }
-    echo "\n";
-    #usleep (500000);
+
+    if ($GLOBALS['numOut'] < 1900) {
+        return;
+    }
+
+    echo $GLOBALS['numOut'], ": $debugX, $debugY\n";
+
+    /*
+    if ($GLOBALS['numOut'] % 1 != 0 && $last === false) {
+        return;
+    }
+*/
+    $image  = imagecreate(clayVein::$maxX+3, clayVein::$maxY);
+    $colors = [
+        '.' => imagecolorallocate($image, 255, 255,   0),
+        '|' => imagecolorallocate($image,   0, 127, 255),
+        '~' => imagecolorallocate($image,   0,   0, 255),
+        '#' => imagecolorallocate($image, 160,  50,  20),
+        '+' => imagecolorallocate($image, 255,   0,   0),
+    ];
+
+    foreach ($map as $numRow => $row) {
+        foreach ($row as $numCol => $col) {
+            imagesetpixel($image, $numCol, $numRow, $colors[$col]);
+        }
+    }
+
+    $white = imagecolorallocate($image, 255, 255, 255);
+    imagesetpixel($image, $debugX, $debugY, $white);
+
+    imagepng($image, __DIR__ . '/out-' . $GLOBALS['numOut'] . '.png');
 }
 
 function trickleDown(&$map, $x, $y)
 {
-    output($map);
+    output($map, false, $x, $y);
 
     for ($newY = $y+1; $newY < count($map); $newY++) {
+        if ('|' === $map[$newY][$x]) {
+            // I'm a second input - no need to flow further
+            return;
+        }
         if ('.' !== $map[$newY][$x]) {
             spread($map, $x, $newY-1);
             return;
@@ -69,61 +101,85 @@ function trickleDown(&$map, $x, $y)
 }
 
 // go left and right until we reach two borders or an edge.
-// if two borders, fill up and go one step up along the original line (use $inX and )
+// if two borders, fill up and go one step up along the original line (use $inX and $inY-1)
 function spread(&$map, $inX, $inY)
 {
-    output($map);
+    output($map, false, $inX, $inY);
 
     $left = $right = false;
 
     $width = 0;
-    $borders  = ['l' => 0, 'r' => 0];
     while ($left === false || $right === false) {
         $width++;
 
         if ($left === false) {
-            if ('.' === $map[$inY][$inX-$width]) {
-                if ('.' !== $map[$inY+1][$inX-$width]) {  // if left is sand and below it no sand, spread the pixel flowing
-                    $map[$inY][$inX - $width] = '|';
-                } else {   // if left is sand and below it is also sand, spread the pixel flowing and start a trickle down.
-                    $map[$inY][$inX-$width] = '|';
+            if ('.' === $map[$inY][$inX-$width] || '|' === $map[$inY][$inX-$width]) {
+                if ('.' === $map[$inY+1][$inX-$width] || '|' === $map[$inY+1][$inX-$width]) {
                     $left = true;
-                    trickleDown($map, $inX-$width, $inY);
+                    $leftOverflow = $inX-$width;
                 }
             } elseif ('#' === $map[$inY][$inX-$width]) {
                 $left = true;
-                $borders['l'] = $inX-$width;
+                $leftBorder = $inX-$width;
             }
         }
 
         if ($right === false) {
-            if ('.' === $map[$inY][$inX+$width]) {
-                if ('.' !== $map[$inY+1][$inX+$width]) {  // if right is sand and below it no sand, spread the pixel flowing
-                    $map[$inY][$inX + $width] = '|';
-                } else {   // if right is sand and below it is also sand, spread the pixel flowing and start a trickle down.
-                    $map[$inY][$inX+$width] = '|';
+            if ('.' === $map[$inY][$inX+$width] || '|' === $map[$inY][$inX+$width]) {
+                if ('.' === $map[$inY+1][$inX+$width] || '|' === $map[$inY+1][$inX+$width]) {
                     $right = true;
-                    trickleDown($map, $inX+$width, $inY);
+                    $rightOverflow = $inX+$width;
                 }
             } elseif ('#' === $map[$inY][$inX+$width]) {
                 $right = true;
-                $borders['r'] = $inX+$width;
+                $rightBorder = $inX+$width;
             }
         }
     }
 
-    if (min($borders) !== 0) {
-        for ($i = min($borders)+1; $i < max($borders); $i++) {
-            $map[$inY][$i] = '~';
-        }
+    // paint
+
+    $filler = '|';
+    if (isset($leftBorder, $rightBorder)) {
+        $filler = '~';
+    }
+
+    if (isset($leftBorder)) {
+        $fillLeft = $leftBorder + 1;
+    } else {
+        $fillLeft = $leftOverflow;
+    }
+
+    if (isset($rightBorder)) {
+        $fillRight = $rightBorder - 1;
+    } else {
+        $fillRight = $rightOverflow;
+    }
+
+    for ($i = $fillLeft; $i <= $fillRight; $i++) {
+        $map[$inY][$i] = $filler;
+    }
+
+    // move on
+
+    if (isset($leftBorder, $rightBorder)) {
         spread($map, $inX, $inY-1);
+        return;
+    }
+
+    if (isset($leftOverflow)) {
+        trickleDown($map, $leftOverflow, $inY);
+    }
+
+    if (isset($rightOverflow)) {
+        trickleDown($map, $rightOverflow, $inY);
     }
 }
 
 
 $pattern = '/([xy])=(\d+), ([xy])=(\d+)..(\d+)/';
 $list = [];
-foreach (file('in-small.txt') as $line) {
+foreach (file('in.txt') as $line) {
     $out = [];
     preg_match($pattern, $line, $out);
     if ($out[1] === 'x') {
@@ -155,10 +211,13 @@ foreach ($list as $vein) {
 
 trickleDown($map, 500, 0);
 
-output($map);
+output($map, true, 0, 0);
 
 $count = 0;
 foreach ($map as $line => $row) {
+    if ($line < clayVein::$minY) {
+        continue;
+    }
     foreach ($row as $col) {
         if ('|' === $col || '~' === $col) {
             ++$count;
