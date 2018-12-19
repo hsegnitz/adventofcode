@@ -47,11 +47,11 @@ class device
 
     public function runCommand($name, $A, $B, $C)
     {
-        echo 'ip=', $this->instructionPointer, ' [', implode(', ', $this->registers), '] ', $name, ' ', $A, ' ', $B, ' ', $C, ' ';
+        #echo 'ip=', $this->instructionPointer, ' [', implode(', ', $this->registers), '] ', $name, ' ', $A, ' ', $B, ' ', $C, ' ';
         $this->setRegister($this->instructionRegister, $this->instructionPointer);
         opcode::$name($this, $A, $B, $C);
         $this->instructionPointer = $this->getRegister($this->instructionRegister) + 1;
-        echo ' [', implode(', ', $this->registers), "]\n";
+        #echo ' [', implode(', ', $this->registers), "]\n";
     }
 
     public function run()
@@ -197,7 +197,7 @@ class opcode
 $program = [];
 $register = -1;
 
-$rawProgram = file('small.txt');
+$rawProgram = file('in.txt');
 $rawRegister = array_shift($rawProgram);
 $register = (int)$rawRegister[4];
 
@@ -217,5 +217,6 @@ foreach ($rawProgram as $row) {
 $device = new device($register, $program);
 $device->run();
 
+echo $device->getRegister(0), "\n";
 
 
