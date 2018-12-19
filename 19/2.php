@@ -5,7 +5,7 @@ class device
     private $instructionPointer  = 0;
     private $instructionRegister;
 
-    private $program = [];
+    private $program;
 
     private $registers;
 
@@ -16,7 +16,7 @@ class device
         $this->program = $program;
 
         $this->registers = [
-            0 => 0,
+            0 => 1,
             1 => 0,
             2 => 0,
             3 => 0,
@@ -38,7 +38,7 @@ class device
     public function equals(device $device)
     {
         for ($i = 0; $i < 6; $i++) {
-            if ($this->getRegister($i) != $device->getRegister($i)) {
+            if ($this->getRegister($i) !== $device->getRegister($i)) {
                 return false;
             }
         }
