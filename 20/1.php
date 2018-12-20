@@ -168,7 +168,7 @@ class room
                 }
 
                 if (isset(self::$map[$y][$x]) && self::$map[$y][$x] instanceof room) {
-                    echo '.';
+                    echo self::$map[$y][$x]->getId() === 0 ? 'X' : '.';
                 } else {
                     echo '?';
                 }
@@ -197,13 +197,52 @@ class room
             echo "\n";
         }
     }
+
+    /**
+     * @param string $in
+     */
+    public function walk($in)
+    {
+        switch ($in[0]) {
+            case '$':
+                return;
+            case 'N':
+                if (! $this->getNorth() instanceof room) {
+                    $nextRoom = new room($this->x, $this->y - 1);
+                    $this->setNorth($nextRoom);
+                }
+                $this->getNorth()->walk(substr($in, 1));
+                break;
+            case 'E':
+                if (! $this->getEast() instanceof room) {
+                    $nextRoom = new room($this->x +1, $this->y);
+                    $this->setEast($nextRoom);
+                }
+                $this->getEast()->walk(substr($in, 1));
+                break;
+            case 'S':
+                if (! $this->getSouth() instanceof room) {
+                    $nextRoom = new room($this->x, $this->y + 1);
+                    $this->setNorth($nextRoom);
+                }
+                $this->getSouth()->walk(substr($in, 1));
+                break;
+            case 'W':
+                if (! $this->getWest() instanceof room) {
+                    $nextRoom = new room($this->x - 1, $this->y);
+                    $this->setWest($nextRoom);
+                }
+                $this->getWest()->walk(substr($in, 1));
+                break;
+            default:
+                throw new RuntimeException('Go fuck yourself with your ' . $in[0]);
+        }
+    }
 }
 
 $in = file_get_contents('tiny.txt');
 
 $root = new room(0 ,0);
-$e = new room(1, 0);
-$root->setEast($e);
-$e->setSouth(new room(1, 1));
+$root->walk(substr($in, 1));
 
 room::printMap();
