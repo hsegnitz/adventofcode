@@ -68,6 +68,22 @@ class room
     }
 
     /**
+     * @param     $x
+     * @param int $y
+     * @return room
+     */
+    private static function getOrCreateUnrelated($x, int $y): room
+    {
+        if (isset(self::$map[$y][$x])) {
+            $nextRoom = self::$map[$y][$x];
+        } else {
+            $nextRoom = new room($x, $y);
+        }
+
+        return $nextRoom;
+    }
+
+    /**
      * @return room
      */
     public function getNorth()
@@ -199,50 +215,78 @@ class room
     }
 
     /**
+     * @return mixed
+     */
+    public function getX()
+    {
+        return $this->x;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getY()
+    {
+        return $this->y;
+    }
+
+    /**
      * @param string $in
      */
     public function walk($in)
     {
-        switch ($in[0]) {
-            case '$':
-                return;
-            case 'N':
-                if (! $this->getNorth() instanceof room) {
-                    $nextRoom = new room($this->x, $this->y - 1);
-                    $this->setNorth($nextRoom);
-                }
-                $this->getNorth()->walk(substr($in, 1));
-                break;
-            case 'E':
-                if (! $this->getEast() instanceof room) {
-                    $nextRoom = new room($this->x +1, $this->y);
-                    $this->setEast($nextRoom);
-                }
-                $this->getEast()->walk(substr($in, 1));
-                break;
-            case 'S':
-                if (! $this->getSouth() instanceof room) {
-                    $nextRoom = new room($this->x, $this->y + 1);
-                    $this->setSouth($nextRoom);
-                }
-                $this->getSouth()->walk(substr($in, 1));
-                break;
-            case 'W':
-                if (! $this->getWest() instanceof room) {
-                    $nextRoom = new room($this->x - 1, $this->y);
-                    $this->setWest($nextRoom);
-                }
-                $this->getWest()->walk(substr($in, 1));
-                break;
-            case '(':
-                $posClosingBrace = $this->findClosingParanthesis($in);
-                $branches = $this->splitWithBraces(substr($in, 1, $posClosingBrace-1)); // FIXME: leave (...|...) intact ;)
-                foreach ($branches as $branch) {
-                    $this->walk($branch . substr($in, $posClosingBrace+1));
-                }
-                break;
-            default:
-                throw new RuntimeException('Go fuck yourself with your ' . $in[0]);
+        $currentRoom = $this;
+        for ($i = 0; $i < strlen($in); $i++) {
+            switch ($in[$i]) {
+                case '$':
+                    return;
+                case 'N':
+                    if (! $currentRoom->getNorth() instanceof room) {
+                        $x = $currentRoom->getX();
+                        $y = $currentRoom->getY() - 1;
+                        $nextRoom = self::getOrCreateUnrelated($x, $y);
+                        $currentRoom->setNorth($nextRoom);
+                    }
+                    $currentRoom = $currentRoom->getNorth();
+                    break;
+                case 'E':
+                    if (! $currentRoom->getEast() instanceof room) {
+                        $x = $currentRoom->getX() + 1;
+                        $y = $currentRoom->getY();
+                        $nextRoom = self::getOrCreateUnrelated($x, $y);
+                        $currentRoom->setEast($nextRoom);
+                    }
+                    $currentRoom = $currentRoom->getEast();
+                    break;
+                case 'S':
+                    if (! $currentRoom->getSouth() instanceof room) {
+                        $x = $currentRoom->getX();
+                        $y = $currentRoom->getY() + 1;
+                        $nextRoom = self::getOrCreateUnrelated($x, $y);
+                        $currentRoom->setSouth($nextRoom);
+                    }
+                    $currentRoom = $currentRoom->getSouth();
+                    break;
+                case 'W':
+                    if (! $currentRoom->getWest() instanceof room) {
+                        $x = $currentRoom->getX() - 1;
+                        $y = $currentRoom->getY();
+                        $nextRoom = self::getOrCreateUnrelated($x, $y);
+                        $currentRoom->setWest($nextRoom);
+                    }
+                    $currentRoom = $currentRoom->getWest();
+                    break;
+                case '(':
+                    $remainder = substr($in, $i);
+                    $posClosingBrace = $currentRoom->findClosingParanthesis($remainder);
+                    $branches = $currentRoom->splitWithBraces(substr($remainder, 1, $posClosingBrace-1));
+                    foreach ($branches as $branch) {
+                        $currentRoom->walk($branch . substr($remainder, $posClosingBrace+1));
+                    }
+                    return;
+                default:
+                    throw new RuntimeException('Go fuck yourself with your ' . $in[$i]);
+            }
         }
     }
 
@@ -286,9 +330,14 @@ class room
     }
 }
 
-$in = file_get_contents('in.txt');
+$in = file_get_contents('small.txt');
 
 $root = new room(0 ,0);
 $root->walk(substr($in, 1));
 
 room::printMap();
+
+
+// solution:
+// bruteforce -> for all possible points find shortest way to center -- walk all possible directions - skipping branches where the field was previously visited,
+// count recursion depth and return min($ownDepth, inheritedDepth())
