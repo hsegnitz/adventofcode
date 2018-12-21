@@ -1,5 +1,7 @@
 <?php
 
+ini_set('xdebug.max_nesting_level', 512);
+
 class room
 {
     private static $instanceCount = 0;
@@ -330,7 +332,7 @@ class room
     }
 }
 
-$in = file_get_contents('small.txt');
+$in = file_get_contents('in.txt');
 
 $root = new room(0 ,0);
 $root->walk(substr($in, 1));
