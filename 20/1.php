@@ -288,7 +288,7 @@ class room
 
 }
 
-$in = file_get_contents('small.txt');
+$in = file_get_contents('medium.txt');
 
 $root = new room(0 ,0);
 $root->walk(substr($in, 1));
