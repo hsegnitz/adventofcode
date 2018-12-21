@@ -243,40 +243,24 @@ class room
                 case '$':
                     return;
                 case 'N':
-                    if (! $currentRoom->getNorth() instanceof room) {
-                        $x = $currentRoom->getX();
-                        $y = $currentRoom->getY() - 1;
-                        $nextRoom = self::getOrCreateUnrelated($x, $y);
-                        $currentRoom->setNorth($nextRoom);
-                    }
-                    $currentRoom = $currentRoom->getNorth();
+                    $x = $currentRoom->getX();
+                    $y = $currentRoom->getY() - 1;
+                    $currentRoom = self::getOrCreateUnrelated($x, $y);
                     break;
                 case 'E':
-                    if (! $currentRoom->getEast() instanceof room) {
-                        $x = $currentRoom->getX() + 1;
-                        $y = $currentRoom->getY();
-                        $nextRoom = self::getOrCreateUnrelated($x, $y);
-                        $currentRoom->setEast($nextRoom);
-                    }
-                    $currentRoom = $currentRoom->getEast();
+                    $x = $currentRoom->getX() + 1;
+                    $y = $currentRoom->getY();
+                    $currentRoom = self::getOrCreateUnrelated($x, $y);
                     break;
                 case 'S':
-                    if (! $currentRoom->getSouth() instanceof room) {
-                        $x = $currentRoom->getX();
-                        $y = $currentRoom->getY() + 1;
-                        $nextRoom = self::getOrCreateUnrelated($x, $y);
-                        $currentRoom->setSouth($nextRoom);
-                    }
-                    $currentRoom = $currentRoom->getSouth();
+                    $x = $currentRoom->getX();
+                    $y = $currentRoom->getY() + 1;
+                    $currentRoom = self::getOrCreateUnrelated($x, $y);
                     break;
                 case 'W':
-                    if (! $currentRoom->getWest() instanceof room) {
-                        $x = $currentRoom->getX() - 1;
-                        $y = $currentRoom->getY();
-                        $nextRoom = self::getOrCreateUnrelated($x, $y);
-                        $currentRoom->setWest($nextRoom);
-                    }
-                    $currentRoom = $currentRoom->getWest();
+                    $x = $currentRoom->getX() - 1;
+                    $y = $currentRoom->getY();
+                    $currentRoom = self::getOrCreateUnrelated($x, $y);
                     break;
                 case '(':
                     $remainder = substr($in, $i);
