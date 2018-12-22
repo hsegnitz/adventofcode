@@ -118,14 +118,54 @@ class room
     }
 }
 
-$in = file_get_contents('large.txt');
+$in = file_get_contents('in.txt');
+
+// cleanup superfluous walkthroughs
+$dictionary = [
+    '(|'   => '(',
+    '||'   => '|',
+    '|)'   => ')',
+    '()'   => '',
+    'NWES' => '',
+    'NWSE' => '',
+    'NEWS' => '',
+    'NESW' => '',
+    'NSEW' => '',
+    'NSWE' => '',
+    'WNES' => '',
+    'WNSE' => '',
+    'WESN' => '',
+    'WENS' => '',
+    'WSNE' => '',
+    'WSEN' => '',
+    'EWSN' => '',
+    'EWNS' => '',
+    'ENSW' => '',
+    'ENWS' => '',
+    'ESWN' => '',
+    'ESNW' => '',
+    'SEWN' => '',
+    'SENW' => '',
+    'SWEN' => '',
+    'SWNE' => '',
+    'SNWE' => '',
+    'SNEW' => '',
+];
+
+while (true) {
+    $newIn = str_replace(array_keys($dictionary), array_values($dictionary), $in);
+    if ($newIn === $in) {
+        break;
+    }
+    $in = $newIn;
+}
+
+#echo $in, "   ", strlen($in);
+
+#die();
 
 $root = new room();
 $root->walk(0, 0, 0, substr($in, 1));
+echo max($root->getSeen()), "\n\n";
 print_r($root->getSeen());
 
-
-
-// solution:
-// bruteforce -> for all possible points find shortest way to center -- walk all possible directions - skipping branches where the field was previously visited,
-// count recursion depth and return min($ownDepth, inheritedDepth())
