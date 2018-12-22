@@ -126,7 +126,7 @@ $dictionary = [
     '||'   => '|',
     '|)'   => ')',
     '()'   => '',
-    'NWES' => '',
+/*    'NWES' => '',
     'NWSE' => '',
     'NEWS' => '',
     'NESW' => '',
@@ -149,7 +149,7 @@ $dictionary = [
     'SWEN' => '',
     'SWNE' => '',
     'SNWE' => '',
-    'SNEW' => '',
+    'SNEW' => '',*/
 ];
 
 while (true) {
@@ -167,5 +167,12 @@ while (true) {
 $root = new room();
 $root->walk(0, 0, 0, substr($in, 1));
 echo max($root->getSeen()), "\n\n";
-print_r($root->getSeen());
 
+$count = 0;
+foreach ($root->getSeen() as $value) {
+    if ($value >= 1000) {
+        ++$count;
+    }
+}
+
+echo $count, "\n";
