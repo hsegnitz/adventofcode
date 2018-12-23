@@ -90,16 +90,6 @@ class map
 
     }
 
-    public function build()
-    {
-        for ($y = 0; $y <= $this->maxY+50; $y++) {
-            $this->map[$y] = [];
-            for ($x = 0; $x <= $this->maxX+50; $x++) {
-                $this->map[$y][$x] = $this->erosionLevel($x, $y) % 3;
-            }
-        }
-    }
-
     /**
      * @param  int $x
      * @param  int $y
@@ -150,26 +140,6 @@ class map
         return $erosionLevel;
     }
 
-    public function sum()
-    {
-        $sum = 0;
-        foreach ($this->map as $row) {
-            $sum += array_sum($row);
-        }
-
-        return $sum;
-    }
-
-    public function printMap()
-    {
-        $out = '';
-        foreach ($this->map as $row) {
-            $out .= implode('', $row) . "\n";
-        }
-
-        echo str_replace([0,1,2], ['.', '=', '|'], $out);
-    }
-
     private function visitNext($time, $x, $y, $equipment)
     {
         $nextSteps = [
@@ -203,7 +173,6 @@ class map
      */
     public function walk()
     {
-        $i = 0;
         while (true) {
             $startingPos = $this->heap->extract();
             if ($startingPos['x'] === $this->maxX && $startingPos['y'] === $this->maxY && $startingPos['tool'] === self::TORCH) {
@@ -218,28 +187,17 @@ class map
             $currentTool = $startingPos['tool'];
             $newTool = 3 - $currentTool - $terrain;
             $this->visitNext($startingPos['time'] + 8, $startingPos['x'], $startingPos['y'], $newTool);
-
-/*            if ($i++ === 1000) {
-                print_r($this);
-                die();
-            }*/
         }
     }
 }
 
 /* */
 $map = new map(11, 718, 11739);
-echo $map->walk();
-#$map->build();
-#$map->printMap();
-#echo $map->sum();
+echo $map->walk(), "\n";
 /* */
 
 
 /* * /
 $map = new map(10, 10, 510);
 echo $map->walk();
-#$map->build();
-#$map->printMap();
-#echo $map->sum();
 /* */
