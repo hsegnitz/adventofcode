@@ -46,16 +46,27 @@ class InitiativeHeap extends SplMaxHeap
     }
 }
 
-
 class party
 {
     private $name;
     /** @var group[] */
     private $groups = [];
 
+    private $boost = 0;
+
     public function __construct($name)
     {
         $this->name = $name;
+    }
+
+    public function setBoost($boost)
+    {
+        $this->boost = $boost;
+    }
+
+    public function getBoost()
+    {
+        return $this->boost;
     }
 
     public function getName()
@@ -256,7 +267,7 @@ class group
      */
     public function getEffectivePower()
     {
-        return $this->units * $this->strength;
+        return (int)($this->units * $this->strength);
     }
 
     /**
@@ -285,11 +296,11 @@ class group
             return $a->getInitiative() - $b->getInitiative();
         });
 
-        echo '  ', $attacker->getId(), ' damage against ';
+/*        echo '  ', $attacker->getId(), ' damage against ';
         foreach ($groups as $group) {
             echo $group->getId(), '(', $attacker->damageAgainst($group), '|', $group->getEffectivePower(), '|', $group->getInitiative() , ') ';
         }
-        echo "\n";
+        echo "\n";*/
         $target = array_shift($groups);
         if ($this->damageAgainst($target) === 0) {
             array_unshift($groups, $target);
@@ -316,10 +327,10 @@ class group
         }
 
         if (in_array($this->getAttacktype(), $victim->getWeaknesses())) {
-            return $this->getEffectivePower() * 2;
+            return (int)$this->getEffectivePower() * 2;
         }
 
-        return $this->getEffectivePower();
+        return (int)$this->getEffectivePower();
     }
 
     /**
@@ -344,7 +355,7 @@ class group
      */
     public function receiveDamage($damage)
     {
-        $killed = floor($damage / $this->hitpoints);
+        $killed = (int)floor($damage / $this->hitpoints);
         if ($this->units < $killed) {
             $killed = $this->units;
         }
@@ -361,7 +372,7 @@ function fight($immune, $infection)
 {
     $heapInitiative = new InitiativeHeap();
 
-    echo "\n";
+    #echo "\n";
 
     //// target selection
     /// immune
@@ -376,7 +387,7 @@ function fight($immune, $infection)
     while ($heapSelection->valid()) {
         /** @var group $immuneGroup */
         $immuneGroup = $heapSelection->extract();
-        echo $immuneGroup->getId(), '-', $immuneGroup->getEffectivePower(), '|';
+        #echo $immuneGroup->getId(), '-', $immuneGroup->getEffectivePower(), '|';
         $targets = $immuneGroup->chooseTarget($targets);
         $heapInitiative->insert($immuneGroup);
     }
@@ -393,12 +404,12 @@ function fight($immune, $infection)
     while ($heapSelection->valid()) {
         /** @var group $infectionGroup */
         $infectionGroup = $heapSelection->extract();
-        echo $infectionGroup->getId(), '-', $infectionGroup->getEffectivePower(), '|';
+        #echo $infectionGroup->getId(), '-', $infectionGroup->getEffectivePower(), '|';
         $targets = $infectionGroup->chooseTarget($targets);
         $heapInitiative->insert($infectionGroup);
     }
 
-    echo "\n";
+   /* echo "\n";
     foreach ($immune->getGroups() as $ig) {
         echo 'img (', $ig->getId(). ') chooses ifg (', ($ig->getTarget() instanceof group) ? $ig->getTarget()->getId() : 'nothing', ")\n";
     }
@@ -407,16 +418,17 @@ function fight($immune, $infection)
         echo 'ifg (', $if->getId(). ') chooses img (', ($if->getTarget() instanceof group) ? $if->getTarget()->getId() : 'nothing', ")\n";
     }
 
-    echo "\n";
+    echo "\n";*/
 
     //// fight
     while ($heapInitiative->valid()) {
         /** @var group $attacker */
         $attacker = $heapInitiative->extract();
-        echo $attacker->getId(), ' with initiative ', $attacker->getInitiative(), ' attacks ', ($attacker->getTarget() instanceof group) ? $attacker->getTarget()->getId() : 'nothing';
-        echo ' killing ';
-        echo $attacker->attack();
-        echo "\n";
+        $killed = $attacker->attack();
+        #echo $attacker->getId(), ' with initiative ', $attacker->getInitiative(), ' attacks ', ($attacker->getTarget() instanceof group) ? $attacker->getTarget()->getId() : 'nothing';
+        #echo ' killing ';
+        #echo $killed;
+        #echo "\n";
 
     }
     #die();
@@ -445,7 +457,7 @@ function parseGroups(party $party, $linesRaw)
 
         $group->setUnits($out[1]);
         $group->setHitpoints($out[2]);
-        $group->setStrength($out[5]);
+        $group->setStrength($out[5] + $party->getBoost());
         $group->setAttacktype($out[6]);
         $group->setInitiative($out[7]);
 
@@ -466,34 +478,45 @@ function parseGroups(party $party, $linesRaw)
     }
 }
 
-
-$in = file_get_contents('in.txt');
-$split = explode("\n\n", $in);
-
-$immune    = new party('immune');
-$infection = new party('infection');
-
-parseGroups($immune,    $split[0]);
-parseGroups($infection, $split[1]);
-
 /*
 var_export($immune);
 var_export($infection);
 */
+$boost = 20;
+while (true) {
+    $in = file_get_contents('in.txt');
+    $split = explode("\n\n", $in);
 
-echo 'immune: ', $immune->getUnitCount();
-echo '   infect: ', $infection->getUnitCount(), "\n";
+    $immune    = new party('immune');
+    $immune->setBoost($boost);
+    $infection = new party('infection');
 
-echo "\n\nlet's fight!\n\n";
+    parseGroups($immune,    $split[0]);
+    parseGroups($infection, $split[1]);
 
+    echo "Let's fight with booster $boost! ";
 
-while ($immune->getGroups() !== [] && $infection->getGroups() !== []) {
-    fight($immune, $infection);
-    echo 'immune: ', $immune->getUnitCount();
-    echo '   infect: ', $infection->getUnitCount(), "\n";
+    $previousImmuneCount    = $immune->getUnitCount();
+    $previousInfectionCount = $infection->getUnitCount();
+    while ($immune->getGroups() !== [] && $infection->getGroups() !== []) {
+        fight($immune, $infection);
+     #   echo 'immune: ', $immune->getUnitCount();
+      #  echo '   infect: ', $infection->getUnitCount(), "\n";
+        if ($previousImmuneCount == $immune->getUnitCount() && $previousInfectionCount == $infection->getUnitCount()) {
+            echo "We're in a stalemate.\n";
+            $boost ++;
+            continue 2;
+        }
+        $previousImmuneCount    = $immune->getUnitCount();
+        $previousInfectionCount = $infection->getUnitCount();
+    }
+
+    echo "It's over! ";
+    if ($immune->getUnitCount() > 0) {
+        die("It survived!!! \o/ {$immune->getUnitCount()}\n");
+    }
+    echo "It didn't make it! :( -- Infection won by {$infection->getUnitCount()}\n";
+    ++$boost;
 }
 
-echo "\n\nit's over!\n\n";
-echo 'immune: ', $immune->getUnitCount();
-echo '   infect: ', $infection->getUnitCount(), "\n";
 
