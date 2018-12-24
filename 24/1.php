@@ -1,8 +1,56 @@
 <?php
 
+class EffectivenessHeap extends SplMaxHeap
+{
+    /**
+     * @param  group $a
+     * @param  group $b
+     * @return int
+     */
+    public function compare($a, $b)
+    {
+        if ($a->getEffectivePower() > $b->getEffectivePower()) {
+            return 1;
+        }
+        if ($a->getEffectivePower() < $b->getEffectivePower()) {
+            return -1;
+        }
+
+        if ($a->getInitiative() > $b->getInitiative()) {
+            return 1;
+        }
+        if ($a->getInitiative() < $b->getInitiative()) {
+            return -1;
+        }
+
+        return 0;
+    }
+}
+
+class InitiativeHeap extends SplMinHeap
+{
+    /**
+     * @param  group $a
+     * @param  group $b
+     * @return int
+     */
+    public function compare($a, $b)
+    {
+        if ($a->getInitiative() > $b->getInitiative()) {
+            return 1;
+        }
+        if ($a->getInitiative() < $b->getInitiative()) {
+            return -1;
+        }
+        return 0;
+    }
+}
+
+
 class party
 {
     private $name;
+    /** @var group[] */
     private $groups = [];
 
     public function __construct($name)
@@ -18,6 +66,35 @@ class party
     public function addGroup(group $group)
     {
         $this->groups[] = $group;
+    }
+
+    /**
+     * @return group[]
+     */
+    public function getGroups()
+    {
+        $newGroups = [];
+        foreach ($this->groups as $group) {
+            if ($group->getUnits() > 0) {
+                $newGroups[] = $group;
+            }
+        }
+
+        $this->groups = $newGroups;
+
+        return $this->groups;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUnitCount()
+    {
+        $count = 0;
+        foreach ($this->getGroups() as $group) {
+            $count += $group->getUnits();
+        }
+        return $count;
     }
 }
 
@@ -43,6 +120,9 @@ class group
 
     /** @var int */
     private $initiative  = 0;
+
+    /** @var group */
+    private $target = null;
 
     /**
      * @return int
@@ -164,7 +244,136 @@ class group
         return $this->units * $this->strength;
     }
 
+    /**
+     * @param  group[] $groups
+     * @return group[] $groups minus the chosen one -- if chosen
+     */
+    public function chooseTarget($groups)
+    {
+        $this->target = null;
+
+        if ($groups === []) {
+            return [];
+        }
+
+        $attacker = $this;
+        usort($groups, function ($a, $b) use ($attacker) {  // check if we need to reverse logic  Oo
+            $damageDelta = $attacker->damageAgainst($b) - $attacker->damageAgainst($a);
+            if ($damageDelta !== 0) {
+                return $damageDelta;
+            }
+
+            $effectiveDelta = $b->getEffectivePower() - $a->getEffectivePower();
+            if ($effectiveDelta !== 0) {
+                return $effectiveDelta;
+            }
+
+            return $b->getInitiative() - $a->getInitiative();
+        });
+
+        $target = array_shift($groups);
+        if ($this->damageAgainst($target) === 0) {
+            array_unshift($groups, $target);
+            return $groups;
+        }
+
+        $this->target = $target;
+        return $groups;
+    }
+
+    /**
+     * @param  group $victim
+     * @return int
+     */
+    public function damageAgainst(group $victim)
+    {
+        if (in_array($this->getAttacktype(), $victim->getImmunities())) {
+            return 0;
+        }
+
+        if (in_array($this->getAttacktype(), $victim->getWeaknesses())) {
+            return $this->getEffectivePower() * 2;
+        }
+
+        return $this->getEffectivePower();
+    }
+
+    /**
+     *
+     */
+    public function attack()
+    {
+        if ($this->units <= 0 || null === $this->target) {
+            return;
+        }
+
+        $this->target->receiveDamage($this->damageAgainst($this->target));
+        $this->target = null;
+    }
+
+    /**
+     * @param int $damage
+     */
+    public function receiveDamage($damage)
+    {
+        $killed = floor($damage / $this->hitpoints);
+        $this->units -= $killed;
+        if ($this->units < 0) {
+            $this->units = 0;
+        }
+    }
 }
+
+/**
+ * @param party $immune
+ * @param party $infection
+ */
+function fight($immune, $infection)
+{
+    $heapInitiative = new InitiativeHeap();
+
+    //// target selection
+    /// immune
+    // priority
+    $heapSelection = new EffectivenessHeap();
+    foreach ($immune->getGroups() as $immuneGroup) {
+        $heapSelection->insert($immuneGroup);
+    }
+
+    // choosing
+    $targets = $infection->getGroups();
+    while ($heapSelection->valid()) {
+        /** @var group $immuneGroup */
+        $immuneGroup = $heapSelection->extract();
+        $targets = $immuneGroup->chooseTarget($targets);
+        $heapInitiative->insert($immuneGroup);
+    }
+
+    /// infection
+    // priority
+    $heapSelection = new EffectivenessHeap();
+    foreach ($infection->getGroups() as $infectionGroup) {
+        $heapSelection->insert($infectionGroup);
+    }
+
+    // choosing
+    $targets = $immune->getGroups();
+    while ($heapSelection->valid()) {
+        /** @var group $infectionGroup */
+        $infectionGroup = $heapSelection->extract();
+        $targets = $infectionGroup->chooseTarget($targets);
+        $heapInitiative->insert($infectionGroup);
+    }
+
+    //// fight
+    while ($heapInitiative->valid()) {
+        /** @var group $attacker */
+        $attacker = $heapInitiative->extract();
+        $attacker->attack();
+    }
+}
+
+
 
 function parseGroups(party $party, $linesRaw)
 {
@@ -215,4 +424,11 @@ $infection = new party('infection');
 
 parseGroups($immune,    $split[0]);
 parseGroups($infection, $split[1]);
+
+while ($immune->getGroups() !== [] && $infection->getGroups() !== []) {
+    fight($immune, $infection);
+}
+
+echo 'immune: ', $immune->getUnitCount();
+echo '   infect: ', $infection->getUnitCount(), "\n";
 
