@@ -144,6 +144,10 @@ class constellation
      */
     public function combineConstellations(constellation $con)
     {
+        if ($this === $con) {
+            return false;
+        }
+
         foreach ($con->getCoordinates() as $c) {
             if ($this->incorporate($c)) {
                 // one match, quickly move all others over as they are now one bigger constellation
@@ -176,7 +180,7 @@ function manhattanDistance4d(coordinate $a, coordinate $b)
 // One point cannot be within two constellations so as soon as it is in one, it shall be removed from the list of available points.
 
 $coordinates = [];
-foreach (file('small4.txt') as $row) {
+foreach (file('in.txt') as $row) {
     $split = explode(',', $row);
     if (count($split) === 4) {
         $coordinates[] = new coordinate((int)$split[0], (int)$split[1], (int)$split[2], (int)$split[3]);
@@ -201,23 +205,29 @@ while ($coordinates !== []) {
     $constellations[$constellation->getId()] = $constellation;
 }
 
-
-do {
-    $modified = false;
-    $workingCons = $constellations;
-    /** @var constellation $first */
-    $first = array_shift($constellations);
-    foreach ($constellations as $con) {
-        if ($first->combineConstellations($con)) {
-            unset ($workingCons[$con->getId()]);
-            $modified = true;
-        }
-    }
-    $constellations = $workingCons;
-} while ($modified);
-
-
 // phase 2 -- try to combine as much constellations as possible
+// looping over and over again until nothing changes.
+
+// merge OR append
+
+$modified = true;
+while ($modified) {
+    $modified = false;
+    $workingConstellations = [];
+    /** @var constellation $c */
+    foreach ($constellations as $c) {
+        /** @var constellation $w */
+        foreach ($workingConstellations as $w) {
+            if ($w->combineConstellations($c)) {
+                $modified = true;
+                continue 2;
+            }
+        }
+        $workingConstellations[$c->getId()] = $c;
+    }
+    $constellations = $workingConstellations;
+}
+
 
 #print_r($constellations);
 
