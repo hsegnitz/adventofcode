@@ -176,7 +176,7 @@ function manhattanDistance4d(coordinate $a, coordinate $b)
 // One point cannot be within two constellations so as soon as it is in one, it shall be removed from the list of available points.
 
 $coordinates = [];
-foreach (file('small3.txt') as $row) {
+foreach (file('small4.txt') as $row) {
     $split = explode(',', $row);
     if (count($split) === 4) {
         $coordinates[] = new coordinate((int)$split[0], (int)$split[1], (int)$split[2], (int)$split[3]);
@@ -201,24 +201,24 @@ while ($coordinates !== []) {
     $constellations[$constellation->getId()] = $constellation;
 }
 
+
 do {
     $modified = false;
+    $workingCons = $constellations;
     /** @var constellation $first */
     $first = array_shift($constellations);
-    $workingCons = $constellations;
-    foreach ($workingCons as $id => $con) {
+    foreach ($constellations as $con) {
         if ($first->combineConstellations($con)) {
-            unset ($constellations[$id]);
+            unset ($workingCons[$con->getId()]);
             $modified = true;
         }
     }
-    $constellations[$first->getId()] = $first;
+    $constellations = $workingCons;
 } while ($modified);
-
 
 
 // phase 2 -- try to combine as much constellations as possible
 
-print_r($constellations);
+#print_r($constellations);
 
 echo count($constellations);
