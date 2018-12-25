@@ -5,6 +5,8 @@ class device
     const MODE_1 = 1;
     const MODE_2 = 2;
 
+    private $seen = [];
+
     private $instructionPointer  = 0;
     private $instructionRegister;
 
@@ -58,11 +60,19 @@ class device
             die ("register content: " . $this->registers[3]);
         }
 
-        echo 'ip=', $this->instructionPointer, ' [', implode(', ', $this->registers), '] ', $name, ' ', $A, ' ', $B, ' ', $C, ' ';
+        if ($this->mode === self::MODE_2 && 28 === $this->instructionPointer) {
+            if (isset($this->seen[$this->registers[3]])) {
+                die("we encountered a loop!\n");
+            }
+            $this->seen[$this->registers[3]] = true;
+            echo $this->registers[3], "\n";
+        }
+
+        #echo 'ip=', $this->instructionPointer, ' [', implode(', ', $this->registers), '] ', $name, ' ', $A, ' ', $B, ' ', $C, ' ';
         $this->setRegister($this->instructionRegister, $this->instructionPointer);
         opcode::$name($this, $A, $B, $C);
         $this->instructionPointer = $this->getRegister($this->instructionRegister) + 1;
-        echo ' [', implode(', ', $this->registers), "]\n";
+        #echo ' [', implode(', ', $this->registers), "]\n";
     }
 
     public function run()
@@ -225,7 +235,7 @@ foreach ($rawProgram as $row) {
     ];
 }
 
-$device = new device($register, $program, device::MODE_1);
+$device = new device($register, $program, device::MODE_2);
 $device->run();
 
 /*
