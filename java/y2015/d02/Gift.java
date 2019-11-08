@@ -21,6 +21,18 @@ public class Gift {
     }
 
     public int getExtra() {
+        List<Integer> dimensions = getOrderedDimensions();
+
+        return dimensions.get(0) * dimensions.get(1);
+    }
+
+    public int getRibbon() {
+        List<Integer> dimensions = getOrderedDimensions();
+
+        return (2 * (dimensions.get(0) + dimensions.get(1))) + (width * length * height);
+    }
+
+    private List<Integer> getOrderedDimensions() {
         List<Integer> dimensions = new ArrayList<Integer>();
         dimensions.add(this.width);
         dimensions.add(this.height);
@@ -32,8 +44,7 @@ public class Gift {
                 return o1 - o2;
             }
         });
-
-        return dimensions.get(0) * dimensions.get(1);
+        return dimensions;
     }
 
     public int getTotalWrappingPaper() {
