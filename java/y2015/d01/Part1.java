@@ -11,6 +11,8 @@ public class Part1 {
         File file = new File("y2015/d01/in.txt");
         try {
             int floor = 0;
+            int count = 0;
+            boolean basementReached = false;
             FileReader fr = new FileReader(file);
 
             int data = fr.read();
@@ -20,10 +22,18 @@ public class Part1 {
                 } else if (41 == data) {
                     floor--;
                 }
+
+                if (-1 == floor && basementReached == false) {
+                    System.out.println("Basement reached after (" + (count+1) + ") steps. (Part 2)");
+                    basementReached = true;
+                } else {
+                    count++;
+                }
+
                 data = fr.read();
             }
 
-            System.out.println("Floor: " + floor);
+            System.out.println("Floor (Part1): " + floor);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
