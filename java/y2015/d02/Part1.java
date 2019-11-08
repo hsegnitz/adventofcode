@@ -2,36 +2,30 @@ package y2015.d02;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.Scanner;
 
 public class Part1 {
 
     public static void main(String[] args) {
         File file = new File("y2015/d02/in.txt");
         try {
-            int floor = 0;
-            int count = 0;
-            boolean basementReached = false;
-            FileReader fr = new FileReader(file);
+            int squareFoot = 0;
+            Scanner scanner = new Scanner(file);
+            String line = "";
+            while (scanner.hasNextLine()) {
+                line = scanner.nextLine();
+                String[] split = line.split("x");
 
-            int data = fr.read();
-            while (-1 != data) {
-                if (40 == data) {
-                    floor++;
-                } else if (41 == data) {
-                    floor--;
-                }
+                Gift gift = new Gift(
+                        Integer.parseInt(split[0]),
+                        Integer.parseInt(split[1]),
+                        Integer.parseInt(split[2])
+                );
 
-                if (-1 == floor && basementReached == false) {
-                    System.out.println("Basement reached after (" + (count+1) + ") steps. (Part 2)");
-                    basementReached = true;
-                } else {
-                    count++;
-                }
-
-                data = fr.read();
+                squareFoot += gift.getTotalWrappingPaper();
             }
 
-            System.out.println("Floor (Part1): " + floor);
+            System.out.println("Total Square Footage: " + squareFoot);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
