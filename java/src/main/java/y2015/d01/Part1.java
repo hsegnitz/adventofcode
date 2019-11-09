@@ -8,7 +8,7 @@ public class Part1 {
 
     public static void main(String[] args) {
 
-        File file = new File("y2015/d01/in.txt");
+        File file = new File("src/main/java/y2015/d01/in.txt");
         try {
             int floor = 0;
             int count = 0;
@@ -23,7 +23,7 @@ public class Part1 {
                     floor--;
                 }
 
-                if (-1 == floor && basementReached == false) {
+                if (-1 == floor && !basementReached) {
                     System.out.println("Basement reached after (" + (count+1) + ") steps. (Part 2)");
                     basementReached = true;
                 } else {
