@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class Part1 {
 
     public static void main(String[] args) {
-        File file = new File("y2015/d02/in.txt");
+        File file = new File("src/main/java/y2015/d02/in.txt");
         try {
             int squareFoot = 0;
             int ribbon = 0;
