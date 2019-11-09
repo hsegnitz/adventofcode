@@ -23,7 +23,7 @@ public class Part1 {
                     floor--;
                 }
 
-                if (-1 == floor && basementReached == false) {
+                if (-1 == floor && !basementReached) {
                     System.out.println("Basement reached after (" + (count+1) + ") steps. (Part 2)");
                     basementReached = true;
                 } else {
