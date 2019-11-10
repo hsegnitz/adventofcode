@@ -1,6 +1,7 @@
 package y2015.d07;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Wires {
     private HashMap<String, Short> wires = new HashMap<String, Short>();
@@ -20,4 +21,9 @@ public class Wires {
         wires.put(wireName, value);
     }
 
+    public void printWires() {
+        for (Map.Entry<String, Short> entry: wires.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+    }
 }

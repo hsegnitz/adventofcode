@@ -4,12 +4,14 @@ import java.security.InvalidParameterException;
 
 public class Gate {
 
-    private String wire1  = "";
-    private Short  value1 = -1;
-    private String wire2  = "";
-    private Short  value2 = -1;
-    private String command;
-    private String out;
+    private String  wire1  = "";
+    private Short   value1;
+    private boolean value1Set = false;
+    private String  wire2  = "";
+    private Short   value2;
+    private boolean value2Set = false;
+    private String  command;
+    private String  out;
 
     public Gate(String raw) {
         String[] split = raw.split(" ");
@@ -48,18 +50,28 @@ public class Gate {
 
     private void receiveFirstInput(String input) {
         if (input.matches("\\d+")) {
-            value1 = Short.parseShort(input);
+            value1    = Short.parseShort(input);
+            value1Set = true;
         } else {
-            wire1 = input;
+            wire1     = input;
         }
     }
 
     private void receiveSecondInput(String input) {
         if (input.matches("\\d+")) {
-            value2 = Short.parseShort(input);
+            value2    = Short.parseShort(input);
+            value2Set = true;
         } else {
-            wire2 = input;
+            wire2     = input;
         }
+    }
+
+    private boolean hasValue1(Wires wires) {
+        return value1Set || wires.hasWire(wire1);
+    }
+
+    private boolean hasValue2(Wires wires) {
+        return value2Set || wires.hasWire(wire2);
     }
 
     private Short getValue1(Wires wires) {
@@ -79,30 +91,38 @@ public class Gate {
     public void compute(Wires wires) throws Exception {
         switch (command) {
             case "SET":
-                wires.writeWire(out, getValue2(wires));
+                if (hasValue2(wires)) {
+                    //System.out.println("SET <" + out + "> to " + getValue2(wires));
+                    wires.writeWire(out, getValue2(wires));
+                }
                 break;
             case "NOT":
-                if (-1 != getValue2(wires)) {
+                if (hasValue2(wires)) {
+                    //System.out.println("NOT " + getValue2(wires) + " (" + (short) ~getValue2(wires) + ") stored in <" + out + ">");
                     wires.writeWire(out, (short) ~getValue2(wires));
                 }
                 break;
             case "AND":
-                if (-1 != getValue1(wires) && -1 != getValue2(wires)) {
+                if (hasValue1(wires) && hasValue2(wires)) {
+                   //System.out.println("AND " + getValue1(wires) + ", " + getValue2(wires) + " stored in <" + out + ">");
                     wires.writeWire(out, (short) (getValue1(wires) & getValue2(wires)));
                 }
                 break;
             case "OR":
-                if (-1 != getValue1(wires) && -1 != getValue2(wires)) {
+                if (hasValue1(wires) && hasValue2(wires)) {
+                   // System.out.println("OR " + getValue1(wires) + ", " + getValue2(wires) + " stored in <" + out + ">");
                     wires.writeWire(out, (short) (getValue1(wires) | getValue2(wires)));
                 }
                 break;
             case "LSHIFT":
-                if (-1 != getValue1(wires) && -1 != getValue2(wires)) {
+                if (hasValue1(wires) && hasValue2(wires)) {
+               //     System.out.println("LSHIFT " + getValue1(wires) + ", " + getValue2(wires) + " stored in <" + out + ">");
                     wires.writeWire(out, (short)(getValue1(wires) << getValue2(wires)));
                 }
                 break;
             case "RSHIFT":
-                if (-1 != getValue1(wires) && -1 != getValue2(wires)) {
+                if (hasValue1(wires) && hasValue2(wires)) {
+         //           System.out.println("RSHIFT " + getValue1(wires) + ", " + getValue2(wires) + " stored in <" + out + ">");
                     wires.writeWire(out, (short)(getValue1(wires) >> getValue2(wires)));
                 }
                 break;

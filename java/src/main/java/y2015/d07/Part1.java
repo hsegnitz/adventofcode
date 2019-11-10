@@ -11,7 +11,7 @@ public class Part1 {
         Wires wires = new Wires();
         ArrayList<Gate> gates = new ArrayList<Gate>();
 
-        File file = new File("src/main/java/y2015/d07/small.txt");
+        File file = new File("src/main/java/y2015/d07/in.txt");
         try {
             Scanner scanner = new Scanner(file);
             String line = "";
@@ -24,7 +24,7 @@ public class Part1 {
             return;
         }
 
-        while (!wires.hasWire("i")) {
+        while (!wires.hasWire("a")) {
             for (Gate gate: gates) {
                 try {
                     gate.compute(wires);
@@ -33,9 +33,13 @@ public class Part1 {
                     return;
                 }
             }
+
+          //  wires.printWires();
+          //  System.out.println("");
+            // #return;
         }
 
-        outputWithBitShift(wires.readWire("i"));
+        outputWithBitShift(wires.readWire("a"));
     }
 
     public static void outputWithBitShift(Short input) {
