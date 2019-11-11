@@ -24,8 +24,8 @@ public class Line {
 
     public int escapedChars() {
         String escapedLine = "\""
-            + this.rawLine.replace("\"", "xxxx")
-                .replace("\\", "XXX")
+            + this.rawLine.replace("\\", "xx")
+                .replace("\"", "XX")
             + "\"";
 
         return escapedLine.length();
