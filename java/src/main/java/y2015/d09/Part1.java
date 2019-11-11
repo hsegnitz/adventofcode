@@ -11,11 +11,39 @@ public class Part1 {
     public static void main(String[] args) {
 
         readFile();
+        int shortest = Integer.MAX_VALUE;
 
-        System.out.println(cities);
-        System.out.println(distances);
+        // nested loops - one per city
+        for (int a = 0; a < cities.length; a++) {
+            ArrayList<String> pathA = new ArrayList<>();
+            pathA.add(cities[a]);
+            for (int b = 0; b < cities.length; b++) {
+                ArrayList<String> pathB = (ArrayList<String>) pathA.clone();
+                if (pathB.contains(cities[b])) {
+                    continue;
+                }
+                pathB.add(cities[b]);
+                for (int c = 0; c < cities.length; c++) {
+                    ArrayList<String> pathC = (ArrayList<String>) pathB.clone();
+                    if (pathC.contains(cities[c])) {
+                        continue;
+                    }
+                    pathC.add(cities[c]);
 
+                    System.out.println(pathC);
+                }
+            }
+        }
+
+        // calculate length of path as a function
+        // if short as previous one, store length as "shortest"
     }
+
+    public static int calculatePathLength(ArrayList<String> path) {
+        
+    }
+
+
 
     public static void readFile() {
 
