@@ -22,4 +22,12 @@ public class Line {
         return strippedLine.length();
     }
 
+    public int escapedChars() {
+        String escapedLine = "\""
+            + this.rawLine.replace("\"", "xxxx")
+                .replace("\\", "XXX")
+            + "\"";
+
+        return escapedLine.length();
+    }
 }
