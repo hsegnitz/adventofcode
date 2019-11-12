@@ -31,24 +31,27 @@ public class Part1 {
     }
 
     public static void addCity(ArrayList<String> path) {
-        for (int i = 0; i < cities.length; i++) {
-            if (path.contains(cities[i])) {
+        for (String city : cities) {
+            ArrayList<String>pathB = (ArrayList<String>) path.clone();
+            if (path.contains(city)) {
                 continue;
             }
-            ArrayList<String>pathB = (ArrayList<String>) path.clone();
-            pathB.add(cities[i]);
-            addCity(pathB);
+            pathB.add(city);
+            if (pathB.size() == cities.length) {
+                int distance = calculatePathLength(pathB);
+
+                shortest = Math.min(shortest, distance);
+
+                System.out.println(pathB + " -- [" + distance + "] -- shortest(" + shortest + ")");
+            } else {
+                addCity(pathB);
+            }
         }
-        int distance = calculatePathLength(path);
-
-        shortest = Math.min(shortest, distance);
-
-        System.out.println(path + " -- [" + distance + "] -- shortest(" + shortest + ")");
     }
 
     public static void readFile() {
 
-        File file = new File("src/main/java/y2015/d09/in.txt");
+        File file = new File("src/main/java/y2015/d09/small.txt");
         String rawLine   = "";
         HashMap<String, Boolean> localCities = new HashMap<>();
         try {
