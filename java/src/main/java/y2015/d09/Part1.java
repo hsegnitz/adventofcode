@@ -7,6 +7,7 @@ public class Part1 {
 
     private static String[] cities;
     private static HashMap<String, Integer> distances = new HashMap<>();
+    private static int shortest = Integer.MAX_VALUE;
 
     public static void main(String[] args) {
 
@@ -14,32 +15,11 @@ public class Part1 {
         int shortest = Integer.MAX_VALUE;
 
         // nested loops - one per city
-        for (int a = 0; a < cities.length; a++) {
-            ArrayList<String> pathA = new ArrayList<>();
-            pathA.add(cities[a]);
-            for (int b = 0; b < cities.length; b++) {
-                ArrayList<String> pathB = (ArrayList<String>) pathA.clone();
-                if (pathB.contains(cities[b])) {
-                    continue;
-                }
-                pathB.add(cities[b]);
-                for (int c = 0; c < cities.length; c++) {
-                    ArrayList<String> pathC = (ArrayList<String>) pathB.clone();
-                    if (pathC.contains(cities[c])) {
-                        continue;
-                    }
-                    pathC.add(cities[c]);
-
-                    int distance = calculatePathLength(pathC);
-                    shortest = Math.min(shortest, distance);
-
-                    System.out.println(pathC + " -- [" + distance + "] -- shortest(" + shortest + ")");
-                }
-            }
+        for (int i = 0; i < cities.length; i++) {
+            ArrayList<String> path = new ArrayList<>();
+            path.add(cities[i]);
+            addCity(path);
         }
-
-        // calculate length of path as a function
-        // if short as previous one, store length as "shortest"
     }
 
     public static int calculatePathLength(ArrayList<String> path) {
@@ -50,11 +30,25 @@ public class Part1 {
         return distance;
     }
 
+    public static void addCity(ArrayList<String> path) {
+        for (int i = 0; i < cities.length; i++) {
+            if (path.contains(cities[i])) {
+                continue;
+            }
+            ArrayList<String>pathB = (ArrayList<String>) path.clone();
+            pathB.add(cities[i]);
+            addCity(pathB);
+        }
+        int distance = calculatePathLength(path);
 
+        shortest = Math.min(shortest, distance);
+
+        System.out.println(path + " -- [" + distance + "] -- shortest(" + shortest + ")");
+    }
 
     public static void readFile() {
 
-        File file = new File("src/main/java/y2015/d09/small.txt");
+        File file = new File("src/main/java/y2015/d09/in.txt");
         String rawLine   = "";
         HashMap<String, Boolean> localCities = new HashMap<>();
         try {
