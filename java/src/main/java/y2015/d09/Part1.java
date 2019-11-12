@@ -51,7 +51,7 @@ public class Part1 {
 
     public static void readFile() {
 
-        File file = new File("src/main/java/y2015/d09/small.txt");
+        File file = new File("src/main/java/y2015/d09/in.txt");
         String rawLine   = "";
         HashMap<String, Boolean> localCities = new HashMap<>();
         try {
