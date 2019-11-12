@@ -37,7 +37,11 @@ public class Part1 {
 //                sues.add(sue);
 
                 if (target.equals(sue)) {
-                    System.out.println(sue.getNumber());
+                    System.out.println("Part 1: " + sue.getNumber());
+                }
+
+                if (target.equalsPart2(sue)) {
+                    System.out.println("Part 2: " + sue.getNumber());
                 }
 
             }
