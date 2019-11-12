@@ -6,7 +6,8 @@ import java.util.Arrays;
 public class Part1 {
 
     public static void main(String[] args) {
-        String input = "cqjxjnds";
+        String input = "cqjxxyzz";
+        input = increment(input, 7);
 
         while (!isValid(input)) {
             input = increment(input, 7);
