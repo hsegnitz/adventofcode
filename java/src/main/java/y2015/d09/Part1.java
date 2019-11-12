@@ -30,7 +30,10 @@ public class Part1 {
                     }
                     pathC.add(cities[c]);
 
-                    System.out.println(pathC);
+                    int distance = calculatePathLength(pathC);
+                    shortest = Math.min(shortest, distance);
+
+                    System.out.println(pathC + " -- [" + distance + "] -- shortest(" + shortest + ")");
                 }
             }
         }
@@ -40,7 +43,11 @@ public class Part1 {
     }
 
     public static int calculatePathLength(ArrayList<String> path) {
-        
+        int distance = 0;
+        for (int i = 0; i < path.size()-1; i++) {
+            distance += distances.get(path.get(i) + ":" + path.get(i+1));
+        }
+        return distance;
     }
 
 
@@ -66,9 +73,7 @@ public class Part1 {
             cities = keys.toArray(new String[0]);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return;
         }
-
     }
 
 }
