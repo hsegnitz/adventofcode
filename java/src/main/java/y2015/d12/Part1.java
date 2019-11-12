@@ -2,9 +2,7 @@ package y2015.d12;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Scanner;
-import java.util.Set;
 
 public class Part1 {
 
