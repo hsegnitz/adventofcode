@@ -5,7 +5,7 @@ public class Part1 {
     public static void main(String[] args) {
         String numbers = "1113122113";
 
-        for (int i = 1; i <= 40; i++) {
+        for (int i = 1; i <= 50; i++) {
             numbers = lookAndSay(numbers);
             System.out.println(i + ": " + numbers.length());
         }
