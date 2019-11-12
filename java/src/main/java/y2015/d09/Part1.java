@@ -8,6 +8,7 @@ public class Part1 {
     private static String[] cities;
     private static HashMap<String, Integer> distances = new HashMap<>();
     private static int shortest = Integer.MAX_VALUE;
+    private static int longest  = Integer.MIN_VALUE;
 
     public static void main(String[] args) {
 
@@ -41,8 +42,9 @@ public class Part1 {
                 int distance = calculatePathLength(pathB);
 
                 shortest = Math.min(shortest, distance);
+                longest  = Math.max(longest,  distance);
 
-                System.out.println(pathB + " -- [" + distance + "] -- shortest(" + shortest + ")");
+                System.out.println(pathB + " -- [" + distance + "] -- shortest(" + shortest + ") -- longest(" + longest + ")");
             } else {
                 addCity(pathB);
             }
