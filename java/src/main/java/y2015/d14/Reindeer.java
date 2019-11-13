@@ -22,7 +22,7 @@ public class Reindeer {
         boolean isResting = false;
         int distance = 0;
 
-        while (seconds > 0) {
+        while (seconds >= 0) {
             if (isResting) {
                 if (seconds >= rest) {
                     seconds -= rest;
@@ -32,15 +32,22 @@ public class Reindeer {
                 }
             } else {
                 if (seconds >= burnLength) {
-                    distance += kilometersPerSecond * burnLength;
+                    distance += (kilometersPerSecond * burnLength);
                     seconds -= burnLength;
                     isResting = true;
                 } else {
-                    distance += kilometersPerSecond * seconds;
+                    distance += (kilometersPerSecond * seconds);
                     return distance;
                 }
             }
         }
-        return -1;
+        return distance;
+    }
+
+    public int kilometersAfter2(int seconds) {
+        int q = seconds / (burnLength + rest);
+        int r = seconds % (burnLength + rest);
+
+        return ((q * burnLength) + Math.min(r, burnLength)) * kilometersPerSecond;
     }
 }
