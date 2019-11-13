@@ -1,6 +1,9 @@
 package y2015.d14;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Part1 {
 
@@ -17,10 +20,15 @@ public class Part1 {
                 new Reindeer("Dancer",  37,  1,  36)
         };
 
+        HashMap<Reindeer, Integer> scores = new HashMap<>();
+
         for (Reindeer deer: reindeers) {
-            System.out.println(deer.getName() + ": " + deer.kilometersAfter2(2503));
+            scores.put(deer, deer.kilometersAfter(2503));
         }
 
+        Reindeer farthest = Collections.max(scores.entrySet(), Map.Entry.comparingByValue()).getKey();
+
+        System.out.println(farthest.getName() + ": " + farthest.kilometersAfter(2503));
     }
 
 }
