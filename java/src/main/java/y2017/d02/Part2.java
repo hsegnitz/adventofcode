@@ -3,7 +3,7 @@ package y2017.d02;
 import java.io.File;
 import java.util.Scanner;
 
-public class Part1 {
+public class Part2 {
 
     public static void main(String[] args) {
         File file = new File("src/main/java/y2017/d02/in.txt");
@@ -14,15 +14,23 @@ public class Part1 {
             while (scanner.hasNextLine()) {
                 line = scanner.nextLine();
                 String[] split = line.split("\t");
-                int largest  = Integer.MIN_VALUE;
-                int smallest = Integer.MAX_VALUE;
+                int divResult = 0;
 
                 for (String number: split) {
-                    largest  = Math.max(Integer.parseInt(number), largest);
-                    smallest = Math.min(Integer.parseInt(number), smallest);
+                    int n = Integer.parseInt(number);
+                    for (String number2: split) {
+                        int n2 = Integer.parseInt(number2);
+                        if (n == n2) {
+                            continue;
+                        }
+
+                        if (n % n2 == 0) {
+                            divResult = n / n2;
+                        }
+                    }
                 }
 
-                checksum += largest - smallest;
+                checksum += divResult;
             }
 
             System.out.println("Checksum: " + checksum);
