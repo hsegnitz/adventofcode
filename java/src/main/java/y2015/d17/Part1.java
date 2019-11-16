@@ -6,8 +6,10 @@ import java.util.*;
 
 public class Part1 {
     // private static int target = 25;  // small
-    private static int target = 150;    // in
-    private static int count  =   0;
+    private static int target   = 150;    // in
+    private static int count    =   0;
+    private static int count2   =   0;
+    private static int minCount = Integer.MAX_VALUE;
     private static ArrayList<Integer> allContainers = new ArrayList<>();
 
 
@@ -15,17 +17,37 @@ public class Part1 {
         // allContainers = small();
         allContainers = in();
 
-        calc(0, 0);
+        calc(0, 0, 0);
         System.out.println(count);
+        System.out.println(minCount);
+
+        calcFixedNum(0, 0, 0);
+        System.out.println(count2);
     }
 
-    public static void calc(int sum, int index) {
-        for (int i = index; i < allContainers.size(); i++) {
+    public static void calc(int sum, int depth, int containerCount) {
+        ++containerCount;
+        for (int i = depth; i < allContainers.size(); i++) {
             int newSum = sum + allContainers.get(i);
             if (newSum < target) {
-                calc(newSum, i + 1);
+                calc(newSum, i + 1, containerCount);
             } else if (newSum == target) {
+                minCount = Math.min(minCount, containerCount);
                 ++count;
+            }
+        }
+    }
+
+    public static void calcFixedNum(int sum, int depth, int containerCount) {
+        ++containerCount;
+        for (int i = depth; i < allContainers.size(); i++) {
+            int newSum = sum + allContainers.get(i);
+            if (newSum < target) {
+                calcFixedNum(newSum, i + 1, containerCount);
+            } else if (newSum == target) {
+                if (containerCount == minCount) {
+                    ++count2;
+                }
             }
         }
     }
