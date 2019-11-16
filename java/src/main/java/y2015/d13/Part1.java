@@ -53,7 +53,7 @@ public class Part1 {
 
     public static void readFile() {
 
-        File   file    = new File("src/main/java/y2015/d13/small.txt");
+        File   file    = new File("src/main/java/y2015/d13/in.txt");
         String rawLine = "";
         HashMap<String, Boolean> localPeople = new HashMap<>();
         try {
@@ -67,6 +67,12 @@ public class Part1 {
                 happinessDeltas.put(split[0] + ":" + split[9], Integer.parseInt(split[2]));
             }
 
+            for (String person: localPeople.keySet()) {
+                happinessDeltas.put("Me:" + person, 0);
+                happinessDeltas.put(person + ":Me", 0);
+            }
+
+            localPeople.put("Me", true);
             Set<String> keys = localPeople.keySet();
             people = keys.toArray(new String[0]);
 
