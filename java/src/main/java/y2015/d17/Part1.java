@@ -1,14 +1,18 @@
 package y2015.d17;
 
+import java.io.File;
 import java.util.*;
 
 public class Part1 {
 
-    private static int target = 25;
-    private static int count  =  0;
+    private static int target = 150;
+    private static int count  =   0;
     private static HashSet<String> seen = new HashSet<>();
+    private static LinkedHashMap<Integer, Integer> allContainers = new LinkedHashMap<>();
 
     public static void main(String[] args) {
+        allContainers = in();
+
         calc(new LinkedHashMap<Integer, Integer>(), 0);
 
         System.out.println(count);
@@ -39,20 +43,18 @@ public class Part1 {
             return;
         }
 
-        LinkedHashMap<Integer, Integer> containers = small();
-        if (depth >= containers.size()) {
+        if (depth >= allContainers.size()) {
             return;
         }
 
         LinkedHashMap<Integer, Integer> clone = (LinkedHashMap<Integer, Integer>) previous.clone();
         calc(clone, depth + 1);
 
-        for (int i = depth; i < containers.size(); i++ ) {
+        for (int i = depth; i < allContainers.size(); i++ ) {
             clone = (LinkedHashMap<Integer, Integer>) previous.clone();
-            clone.put(i, containers.get(i));
+            clone.put(i, allContainers.get(i));
             calc(clone, depth + 1);
         }
-
     }
 
 
@@ -67,5 +69,26 @@ public class Part1 {
         return map;
     }
 
+    private static LinkedHashMap<Integer, Integer> in() {
+        LinkedHashMap<Integer, Integer> map = new LinkedHashMap<>();
+        int counter = 0;
+        File file = new File("src/main/java/y2015/d17/in.txt");
+        try {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                map.put(counter++, scanner.nextInt());
+                scanner.nextLine();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+/*
+        System.out.println(map);
+        System.exit(42);
+*/
+
+        return map;
+    }
 
 }
