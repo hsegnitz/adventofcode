@@ -2,44 +2,44 @@ package y2015.d15;
 
 public class Recipe {
 
-    private int sprinkles;
-    private int peanutButter;
-    private int frosting;
-    private int sugar;
+    private int sprinkleCount;
+    private int peanutButterCount;
+    private int frostingCount;
+    private int sugarCount;
 
-    public Recipe(int sprinkles, int peanutButter, int frosting, int sugar) throws Exception {
-        if (sprinkles + peanutButter + frosting + sugar != 100) {
+    Ingredient sprinkles    = IngredientFactory.getSprinkles();
+    Ingredient peanutButter = IngredientFactory.getPeanutButter();
+    Ingredient frosting     = IngredientFactory.getFrosting();
+    Ingredient sugar        = IngredientFactory.getSugar();
+
+    public Recipe(int sprinkleCount, int peanutButterCount, int frostingCount, int sugarCount) throws Exception {
+        if (sprinkleCount + peanutButterCount + frostingCount + sugarCount != 100) {
             throw new Exception("invalid recipe");
         }
 
-        this.sprinkles    = sprinkles;
-        this.peanutButter = peanutButter;
-        this.frosting     = frosting;
-        this.sugar        = sugar;
+        this.sprinkleCount = sprinkleCount;
+        this.peanutButterCount = peanutButterCount;
+        this.frostingCount = frostingCount;
+        this.sugarCount = sugarCount;
     }
 
     public int getScore() {
-        Ingredient sprinkles    = IngredientFactory.getSprinkles();
-        Ingredient peanutButter = IngredientFactory.getPeanutButter();
-        Ingredient frosting     = IngredientFactory.getFrosting();
-        Ingredient sugar        = IngredientFactory.getSugar();
-
-        int capacity   = (this.sprinkles * sprinkles.getCapacity())
-                + (this.peanutButter     * peanutButter.getCapacity())
-                + (this.frosting         * frosting.getCapacity())
-                + (this.sugar            * sugar.getCapacity());
-        int durability = (this.sprinkles * sprinkles.getDurability())
-                + (this.peanutButter     * peanutButter.getDurability())
-                + (this.frosting         * frosting.getDurability())
-                + (this.sugar            * sugar.getDurability());
-        int flavor     = (this.sprinkles * sprinkles.getFlavor())
-                + (this.peanutButter     * peanutButter.getFlavor())
-                + (this.frosting         * frosting.getFlavor())
-                + (this.sugar            * sugar.getFlavor());
-        int texture    = (this.sprinkles * sprinkles.getTexture())
-                + (this.peanutButter     * peanutButter.getTexture())
-                + (this.frosting         * frosting.getTexture())
-                + (this.sugar            * sugar.getTexture());
+        int capacity = (this.sprinkleCount * sprinkles.getCapacity())
+                + (this.peanutButterCount * peanutButter.getCapacity())
+                + (this.frostingCount * frosting.getCapacity())
+                + (this.sugarCount * sugar.getCapacity());
+        int durability = (this.sprinkleCount * sprinkles.getDurability())
+                + (this.peanutButterCount * peanutButter.getDurability())
+                + (this.frostingCount * frosting.getDurability())
+                + (this.sugarCount * sugar.getDurability());
+        int flavor = (this.sprinkleCount * sprinkles.getFlavor())
+                + (this.peanutButterCount * peanutButter.getFlavor())
+                + (this.frostingCount * frosting.getFlavor())
+                + (this.sugarCount * sugar.getFlavor());
+        int texture = (this.sprinkleCount * sprinkles.getTexture())
+                + (this.peanutButterCount * peanutButter.getTexture())
+                + (this.frostingCount * frosting.getTexture())
+                + (this.sugarCount * sugar.getTexture());
 
         if (capacity < 0 || durability < 0 || flavor < 0 || texture < 0) {
             return 0;
@@ -48,5 +48,11 @@ public class Recipe {
         return capacity * durability * flavor * texture;
     }
 
+    public int getCalories() {
+        return (this.sprinkleCount * sprinkles.getCalories())
+                + (this.peanutButterCount * peanutButter.getCalories())
+                + (this.frostingCount * frosting.getCalories())
+                + (this.sugarCount * sugar.getCalories());
+    }
 
 }

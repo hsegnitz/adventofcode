@@ -10,6 +10,9 @@ public class Part1 {
                     int sugar = 100 - sprinkles - peanutButter - frosting;
                     try {
                         Recipe r = new Recipe(sprinkles, peanutButter, frosting, sugar);
+                        if (r.getCalories() != 500) {
+                            continue;
+                        }
                         best = Math.max(r.getScore(), best);
                     } catch (Exception e) {
                         e.printStackTrace();
