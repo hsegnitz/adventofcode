@@ -206,6 +206,7 @@ public class Part1 {
 
     public static void main(String[] args) {
         int minCost = Integer.MAX_VALUE;
+        int maxCost = Integer.MIN_VALUE;
 
         for (Weapon weapon: Store.getWeapons()) {
             for (Armor armor: Store.getArmors()) {
@@ -221,8 +222,14 @@ public class Part1 {
                         }
                         player.equip(ringRight);
 
-                        if (player.getCost() < minCost && isPlayerVictorious(boss, player)) {
+                        boolean playerIsVictorious = isPlayerVictorious(boss, player);
+
+                        if (playerIsVictorious) {
                             minCost = Math.min(minCost, player.getCost());
+                        }
+
+                        if (!playerIsVictorious) {
+                            maxCost = Math.max(maxCost, player.getCost());
                         }
                     }
                 }
@@ -230,6 +237,7 @@ public class Part1 {
         }
 
         System.out.println("min Gold to win:" + minCost);
+        System.out.println("max Gold to lose:" + maxCost);
     }
 
     public static boolean isPlayerVictorious(Player boss, Player player) {
