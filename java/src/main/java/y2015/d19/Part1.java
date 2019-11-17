@@ -1,5 +1,7 @@
 package y2015.d19;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Part1 {
@@ -23,10 +25,10 @@ public class Part1 {
     }
 
     private static HashSet<String> permutations = new HashSet<>();
+    private static String molecule;
 
-    public static void main(String[] args) {
-        String molecule = "HOH";
-        Replacement[] replacements = getReplacements();
+    public static void main(String[] args) throws FileNotFoundException {
+        List<Replacement> replacements = getReplacements();
 
         for (Replacement rep: replacements) {
             permutate(rep, molecule);
@@ -55,14 +57,25 @@ public class Part1 {
         }
     }
 
+    private static List<Replacement> getReplacements () throws FileNotFoundException {
+        File file = new File("src/main/java/y2015/d19/in.txt");
+        Scanner scanner = new Scanner(file);
 
+        List<Replacement> replacements = new ArrayList<>();
+        String rawLine = "";
+        while (scanner.hasNextLine()) {
+            rawLine = scanner.nextLine();
+            String[] split = rawLine.split(" ");
+            if (split.length == 3) {
+                replacements.add(
+                        new Replacement(split[0], split[2])
+                );
+            } else if (split.length == 1 && rawLine.length() > 5) {
+                molecule = rawLine;
+            }
+        }
 
-    private static Replacement[] getReplacements () {
-        return new Replacement[]{
-                new Replacement("H", "HO"),
-                new Replacement("H", "OH"),
-                new Replacement("O", "HH"),
-        };
+        return replacements;
     }
 
 }
