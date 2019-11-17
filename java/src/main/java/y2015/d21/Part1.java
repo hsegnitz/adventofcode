@@ -93,7 +93,8 @@ public class Part1 {
         }
 
         public boolean hasRing(Ring ring) {
-            return this.ringRight.getName().equals(ring.getName()) || this.ringLeft.getName().equals(ring.getName());
+            return (this.ringRight != null && this.ringRight.getName().equals(ring.getName()))
+                    || (this.ringLeft != null && this.ringLeft.getName().equals(ring.getName()));
         }
 
         public boolean hitByAndIsDead(Player opponent) {
@@ -102,7 +103,7 @@ public class Part1 {
                 damage = 1;
             }
 
-            hitpoints -= damage;
+            this.hitpoints -= damage;
 
             if (hitpoints <= 0) {
                 return true;
@@ -203,8 +204,6 @@ public class Part1 {
     }
 
 
-
-
     public static void main(String[] args) {
         int minCost = Integer.MAX_VALUE;
 
@@ -217,6 +216,9 @@ public class Part1 {
                         player.equip(weapon);
                         player.equip(armor);
                         player.equip(ringLeft);
+                        if (player.hasRing(ringRight)) {
+                            continue; // skip same ring twice!
+                        }
                         player.equip(ringRight);
 
                         if (player.getCost() < minCost && isPlayerVictorious(boss, player)) {
@@ -227,7 +229,7 @@ public class Part1 {
             }
         }
 
-        System.out.println(minCost);
+        System.out.println("min Gold to win:" + minCost);
     }
 
     public static boolean isPlayerVictorious(Player boss, Player player) {
