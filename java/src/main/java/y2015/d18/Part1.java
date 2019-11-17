@@ -8,21 +8,23 @@ import java.util.Scanner;
 
 public class Part1 {
 
-    private static boolean[][] grid = new boolean[6][6];
-//    private boolean[][] grid = new boolean[100][100];
+//    private static boolean[][] grid = new boolean[6][6];
+    private static boolean[][] grid = new boolean[100][100];
 
     public static void main(String[] args) {
         readGrid();
         printGrid(grid);
         System.out.println();
-        tick();
+        for (int i = 0; i < 100; i++) {
+            tick();
+        }
         printGrid(grid);
     }
 
     public static void readGrid () {
         try {
-            File file = new File("src/main/java/y2015/d18/small.txt");
-//            File file = new File("src/main/java/y2015/d18/in.txt");
+//            File file = new File("src/main/java/y2015/d18/small.txt");
+            File file = new File("src/main/java/y2015/d18/in.txt");
             Scanner scanner = new Scanner(file);
             String rawLine = "";
             int line = 0;
@@ -47,10 +49,10 @@ public class Part1 {
             for (int j = 0; j < grid[i].length; j++) {
                 newGrid[i][j] = liveOrDie(i, j);
             }
-            System.out.println();
+//            System.out.println();
         }
 
-        System.out.println();
+//        System.out.println();
         grid = newGrid;
     }
 
@@ -69,7 +71,7 @@ public class Part1 {
             }
         }
 
-        System.out.print(count);
+//        System.out.print(count);
 
         if (grid[i][j]) {
             if (count == 2 || count == 3) {
