@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class Part1 {
 
-    private static int a = 0;
+    private static int a = 1;
     private static int b = 0;
 
     private static ArrayList<Instruction> program = new ArrayList<>();
