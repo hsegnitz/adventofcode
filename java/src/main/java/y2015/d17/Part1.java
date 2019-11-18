@@ -1,6 +1,5 @@
 package y2015.d17;
 
-import javax.swing.*;
 import java.io.File;
 import java.util.*;
 
