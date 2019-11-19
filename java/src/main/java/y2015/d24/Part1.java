@@ -32,13 +32,17 @@ public class Part1 {
         System.out.println(candidates.size());
         System.out.println(shortestCandidates.size());
 
+        long smallestQE = Long.MAX_VALUE;
         for (ArrayList<Integer> candidate: shortestCandidates) {
-            int qe = 1;
+            long qe = 1L;
             for (Integer gift: candidate) {
                 qe *= gift;
             }
             System.out.println(candidate + "; QE=" + qe);
+            smallestQE = Math.min(smallestQE, qe);
         }
+
+        System.out.println("smallest QE: " + smallestQE);
     }
 
     public static void stack(ArrayList<Integer> group, int depth) {
@@ -106,7 +110,7 @@ public class Part1 {
 
     private static ArrayList<Integer> in() {
         ArrayList<Integer> list = new ArrayList<>();
-        File file = new File("src/main/java/y2015/d24/small.txt");
+        File file = new File("src/main/java/y2015/d24/in.txt");
         try {
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
