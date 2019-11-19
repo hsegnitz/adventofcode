@@ -56,6 +56,12 @@ public class Part1 {
                 }
                 playerTurn = false;
 
+                --hitPointsPlayer;
+                if (hitPointsPlayer <= 0) {
+                    // lost because of "hard" setting -- day 2
+                    break;
+                }
+
                 handleStatusEffects();
                 if (hitPointsBoss <= 0) {
                     registerWin();
