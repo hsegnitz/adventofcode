@@ -3,7 +3,10 @@ package y2016.d01;
 import common.Geometry;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Part1 {
 
@@ -18,9 +21,15 @@ public class Part1 {
         int posX = 0;
         int posY = 0;
         Directions heading = Directions.NORTH;
+        Set<String> seen = new HashSet<>();
 
         for (String command: chainOfCommand) {
-            System.out.println(command);
+            String pos = "" + posX + ":" + posY;
+            if (!seen.add(pos)) {
+                break;
+            }
+
+            System.out.println(pos + " " + command);
             heading = turn(command, heading);
             int distance = Integer.parseInt(command.substring(1));
             switch (heading) {
