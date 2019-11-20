@@ -26,7 +26,7 @@ public class Part1 {
 
         while (!wires.hasWire("a")) {
             for (Gate gate: gates) {
-                wires.writeWire("b", (short)956);
+                wires.writeWire("b", 956);
                 try {
                     gate.compute(wires);
                 } catch (Exception e) {
@@ -43,14 +43,13 @@ public class Part1 {
         outputWithBitShift(wires.readWire("a"));
     }
 
-    public static void outputWithBitShift(Short input) {
-        System.out.println(input);
+    public static void outputWithBitShift(Integer input) {
         int input2 = (int)input;
-        if (input < 0) {
+        //if (input < 0) {
             input2 = (input & 0xFFFF);
-        }
+        //}
 
-        System.out.println(input2);
+        System.out.println(input & 0xFFFF);
     }
 
 }

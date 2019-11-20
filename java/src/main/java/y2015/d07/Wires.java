@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Wires {
-    private HashMap<String, Short> wires = new HashMap<String, Short>();
+    private HashMap<String, Integer> wires = new HashMap<String, Integer>();
 
     public Wires() {
     }
@@ -13,16 +13,16 @@ public class Wires {
         return wires.containsKey(wireName);
     }
 
-    public Short readWire(String wireName) {
-        return wires.get(wireName);
+    public Integer readWire(String wireName) {
+        return wires.get(wireName) & 0xFFFF;
     }
 
-    public void writeWire(String wireName, Short value) {
-        wires.put(wireName, value);
+    public void writeWire(String wireName, int value) {
+        wires.put(wireName, value & 0xFFFF);
     }
 
     public void printWires() {
-        for (Map.Entry<String, Short> entry: wires.entrySet()) {
+        for (Map.Entry<String, Integer> entry: wires.entrySet()) {
             System.out.println(entry.getKey() + ": " + entry.getValue());
         }
     }
