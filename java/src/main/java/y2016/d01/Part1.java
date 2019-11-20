@@ -14,34 +14,60 @@ public class Part1 {
         NORTH, EAST, SOUTH, WEST
     }
 
-    // private
+    private static Set<String> seen = new HashSet<>();
 
     public static void main(String[] args) throws Exception {
         String[] chainOfCommand = readFile();
         int posX = 0;
         int posY = 0;
         Directions heading = Directions.NORTH;
-        Set<String> seen = new HashSet<>();
 
+        //storePosition(posX, posY);
         for (String command: chainOfCommand) {
-            String pos = "" + posX + ":" + posY;
-            if (!seen.add(pos)) {
-                break;
-            }
-
-            System.out.println(pos + " " + command);
+            // System.out.println(pos + " " + command);
             heading = turn(command, heading);
             int distance = Integer.parseInt(command.substring(1));
             switch (heading) {
-                case NORTH: posY += distance; break;
-                case EAST:  posX += distance; break;
-                case SOUTH: posY -= distance; break;
-                case WEST:  posX -= distance; break;
+                case NORTH:
+                    for (int i = 0; i < distance; i++) {
+                        storePosition(posX, posY);
+                        posY++;
+                    }
+                    break;
+                case EAST:
+                    for (int i = 0; i < distance; i++) {
+                        storePosition(posX, posY);
+                        posX++;
+                    }
+                    break;
+                case SOUTH:
+                    for (int i = 0; i < distance; i++) {
+                        storePosition(posX, posY);
+                        posY--;
+                    }
+                    break;
+                case WEST:
+                    for (int i = 0; i < distance; i++) {
+                        storePosition(posX, posY);
+                        posX--;
+                    }
+                    break;
             }
+
         }
 
         System.out.println(Geometry.taxiDistance(0, 0, posX, posY));
     }
+
+    private static void storePosition(int posX, int posY) {
+        String pos = "" + posX + ":" + posY;
+        System.out.println(pos);
+        if (!seen.add(pos)) {
+            System.out.println(Geometry.taxiDistance(0, 0, posX, posY));
+            System.exit(0);
+        }
+    }
+
 
     private static Directions turn(String command, Directions current) throws Exception {
         if (command.charAt(0) == 'R') {
