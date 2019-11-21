@@ -120,53 +120,34 @@ echo 'maxY:   ', bot::$maxY, '    ';
 echo 'maxZ:   ', bot::$maxZ, '    ';
 echo 'maxAbs: ', bot::$maxAbs, "\n";
 
-$boundingBoxSize = 1;
-while ($boundingBoxSize < bot::$maxAbs) {
-    $boundingBoxSize *= 2;
+
+$ranges = [];
+/** @var bot $bot */
+foreach ($bots as $bot) {
+    $distanceFromCenter = manhattanDistance(0, 0, 0, $bot->getX(), $bot->getY(), $bot->getZ());
+    $ranges[max(0, $distanceFromCenter - $bot->getR())] = 1;
+    $ranges[$distanceFromCenter + $bot->getR()] = -1;
 }
 
-echo $boundingBoxSize, "\n";
+ksort($ranges);
 
-$initialBox = [
-    'low'  => ['x' => -$boundingBoxSize, 'y' => -$boundingBoxSize, 'z' => -$boundingBoxSize],
-    'high' => ['x' =>  $boundingBoxSize, 'y' =>  $boundingBoxSize, 'z' =>  $boundingBoxSize]
-];
+//print_r($ranges);
 
-/**
- * @param  int[][] $box
- * @param  bot     $bot
- * @return boolean
- */
-function doesIntersect($box, bot $bot) {
-    $d = 0;
-    foreach (['x', 'y', 'z'] as $axis) {
-        $getter = 'get' . strtoupper($axis);
+$count = 0;
+$result = 0;
+$maxCount = 0;
 
-        $low  = $box['low'][$axis];
-        $high = $box['high'][$axis] -1;
-
-        $d += abs($bot->$getter() - $low) + abs($bot->$getter() - $high);
-        $d -= $high - $low;
+foreach ($ranges as $key => $value) {
+    $count += $value;
+    if ($count > $maxCount) {
+        $result = $key;
+        $maxCount = $count;
     }
-    $d = (int)floor($d / 2);
-    return $d <= $bot->getR();
 }
 
+echo $result;
 
-/**
- * @param  int[][] $box
- * @param  bot[]   $bots
- * @return int
- */
-function countIntersections($box, $bots) {
-    $count = 0;
-    foreach ($bots as $bot) {
-        if (doesIntersect($box, $bot)) {
-            ++$count;
-        }
-    }
-    return $count;
-}
+
 
 
 
