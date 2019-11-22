@@ -4,7 +4,6 @@ import common.Files;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,10 +32,25 @@ public class Part1 {
         for (HashMap<String, Integer> col: columns) {
             int largest = 0;
             for (Map.Entry<String, Integer> set: col.entrySet()) {
-                largest = Math.max(set.getValue(), largest);
+                largest  = Math.max(set.getValue(), largest);
             }
             for (Map.Entry<String, Integer> set: col.entrySet()) {
                 if (set.getValue() == largest) {
+                    System.out.print(set.getKey());
+                }
+            }
+            System.out.println("");
+        }
+        System.out.println("");
+
+        for (HashMap<String, Integer> col: columns) {
+            int smallest = Integer.MAX_VALUE;
+            for (Map.Entry<String, Integer> set: col.entrySet()) {
+                smallest = Math.min(set.getValue(), smallest);
+            }
+
+            for (Map.Entry<String, Integer> set: col.entrySet()) {
+                if (set.getValue() == smallest) {
                     System.out.print(set.getKey());
                 }
             }
