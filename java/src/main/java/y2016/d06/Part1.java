@@ -17,7 +17,7 @@ public class Part1 {
             columns.add(new HashMap<String, Integer>());
         }
 
-        ArrayList<String> lines = Files.readByLines("src/main/java/y2016/d06/small.txt");
+        ArrayList<String> lines = Files.readByLines("src/main/java/y2016/d06/in.txt");
 
         for (String s: lines) {
             for (int i = 0; i < s.length(); i++) {
