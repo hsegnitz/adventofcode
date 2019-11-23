@@ -37,10 +37,12 @@ public class Part1 {
     }
 
     private static boolean hasAbba(String in) {
-        Pattern pattern = Pattern.compile(".*(\\w)(\\w)(\\2)(\\1).*");
+        Pattern pattern = Pattern.compile("(\\w)(\\w)(\\2)(\\1)");
         Matcher matcher = pattern.matcher(in);
-        if (matcher.find()) {
-            return !matcher.group(1).equals(matcher.group(2));
+        while (matcher.find()) {
+            if (!matcher.group(1).equals(matcher.group(2))) {
+                return true;
+            }
         }
         return false;
     }
