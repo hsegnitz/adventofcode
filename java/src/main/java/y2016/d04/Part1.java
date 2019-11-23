@@ -1,7 +1,6 @@
 package y2016.d04;
 
 import common.Files;
-import org.apache.commons.codec.binary.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileNotFoundException;
@@ -54,7 +53,7 @@ public class Part1 {
             Pattern pattern = Pattern.compile("^([a-z-]+)-(\\d+)\\[([a-z]+)]$");
             Matcher matcher = pattern.matcher(raw.trim());
             if (matcher.find()) {
-                this.name = matcher.group(1).replace("-", "");
+                this.name = matcher.group(1);
                 this.sectorId = Integer.parseInt(matcher.group(2));
                 this.checksum = matcher.group(3);
             }
@@ -62,9 +61,9 @@ public class Part1 {
 
         public boolean isValid() {
             HashMap<Character, Integer> letters = new HashMap<>();
-
-            for (int i = 0; i < name.length(); i++) {
-                char c = name.charAt(i);
+            String tempName = name.replace("-", "");
+            for (int i = 0; i < tempName.length(); i++) {
+                char c = tempName.charAt(i);
                 if (letters.containsKey(c)) {
                     letters.put(c, letters.get(c) + 1);
                 } else {
@@ -96,6 +95,28 @@ public class Part1 {
         public String toString() {
             return this.name + " - " + this.sectorId + " - " + this.checksum;
         }
+
+        public String decodeRoomName() {
+            StringBuilder out = new StringBuilder();
+            for (int i = 0; i < this.name.length(); i++) {
+                char c = this.name.charAt(i);
+                if (c == '-') {
+                    out.append(' ');
+                    continue;
+                }
+
+                Integer a = (int) c;
+                a -= (int) 'a';
+                a += this.getSectorId() % 26;
+                a = a % 26;
+                a += (int) 'a';
+
+                out.append((char)a.byteValue());
+            }
+
+            return out.toString();
+        }
+
     }
 
 
@@ -105,6 +126,7 @@ public class Part1 {
         Integer sum = 0;
         for (String line: lines) {
             Room room = new Room(line);
+            System.out.println(room.decodeRoomName() + " " + room.getSectorId());
             if (room.isValid()) {
                 sum += room.getSectorId();
             }
