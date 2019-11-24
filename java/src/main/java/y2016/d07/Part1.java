@@ -12,15 +12,20 @@ public class Part1 {
     public static void main(String[] args) throws FileNotFoundException {
         ArrayList<String> lines = Files.readByLines("src/main/java/y2016/d07/in.txt");
 
-        int count = 0;
+        int countTLS = 0;
+        int countSSL = 0;
         for (String line: lines) {
             System.out.println(line + " --- " + hasTLS(line));
             if (hasTLS(line)) {
-                ++count;
+                ++countTLS;
+            }
+            if (hasSSL(line)) {
+                ++countSSL;
             }
         }
 
-        System.out.println(count);
+        System.out.println(countTLS);
+        System.out.println(countSSL);
     }
 
     private static boolean hasTLS(String line) {
@@ -34,6 +39,58 @@ public class Part1 {
             }
         }
         return outsideFound;
+    }
+
+    private static boolean hasSSL(String line) {
+        String[] split = line.split("[\\[\\]]");
+
+        ArrayList<String> outer = new ArrayList<>();
+        ArrayList<String> inner = new ArrayList<>();
+
+        for (int i = 0; i < split.length; i++) {  // always an odd number of strings, the even ones are within brackets.
+            if (0 == i % 2) {
+                outer.add(split[i]);
+            } else {
+                inner.add(split[i]);
+            }
+        }
+
+        ArrayList<String> abas = getAbas(outer);
+        for (String aba: abas) {
+            if (hasBab(aba, inner)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean hasBab(String aba, ArrayList<String> inner) {
+        String bab = String.valueOf(aba.charAt(1)) + aba.charAt(0) + aba.charAt(1);
+        System.out.println(bab);
+
+        for (String in: inner) {
+            if (in.contains(bab)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static ArrayList<String> getAbas(ArrayList<String> outer) {
+        ArrayList<String> abas = new ArrayList<>();
+
+        for (String elem: outer) {
+            // can't use "match all" as we need to cover overlapping patterns too!
+            for (int i = 0; i < elem.length()-2; i++) {
+                String substr = elem.substring(i, i+3);
+                if (substr.matches("(\\w)(\\w)(\\1)")) {
+                    abas.add(substr);
+                }
+            }
+        }
+        return abas;
     }
 
     private static boolean hasAbba(String in) {
