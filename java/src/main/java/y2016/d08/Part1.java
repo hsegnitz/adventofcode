@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class Part1 {
 
     public static void main(String[] args) throws Exception {
-        ArrayList<String> lines = Files.readByLines("src/main/java/y2016/d08/small.txt");
+        ArrayList<String> lines = Files.readByLines("src/main/java/y2016/d08/in.txt");
         Grid grid = new Grid();
 
         Pattern pattern1 = Pattern.compile("(\\d+)x(\\d+)");
