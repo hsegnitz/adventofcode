@@ -1,23 +1,21 @@
 package y2016.d09;
 
+import common.Files;
+
+import java.io.FileNotFoundException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Part1 {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
 
-        String[] demo = {
-                "ADVENT",
-                "A(1x5)BC",
-                "(3x3)XYZ",
-                "A(2x2)BCD(2x2)EFG",
-                "(6x1)(1x3)A",
-                "X(8x2)(3x3)ABCY",
-        };
+        ArrayList<String> in = Files.readByLines("src/main/java/y2016/d09/in.txt");
 
-        for (String packed: demo) {
+        for (String packed: in) {
             System.out.print(packed + " " + packed.length() + " ");
             System.out.println(unpack(packed));
         }
