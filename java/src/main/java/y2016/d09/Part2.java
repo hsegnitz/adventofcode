@@ -37,7 +37,7 @@ public class Part2 {
                 continue;
             }
             if (packed.substring(i).matches("^\\((\\d+)x(\\d+)\\).*")) {
-                Matcher m = marker.matcher(packed.substring(i));
+                Matcher m = marker.matcher(packed.substring(i, Math.min(packed.length(), i + 100)));
                 m.find();
                 int length = Integer.parseInt(m.group(1));
                 int times  = Integer.parseInt(m.group(2));
