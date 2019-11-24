@@ -13,29 +13,21 @@ public class Part2 {
 
         ArrayList<String> in = Files.readByLines("src/main/java/y2016/d09/in.txt");
 
-        String oldData = in.get(0);
-        String newData = "";
-        while (true) {
-            newData = unpack(oldData);
+        String input = in.get(0);
 
-            System.out.println(newData.length());
-            if (oldData.length() == newData.length()) {
-                break;
-            }
-
-            oldData = newData;
-        }
+        System.out.println(count(input));
     }
 
-    private static String unpack(String packed) {
-        StringBuilder unpacked = new StringBuilder();
+    private static long count(String packed) {
+        long count = 0;
         Pattern marker = Pattern.compile("^\\((\\d+)x(\\d+)\\)");
 
         for (int i = 0; i < packed.length(); i++) {
             if (packed.charAt(i) != '(') {
-                unpacked.append(packed.charAt(i));
+                ++count;
                 continue;
             }
+
             if (packed.substring(i).matches("^\\((\\d+)x(\\d+)\\).*")) {
                 Matcher m = marker.matcher(packed.substring(i, Math.min(packed.length(), i + 100)));
                 m.find();
@@ -44,15 +36,13 @@ public class Part2 {
                 i += 3 + m.group(1).length() + m.group(2).length();
 
                 String clone = packed.substring(i, i+length);
-                for (int c = 0; c < times; c++) {
-                    unpacked.append(clone);
-                }
 
+                count += times * count(clone);
                 i += length-1;
             }
         }
 
-        return unpacked.toString();
+        return count;
     }
 
 }
