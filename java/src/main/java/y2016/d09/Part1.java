@@ -11,10 +11,10 @@ public class Part1 {
         String[] demo = {
                 "ADVENT",
                 "A(1x5)BC",
- /*               "(3x3)XYZ",
+                "(3x3)XYZ",
                 "A(2x2)BCD(2x2)EFG",
                 "(6x1)(1x3)A",
-                "X(8x2)(3x3)ABCY",*/
+                "X(8x2)(3x3)ABCY",
         };
 
         for (String packed: demo) {
