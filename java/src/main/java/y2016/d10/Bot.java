@@ -6,11 +6,17 @@ public class Bot {
 
     private static HashMap<Integer, Bot> botMap = new HashMap<Integer, Bot>();
 
+    private int number;
+
     private Bot highBot;
     private Bot lowBot;
 
     private Integer value1;
     private Integer value2;
+
+    public Bot(int number) {
+        this.number = number;
+    }
 
     public void setHighBot(Bot highBot) {
         this.highBot = highBot;
@@ -46,5 +52,12 @@ public class Bot {
 
         int max = Math.max(value1, value2);
         int min = Math.min(value1, value2);
+
+        if (max == 61 && min == 17) {
+            System.out.println("Exit condition, bot number: " + number);
+        }
+
+        this.highBot.setValue(max);
+        this.lowBot.setValue(min);
     }
 }
