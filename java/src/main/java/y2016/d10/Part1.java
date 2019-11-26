@@ -5,6 +5,7 @@ import common.Files;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.IntBinaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,6 +41,12 @@ public class Part1 {
 
             System.out.println("NOTHING!!! " + line);
         }
+
+        int out = getOutput(0).getValue();
+        out *= getOutput(1).getValue();
+        out *= getOutput(2).getValue();
+
+        System.out.println(out);
     }
 
     private static Receiver getReceiver(String type, String id) {

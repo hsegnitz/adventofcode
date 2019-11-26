@@ -13,4 +13,12 @@ public class Output implements Receiver {
     public void setValue(Integer value) {
         this.value = value;
     }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public Integer getValue() {
+        return value;
+    }
 }
