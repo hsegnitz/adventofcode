@@ -1,10 +1,6 @@
 package y2016.d10;
 
-import java.util.HashMap;
-
 public class Bot implements Receiver {
-
-    private static HashMap<Integer, Bot> botMap = new HashMap<Integer, Bot>();
 
     private int number;
 

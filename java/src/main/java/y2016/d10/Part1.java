@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class Part1 {
 
-    private static HashMap<Integer, Bot>    BotMap    = new HashMap<>();
+    private static HashMap<Integer, Bot>    botMap    = new HashMap<>();
     private static HashMap<Integer, Output> outputMap = new HashMap<>();
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -30,20 +30,40 @@ public class Part1 {
             m = pattern2.matcher(line);
             if (m.find()) {
                 System.out.println("command " + line);
-                getBot(Integer.parseInt(m.group(1))).setHighReceiver(getBot(Integer.parseInt(m.group(3))));
-                getBot(Integer.parseInt(m.group(1))).setLowReceiver(getBot(Integer.parseInt(m.group(2))));
+                Receiver lowReceiver  = getReceiver(m.group(2), m.group(3));
+                Receiver highReceiver = getReceiver(m.group(4), m.group(5));
+
+                getBot(Integer.parseInt(m.group(1))).setHighReceiver(highReceiver);
+                getBot(Integer.parseInt(m.group(1))).setLowReceiver(lowReceiver);
+                continue;
             }
 
             System.out.println("NOTHING!!! " + line);
         }
     }
 
+    private static Receiver getReceiver(String type, String id) {
+        if ("bot".equals(type)) {
+            return getBot(Integer.parseInt(id));
+        } else if ("output".equals(type)) {
+            return getOutput(Integer.parseInt(id));
+        }
+        throw new RuntimeException("no dude, just no!");
+    }
+
 
     private static Bot getBot(Integer botId) {
-        if (!BotMap.containsKey(botId)) {
-            BotMap.put(botId, new Bot(botId));
+        if (!botMap.containsKey(botId)) {
+            botMap.put(botId, new Bot(botId));
         }
-        return BotMap.get(botId);
+        return botMap.get(botId);
+    }
+
+    private static Output getOutput(Integer outputId) {
+        if (!outputMap.containsKey(outputId)) {
+            outputMap.put(outputId, new Output(outputId));
+        }
+        return outputMap.get(outputId);
     }
 
 }
