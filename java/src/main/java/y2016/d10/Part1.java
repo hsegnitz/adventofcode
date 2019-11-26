@@ -10,7 +10,8 @@ import java.util.regex.Pattern;
 
 public class Part1 {
 
-    private static HashMap<Integer, Bot> BotMap = new HashMap<>();
+    private static HashMap<Integer, Bot>    BotMap    = new HashMap<>();
+    private static HashMap<Integer, Output> outputMap = new HashMap<>();
 
     public static void main(String[] args) throws FileNotFoundException {
         ArrayList<String> in = Files.readByLines("src/main/java/y2016/d10/in.txt");
@@ -29,8 +30,8 @@ public class Part1 {
             m = pattern2.matcher(line);
             if (m.find()) {
                 System.out.println("command " + line);
-                getBot(Integer.parseInt(m.group(1))).setHighBot(getBot(Integer.parseInt(m.group(3))));
-                getBot(Integer.parseInt(m.group(1))).setLowBot(getBot(Integer.parseInt(m.group(2))));
+                getBot(Integer.parseInt(m.group(1))).setHighReceiver(getBot(Integer.parseInt(m.group(3))));
+                getBot(Integer.parseInt(m.group(1))).setLowReceiver(getBot(Integer.parseInt(m.group(2))));
             }
 
             System.out.println("NOTHING!!! " + line);

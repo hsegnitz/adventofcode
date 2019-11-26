@@ -2,14 +2,14 @@ package y2016.d10;
 
 import java.util.HashMap;
 
-public class Bot {
+public class Bot implements Receiver {
 
     private static HashMap<Integer, Bot> botMap = new HashMap<Integer, Bot>();
 
     private int number;
 
-    private Bot highBot;
-    private Bot lowBot;
+    private Receiver highReceiver;
+    private Receiver lowReceiver;
 
     private Integer value1;
     private Integer value2;
@@ -18,19 +18,19 @@ public class Bot {
         this.number = number;
     }
 
-    public void setHighBot(Bot highBot) {
-        this.highBot = highBot;
+    public void setHighReceiver(Receiver highReceiver) {
+        this.highReceiver = highReceiver;
 
         passOnValues();
     }
 
-    public void setLowBot(Bot lowBot) {
-        this.lowBot = lowBot;
+    public void setLowReceiver(Receiver lowReceiver) {
+        this.lowReceiver = lowReceiver;
 
         passOnValues();
     }
 
-    public void setValue(int value) {
+    public void setValue(Integer value) {
         if (null == this.value1) {
             this.value1 = value;
             return;
@@ -46,7 +46,7 @@ public class Bot {
     }
 
     private void passOnValues() {
-        if (null == highBot || null == lowBot || null == value1 || null == value2) {
+        if (null == highReceiver || null == lowReceiver || null == value1 || null == value2) {
             return;  // not ready!
         }
 
@@ -57,7 +57,7 @@ public class Bot {
             System.out.println("Exit condition, bot number: " + number);
         }
 
-        this.highBot.setValue(max);
-        this.lowBot.setValue(min);
+        this.highReceiver.setValue(max);
+        this.lowReceiver.setValue(min);
     }
 }
