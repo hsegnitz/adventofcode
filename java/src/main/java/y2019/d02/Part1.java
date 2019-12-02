@@ -3,8 +3,9 @@ package y2019.d02;
 import org.jetbrains.annotations.NotNull;
 
 public class Part1 {
-    private static final int step =  4;
-    private static final int end  = 99;
+    private static final int step       =        4;
+    private static final int end        =       99;
+    private static final int targetDay2 = 19690720;
 
     private static final int[] small0 = {1,9,10,3,2,3,11,0,99,30,40,50};
     private static final int[] small1 = {1,0,0,0,99};
@@ -26,6 +27,18 @@ public class Part1 {
         program[2] =  2;
         System.out.println(run(program));
 
+        // day 2
+        for (int noun = 0; noun <= 100; noun++) {
+            for (int verb = 0; verb <= 100; verb++) {
+                program = input.clone();
+                program[1] = noun;
+                program[2] = verb;
+                if (run(program) == targetDay2) {
+                    System.out.println((100 * noun) + verb);
+                    System.exit(0);
+                }
+            }
+        }
 
     }
 
