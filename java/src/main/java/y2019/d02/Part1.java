@@ -1,5 +1,7 @@
 package y2019.d02;
 
+import org.jetbrains.annotations.NotNull;
+
 public class Part1 {
     private static final int step =  4;
     private static final int end  = 99;
@@ -19,15 +21,18 @@ public class Part1 {
         System.out.println(run(small4));
 
         // day 1
-        input[1] = 12;
-        input[2] =  2;
-        System.out.println(run(input));
+        int[] program = input.clone();
+        program[1] = 12;
+        program[2] =  2;
+        System.out.println(run(program));
+
+
     }
 
-    private static int run(int[] program) {
+    private static int run(@NotNull int[] program) {
         int pointer = 0;
         while (true) {
-            if (program[pointer] == 99) {
+            if (program[pointer] == end) {
                 return program[0];
             }
             int a = program[pointer+1];
