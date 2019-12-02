@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Part1 {
 
     public static void main(String[] args) throws FileNotFoundException {
-        ArrayList<String> rawProgram = Files.readByLines("src/main/java/y2017/d05/small.txt");
+        ArrayList<String> rawProgram = Files.readByLines("src/main/java/y2017/d05/in.txt");
         ArrayList<Integer> program = new ArrayList<>();
         for (String line: rawProgram) {
             program.add(Integer.parseInt(line));
