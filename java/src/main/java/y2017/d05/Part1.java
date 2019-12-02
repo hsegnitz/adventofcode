@@ -17,7 +17,7 @@ public class Part1 {
         int step = 0;
         int position = 0;
         while (position < program.size()) {
-            int newPosition = program.get(position);
+            int newPosition = position + program.get(position);
             program.set(position, program.get(position)+1);
             position = newPosition;
             ++step;
