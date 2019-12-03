@@ -33,7 +33,7 @@ public class Part1 {
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        ArrayList<String> input = Files.readByLines("src/main/java/y2019/d03/small1.txt");
+        ArrayList<String> input = Files.readByLines("src/main/java/y2019/d03/small2.txt");
         ArrayList<Direction> wireADirections = parseWire(input.get(0));
         ArrayList<Direction> wireBDirections = parseWire(input.get(1));
 
@@ -53,12 +53,12 @@ public class Part1 {
             }
             if (a.getDirection() == 'U') {
                 for (int i = 0; i < a.getLength(); i++) {
-                    wireA.add("" + x + "x" + y++);
+                    wireA.add("" + x + "x" + ++y);
                 }
             }
             if (a.getDirection() == 'D') {
                 for (int i = 0; i < a.getLength(); i++) {
-                    wireA.add("" + x + "x" + y--);
+                    wireA.add("" + x + "x" + --y);
                 }
             }
         }
@@ -83,14 +83,14 @@ public class Part1 {
             }
             if (b.getDirection() == 'U') {
                 for (int i = 0; i < b.getLength(); i++) {
-                    if (wireA.contains("" + x + "x" + y++)) {
+                    if (wireA.contains("" + x + "x" + ++y)) {
                         nearest = Math.min(nearest, Geometry.taxiDistance(0, 0, x, y));
                     }
                 }
             }
             if (b.getDirection() == 'D') {
                 for (int i = 0; i < b.getLength(); i++) {
-                    if (wireA.contains("" + x + "x" + y--)) {
+                    if (wireA.contains("" + x + "x" + --y)) {
                         nearest = Math.min(nearest, Geometry.taxiDistance(0, 0, x, y));
                     }
                 }
