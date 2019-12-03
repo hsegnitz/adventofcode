@@ -33,7 +33,7 @@ public class Part1 {
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        ArrayList<String> input = Files.readByLines("src/main/java/y2019/d03/small2.txt");
+        ArrayList<String> input = Files.readByLines("src/main/java/y2019/d03/in.txt");
         ArrayList<Direction> wireADirections = parseWire(input.get(0));
         ArrayList<Direction> wireBDirections = parseWire(input.get(1));
 
