@@ -12,8 +12,23 @@ public class Part1 {
     private static HashSet<String> seen = new HashSet<>();
 
     public static void main(String[] args) {
-        int max = Collections.max(smallBanks);
-        int pos = smallBanks.indexOf(max);
+
+        while (! seen.contains(smallBanks.toString())) {
+            int max = Collections.max(smallBanks);
+            int pos = smallBanks.indexOf(max);
+
+            // redistribute
+            int toSpread
+            smallBanks.set(pos, 0);
+
+
+
+
+            
+        }
+
+
+
     }
 
 }
