@@ -25,19 +25,25 @@ public class Part1 {
     private static int run(@NotNull int[] program) {
         int pointer = 0;
         while (true) {
-            if (program[pointer] == end) {
-                return program[0];
+//            if (program[pointer] == end) {
+//                return program[0];
+//            }
+            Instruction inst = new Instruction(program, pointer);
+            switch (inst.getOpcode()) {
+                case 1:
+                    program[inst.getOutPosition()] = inst.getParameterValue1() + inst.getParameterValue2();
+                    break;
+                case 2:
+                    program[inst.getOutPosition()] = inst.getParameterValue1() * inst.getParameterValue2();
+                    break;
+                case 3:
+//                    program[inst.getOutPosition()] = input;  /shrug
+                    break;
+                case 4:
+                    System.out.println(inst.getParameterValue1());
+                    break;
             }
-            int a = program[pointer+1];
-            int b = program[pointer+2];
-            int c = program[pointer+3];
-            if (program[pointer] == 1) {
-                program[c] = program[a] + program[b];
-            } else if (program[pointer] == 2) {
-                program[c] = program[a] * program[b];
-            }
-
-            pointer += step;
+            pointer += inst.getStep();
         }
         //return -1;
     }
