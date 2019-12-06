@@ -33,6 +33,31 @@ public class Part1 {
             }
             return 0;
         }
+
+        public String getName() {
+            return name;
+        }
+
+        public SpaceObject getParent() {
+            return parent;
+        }
+
+        public boolean countTowardsCommonAncestor(String searchFor) {
+            if (children.isEmpty()) {
+                return false;
+            }
+
+            for (SpaceObject child: children) {
+                if (child.getName().equals(searchFor)) {
+                    return true;
+                }
+                if (child.countTowardsCommonAncestor(searchFor)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 
     private static HashMap<String, SpaceObject> space = new HashMap<>();
@@ -68,7 +93,25 @@ public class Part1 {
 
         System.out.println(sum);
 
+        SpaceObject me = space.get("YOU");
+        outputParentChain(me);
+
+        SpaceObject santa = space.get("SAN");
+        outputParentChain(santa);
+
+        // manually for speed: delete YOU and SAN from the strings, then all the common steps and then count the commas (divide length by 4)
+        // @todo: do that programmatically
+        // @todo2: use another recursive function to do the actual counting... ;)
     }
 
-
+    public static void outputParentChain(SpaceObject child) {
+        SpaceObject cur = child;
+        StringBuilder out = new StringBuilder();
+        while(!cur.getName().equals("COM")) {
+            out.insert(0, cur.getName() + ",");
+            cur = cur.getParent();
+        }
+        out.insert(0, "COM,");
+        System.out.println(out);
+    }
 }
