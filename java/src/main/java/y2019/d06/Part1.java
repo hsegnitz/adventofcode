@@ -38,7 +38,7 @@ public class Part1 {
     private static HashMap<String, SpaceObject> space = new HashMap<>();
 
     public static void main(String[] args) throws FileNotFoundException {
-        ArrayList<String> input = Files.readByLines("src/main/java/y2019/d06/small.txt");
+        ArrayList<String> input = Files.readByLines("src/main/java/y2019/d06/in.txt");
 
         SpaceObject com = new SpaceObject("COM");
         space.put("COM", com);
