@@ -19,12 +19,21 @@ public class Part1 {
 
         Set<List<Integer>> allCombinations = getAllPhaseCombinations();
 
-        // System.out.println(allCombinations.size());
+        int max = Integer.MIN_VALUE;
 
-        int[] phaseSettings = new int[5];
+        for (List<Integer> phaseSettings: allCombinations) {
+            int prevResult = 0;
+            for (int i = 0; i < 5; i++) {
+                int[] input = new int[2];
+                input[0] = phaseSettings.get(i);
+                input[1] = prevResult;
 
-    //    run(small0, );
+                prevResult = run(program, input);
+            }
+            max = Math.max(max, prevResult);
+        }
 
+        System.out.println(max);
      }
 
     @NotNull
