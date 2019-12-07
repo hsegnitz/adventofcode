@@ -67,11 +67,13 @@ public class Part1 {
         return allCombinations;
     }
 
-    private static void run(@NotNull int[] program) {
+    private static int run(@NotNull int[] program, int[] input) {
+        int inputPointer = 0;
         int pointer = 0;
+        int output  = -1;
         while (true) {
             if (program[pointer] == end) {
-                return;
+                return output;
             }
             Instruction inst = new Instruction(program, pointer);
             switch (inst.getOpcode()) {
@@ -84,11 +86,11 @@ public class Part1 {
                     pointer += inst.getStep();
                     break;
                 case 3:
-                    program[inst.getOutPosition()] = theInput;
+                    program[inst.getOutPosition()] = input[inputPointer++];
                     pointer += inst.getStep();
                     break;
                 case 4:
-                    System.out.println(inst.getParameterValue1());
+                    output = inst.getParameterValue1();
                     pointer += inst.getStep();
                     break;
                 case 5:
@@ -135,7 +137,9 @@ public class Part1 {
         private int parameterMode2 = 0;
         private int parameterMode3 = 0;
 
-        /** either a literal value or a position, depending on parameter mode being 0 or 1 */
+        /**
+         * either a literal value or a position, depending on parameter mode being 0 or 1
+         */
         private int parameterValue1;
         private int parameterValue2;
         private int parameterValue3;
@@ -151,23 +155,23 @@ public class Part1 {
                 case 7:
                 case 8:
                     step = 4;
-                    parameterValue1 = program[position+1];
-                    parameterValue2 = program[position+2];
-                    outPosition = program[position+3];
+                    parameterValue1 = program[position + 1];
+                    parameterValue2 = program[position + 2];
+                    outPosition = program[position + 3];
                     break;
                 case 3:
                     step = 2;
-                    outPosition = program[position+1];
+                    outPosition = program[position + 1];
                     break;
                 case 4:
                     step = 2;
-                    parameterValue1 = program[position+1];
+                    parameterValue1 = program[position + 1];
                     break;
                 case 5:
                 case 6:
                     step = 3;
-                    parameterValue1 = program[position+1];
-                    parameterValue2 = program[position+2];
+                    parameterValue1 = program[position + 1];
+                    parameterValue2 = program[position + 2];
                     break;
             }
         }
@@ -206,7 +210,7 @@ public class Part1 {
         }
 
         private void parseInstruction(Integer instruction) {
-            if (instruction <= 99 ) {
+            if (instruction <= 99) {
                 this.opcode = instruction;
                 return;
             }
@@ -223,7 +227,5 @@ public class Part1 {
                 this.parameterMode3 = Integer.parseInt(temp.substring(temp.length() - 5, temp.length() - 4));
             }
         }
-
     }
-
 }
