@@ -67,5 +67,163 @@ public class Part1 {
         return allCombinations;
     }
 
+    private static void run(@NotNull int[] program) {
+        int pointer = 0;
+        while (true) {
+            if (program[pointer] == end) {
+                return;
+            }
+            Instruction inst = new Instruction(program, pointer);
+            switch (inst.getOpcode()) {
+                case 1:
+                    program[inst.getOutPosition()] = inst.getParameterValue1() + inst.getParameterValue2();
+                    pointer += inst.getStep();
+                    break;
+                case 2:
+                    program[inst.getOutPosition()] = inst.getParameterValue1() * inst.getParameterValue2();
+                    pointer += inst.getStep();
+                    break;
+                case 3:
+                    program[inst.getOutPosition()] = theInput;
+                    pointer += inst.getStep();
+                    break;
+                case 4:
+                    System.out.println(inst.getParameterValue1());
+                    pointer += inst.getStep();
+                    break;
+                case 5:
+                    if (inst.getParameterValue1() != 0) {
+                        pointer = inst.getParameterValue2();
+                    } else {
+                        pointer += inst.getStep();
+                    }
+                    break;
+                case 6:
+                    if (inst.getParameterValue1() == 0) {
+                        pointer = inst.getParameterValue2();
+                    } else {
+                        pointer += inst.getStep();
+                    }
+                    break;
+                case 7:
+                    if (inst.getParameterValue1() < inst.getParameterValue2()) {
+                        program[inst.getOutPosition()] = 1;
+                    } else {
+                        program[inst.getOutPosition()] = 0;
+                    }
+                    pointer += inst.getStep();
+                    break;
+                case 8:
+                    if (inst.getParameterValue1() == inst.getParameterValue2()) {
+                        program[inst.getOutPosition()] = 1;
+                    } else {
+                        program[inst.getOutPosition()] = 0;
+                    }
+                    pointer += inst.getStep();
+                    break;
+            }
+        }
+    }
+
+
+    private static class Instruction {
+        private int[] program;
+        private int opcode;
+        private int step;
+
+        private int parameterMode1 = 0;
+        private int parameterMode2 = 0;
+        private int parameterMode3 = 0;
+
+        /** either a literal value or a position, depending on parameter mode being 0 or 1 */
+        private int parameterValue1;
+        private int parameterValue2;
+        private int parameterValue3;
+
+        private int outPosition;
+
+        public Instruction(int[] program, int position) {
+            this.program = program;
+            parseInstruction(program[position]);
+            switch (opcode) {
+                case 1:
+                case 2:
+                case 7:
+                case 8:
+                    step = 4;
+                    parameterValue1 = program[position+1];
+                    parameterValue2 = program[position+2];
+                    outPosition = program[position+3];
+                    break;
+                case 3:
+                    step = 2;
+                    outPosition = program[position+1];
+                    break;
+                case 4:
+                    step = 2;
+                    parameterValue1 = program[position+1];
+                    break;
+                case 5:
+                case 6:
+                    step = 3;
+                    parameterValue1 = program[position+1];
+                    parameterValue2 = program[position+2];
+                    break;
+            }
+        }
+
+        public int getOpcode() {
+            return opcode;
+        }
+
+        public int getStep() {
+            return step;
+        }
+
+        public int getParameterValue1() {
+            if (parameterMode1 == 1) {
+                return parameterValue1;
+            }
+            return program[parameterValue1];
+        }
+
+        public int getParameterValue2() {
+            if (parameterMode2 == 1) {
+                return parameterValue2;
+            }
+            return program[parameterValue2];
+        }
+
+        public int getParameterValue3() {
+            if (parameterMode3 == 1) {
+                return parameterValue3;
+            }
+            return program[parameterValue3];
+        }
+
+        public int getOutPosition() {
+            return outPosition;
+        }
+
+        private void parseInstruction(Integer instruction) {
+            if (instruction <= 99 ) {
+                this.opcode = instruction;
+                return;
+            }
+
+            String temp = instruction.toString();
+            this.opcode = Integer.parseInt(temp.substring(temp.length() - 2));
+            if (temp.length() > 2) {
+                this.parameterMode1 = Integer.parseInt(temp.substring(temp.length() - 3, temp.length() - 2));
+            }
+            if (temp.length() > 3) {
+                this.parameterMode2 = Integer.parseInt(temp.substring(temp.length() - 4, temp.length() - 3));
+            }
+            if (temp.length() > 4) {
+                this.parameterMode3 = Integer.parseInt(temp.substring(temp.length() - 5, temp.length() - 4));
+            }
+        }
+
+    }
 
 }
