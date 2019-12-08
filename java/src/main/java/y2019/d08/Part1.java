@@ -28,6 +28,18 @@ public class Part1 {
 
         System.out.println(countChars(candidate, "1") * countChars(candidate, "2"));
 
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int offset = (y*width)+width;
+                while ("2".equals(theInput.substring(offset, offset+1))) {
+                    offset += step;
+                }
+                System.out.print(theInput.substring(offset, offset+1));
+            }
+            System.out.println();
+        }
+
+
     }
 
     private static int countChars(String input, String character) {
