@@ -30,11 +30,15 @@ public class Part1 {
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                int offset = (y*width)+width;
+                int offset = (y*width)+x;
                 while ("2".equals(theInput.substring(offset, offset+1))) {
                     offset += step;
                 }
-                System.out.print(theInput.substring(offset, offset+1));
+                System.out.print(
+                        "1".equals(theInput.substring(offset, offset+1))
+                        ? "X"
+                        : " "
+                );
             }
             System.out.println();
         }
