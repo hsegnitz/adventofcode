@@ -17,7 +17,7 @@ public class Part1 {
 
         IntCodeProgram program = new IntCodeProgram(input);
 
-        program.addInput(1);
+        program.addInput(2);
 
         long output = 0;
         while (output != -1) {
