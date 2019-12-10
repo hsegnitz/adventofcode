@@ -13,6 +13,40 @@ public class Part1 {
     public static void main(String[] args) throws IOException {
         readMap();
         printMap();
+
+        int maxSeen = 0;
+
+        //iterate over all points
+        for (int candidateLine = 0; candidateLine < map.length; candidateLine++) {
+            for (int candidateCol = 0; candidateCol < map.length; candidateCol++) {
+                if (map[candidateLine][candidateCol] != '#') {
+                    continue;
+                }
+                int asteroidsSeen = countVisibleAsteroids(candidateLine, candidateCol);
+                maxSeen = Math.max(maxSeen, asteroidsSeen);
+            }
+            System.out.println();
+        }
+        System.out.println(maxSeen);
+    }
+
+    private static int countVisibleAsteroids(int candidateLine, int candidateCol) {
+        int count = 0;
+        for (int line = 0; line < map.length; line++) {
+            for (int col = 0; col < map.length; col++) {
+                if (line == candidateLine && col == candidateCol) {
+                    continue;
+                }
+                if (map[line][col] != '#') {
+                    continue;
+                }
+
+                
+
+                // the check
+            }
+        }
+        return count;
     }
 
 
@@ -27,8 +61,6 @@ public class Part1 {
             }
             ++line;
         }
-
-        System.out.println(map);
     }
 
     private static void printMap()
