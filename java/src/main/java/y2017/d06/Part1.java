@@ -18,7 +18,7 @@ public class Part1 {
             int pos = smallBanks.indexOf(max);
 
             // redistribute
-            int toSpread
+            //int toSpread
             smallBanks.set(pos, 0);
 
 
