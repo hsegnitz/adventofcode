@@ -16,6 +16,8 @@ public class Part1 {
 
         int maxSeen = 0;
 
+        // int asteroidsSeen2 = countVisibleAsteroids(4, 3);
+
         //iterate over all points
         for (int candidateLine = 0; candidateLine < map.length; candidateLine++) {
             for (int candidateCol = 0; candidateCol < map.length; candidateCol++) {
@@ -40,21 +42,31 @@ public class Part1 {
                     continue;
                 }
 
-                int deltaCol = candidateCol - col;
-                int deltaLine = candidateLine - line;
+                int deltaLine = Math.abs(candidateLine - line);
+                int deltaCol  = Math.abs(candidateCol - col);
 
                 int smallestPrimeFactor = getSmallestCommonPrimeFactor(deltaCol, deltaLine);
+                int stepCol  = -1;
+                int stepLine = -1;
                 if (-1 == smallestPrimeFactor) {  // no field inbetween -> visible.
                     count++;
                     continue;
+                } else if (smallestPrimeFactor == 1) {
+                    stepCol  = (deltaCol  > 0) ? 1 : 0;
+                    stepLine = (deltaLine > 0) ? 1 : 0;
+                    smallestPrimeFactor = Math.max(deltaCol, deltaLine);
+                } else {
+                    stepCol  = deltaCol / smallestPrimeFactor;
+                    stepLine = deltaLine / smallestPrimeFactor;
                 }
 
-                int stepCol = deltaCol / smallestPrimeFactor;
-                int stepLine = deltaLine / smallestPrimeFactor;
-
                 boolean found = false;
-                for (int i = 1; i <= smallestPrimeFactor; i++) {
-                    if (map[candidateLine + (i * stepLine)][candidateCol + (i * stepCol)] == '#') {
+                int lineSign = (deltaLine > candidateLine) ? 1 : -1;
+                int colSign  = (deltaCol  > candidateCol)  ? 1 : -1;
+                for (int i = 1; i < smallestPrimeFactor; i++) {
+                    int checkLine = candidateLine + (i * stepLine * lineSign);
+                    int checkCol  = candidateCol  + (i * stepCol  * colSign);
+                    if (map[checkLine][checkCol] == '#') {
                         found = true;
                         break;
                     }
@@ -71,11 +83,11 @@ public class Part1 {
     private static int getSmallestCommonPrimeFactor(int deltaCol, int deltaLine) {
         int absDeltaCol  = Math.abs(deltaCol);
         int absDeltaLine = Math.abs(deltaLine);
-        if (absDeltaCol == absDeltaLine) {
-            return 1; // straight diagonals
+        if (absDeltaCol == absDeltaLine || absDeltaCol == 0 || absDeltaLine == 0) {
+            return 1; // straight diagonals or horizontal/verticals
         }
 
-        for (int i = 2; i < Math.min(absDeltaCol, absDeltaLine); i++ ) {
+        for (int i = 2; i <= Math.min(absDeltaCol, absDeltaLine); i++ ) {
             if (absDeltaCol % i == 0 && absDeltaLine % i == 0) {
                 return i;
             }
