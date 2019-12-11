@@ -25,7 +25,6 @@ public class Part1 {
                 int asteroidsSeen = countVisibleAsteroids(candidateLine, candidateCol);
                 maxSeen = Math.max(maxSeen, asteroidsSeen);
             }
-            System.out.println();
         }
         System.out.println(maxSeen);
     }
@@ -41,13 +40,51 @@ public class Part1 {
                     continue;
                 }
 
-                
+                int deltaCol = candidateCol - col;
+                int deltaLine = candidateLine - line;
 
-                // the check
+                int smallestPrimeFactor = getSmallestCommonPrimeFactor(deltaCol, deltaLine);
+                if (-1 == smallestPrimeFactor) {  // no field inbetween -> visible.
+                    count++;
+                    continue;
+                }
+
+                int stepCol = deltaCol / smallestPrimeFactor;
+                int stepLine = deltaLine / smallestPrimeFactor;
+
+                boolean found = false;
+                for (int i = 1; i <= smallestPrimeFactor; i++) {
+                    if (map[candidateLine + (i * stepLine)][candidateCol + (i * stepCol)] == '#') {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    count++;
+                }
             }
         }
         return count;
     }
+
+    private static int getSmallestCommonPrimeFactor(int deltaCol, int deltaLine) {
+        int absDeltaCol  = Math.abs(deltaCol);
+        int absDeltaLine = Math.abs(deltaLine);
+        if (absDeltaCol == absDeltaLine) {
+            return 1; // straight diagonals
+        }
+
+        for (int i = 2; i < Math.min(absDeltaCol, absDeltaLine); i++ ) {
+            if (absDeltaCol % i == 0 && absDeltaLine % i == 0) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+
 
 
     private static void readMap() throws IOException {
