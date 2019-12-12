@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Part2 {
 
     public static void main(String[] args) {
-        ArrayList<Moon> moons = demoMoons2();
+        ArrayList<Moon> moons = realMoons();
 
         String seqX = extractState(moons, 'x');
         String seqY = extractState(moons, 'y');
