@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Part2 {
 
     public static void main(String[] args) {
-        ArrayList<Moon> moons = demoMoons1();
+        ArrayList<Moon> moons = demoMoons2();
 
         String seqX = extractState(moons, 'x');
         String seqY = extractState(moons, 'y');
@@ -53,19 +53,19 @@ public class Part2 {
 
     }
 
-    private static int leastCommonMultiple(int x, int y, int z) {
-        int lcm = x;
+    private static long leastCommonMultiple(int x, int y, int z) {
+        long lcm = x;
         lcm = (lcm * y) / greatestCommonDivisor(lcm, y);
         lcm = (lcm * z) / greatestCommonDivisor(lcm, z);
         return lcm;
     }
 
-    private static int greatestCommonDivisor(int a, int b) {
+    private static long greatestCommonDivisor(long a, long b) {
         if (a == 0 || b == 0) {
             return a + b;
         } else {
-            int max = Math.max(a, b);
-            int min = Math.min(a, b);
+            long max = Math.max(a, b);
+            long min = Math.min(a, b);
             return greatestCommonDivisor(max % min, min);
         }
     }
