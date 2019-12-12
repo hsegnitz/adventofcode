@@ -5,16 +5,16 @@ import java.util.ArrayList;
 public class Part1 {
 
     public static void main(String[] args) {
-        ArrayList<Moon> moons = demoMoons1();
+        ArrayList<Moon> moons = realMoons();
 
         int sum;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1000; i++) {
             for (int a = 0; a < 4; a++) {
                 for (int b = 0; b < 4; b++) {
                     if (a == b) {
                         continue;
                     }
-                    System.out.println("" + a + ":" + b );
+                    //System.out.println("" + a + ":" + b );
                     moons.get(a).gravity(moons.get(b));
                 }
             }
@@ -23,7 +23,7 @@ public class Part1 {
             for (int a = 0; a < 4; a++) {
                 moons.get(a).tick();
                 sum += moons.get(a).getTotalEnergy();
-                System.out.println(moons.get(a));
+                //System.out.println(moons.get(a));
             }
         System.out.println(sum);
         }
@@ -50,10 +50,10 @@ public class Part1 {
 
     private static ArrayList<Moon> realMoons() {
         ArrayList<Moon> moons = new ArrayList<>(4);
-        moons.add(new Moon(-4,   3, 15));
-        moons.add(new Moon(11, -10, 13));
-        moons.add(new Moon( 2,   2, 18));
-        moons.add(new Moon( 7,  -1,  0));
+        moons.add(new Moon( -4,   3, 15));
+        moons.add(new Moon(-11, -10, 13));
+        moons.add(new Moon(  2,   2, 18));
+        moons.add(new Moon(  7,  -1,  0));
         return moons;
     }
 
