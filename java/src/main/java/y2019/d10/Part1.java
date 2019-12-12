@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Part1 {
 
-    private static char[][] map = new char[32][32];
+    private static char[][] map = new char[33][33];
 
 
     public static void main(String[] args) throws IOException {
@@ -16,7 +16,7 @@ public class Part1 {
 
         int maxSeen = 0;
 
-        // int asteroidsSeen2 = countVisibleAsteroids(4, 3);
+        int asteroidsSeen2 = countVisibleAsteroids(4, 3);
 
         //iterate over all points
         for (int candidateLine = 0; candidateLine < map.length; candidateLine++) {
@@ -52,8 +52,8 @@ public class Part1 {
                     count++;
                     continue;
                 } else if (smallestPrimeFactor == 1) {
-                    stepCol  = (deltaCol  > 0) ? 1 : 0;
-                    stepLine = (deltaLine > 0) ? 1 : 0;
+                    stepCol  = (col  > candidateCol)  ? 1 : 0;
+                    stepLine = (line > candidateLine) ? 1 : 0;
                     smallestPrimeFactor = Math.max(deltaCol, deltaLine);
                 } else {
                     stepCol  = deltaCol / smallestPrimeFactor;
@@ -104,11 +104,12 @@ public class Part1 {
         int line = 0;
         for (String sline: input) {
             int col = 0;
-            for (char character: sline.toCharArray()) {
+            for (char character: sline.trim().toCharArray()) {
                 map[line][col] = character;
                 ++col;
             }
             ++line;
+            System.out.println(line);
         }
     }
 
