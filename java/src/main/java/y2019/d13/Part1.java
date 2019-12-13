@@ -16,16 +16,26 @@ public class Part1 {
 
         ArrayList<Long> output = outputAsList(program);
 
+        long maxX = 0;
+        long maxY = 0;
+
         int count = 0;
         for (int i = 0; i < output.size()-1; i += 3) {
             long x = output.get(i);
             long y = output.get(i+1);
+
+            maxX = Math.max(maxX, x);
+            maxY = Math.max(maxY, y);
+
             long t = output.get(i+2);
             if (t == 2L) {
                 ++count;
             }
         }
         System.out.println(count);
+        System.out.println(maxX);
+        System.out.println(maxY);
+
     }
 
     private static ArrayList<Long> outputAsList(IntCodeProgram program) {
