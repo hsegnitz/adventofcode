@@ -62,8 +62,13 @@ public class Part1 {
                     stepCol  = (col  != candidateCol)  ? 1 : 0;
                     stepLine = (line != candidateLine) ? 1 : 0;
                 } else {
-                    stepCol  = deltaCol / smallestPrimeFactor;
-                    stepLine = deltaLine / smallestPrimeFactor;
+                    stepCol  = deltaCol;
+                    stepLine = deltaLine;
+                    while (stepCol % smallestPrimeFactor == 0 && stepLine % smallestPrimeFactor == 0) {
+                        stepCol  /= smallestPrimeFactor;
+                        stepLine /= smallestPrimeFactor;
+                    }
+                    // System.out.println("   " + stepCol + ":" + stepLine + "   ");
                 }
 
                 boolean found = false;
