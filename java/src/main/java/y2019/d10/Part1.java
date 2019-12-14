@@ -46,14 +46,14 @@ public class Part1 {
                 int deltaCol  = Math.abs(candidateCol - col);
 
                 int smallestPrimeFactor = getSmallestCommonPrimeFactor(deltaCol, deltaLine);
-                int stepCol  = -1;
-                int stepLine = -1;
+                int stepCol;
+                int stepLine;
                 if (-1 == smallestPrimeFactor) {  // no field inbetween -> visible.
                     count++;
                     continue;
                 } else if (smallestPrimeFactor == 1) {
-                    stepCol  = (col  > candidateCol)  ? 1 : 0;
-                    stepLine = (line > candidateLine) ? 1 : 0;
+                    stepCol  = (col  != candidateCol)  ? 1 : 0;
+                    stepLine = (line != candidateLine) ? 1 : 0;
                     smallestPrimeFactor = Math.max(deltaCol, deltaLine);
                 } else {
                     stepCol  = deltaCol / smallestPrimeFactor;
