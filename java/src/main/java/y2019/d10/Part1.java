@@ -16,11 +16,10 @@ public class Part1 {
 
         int maxSeen = 0;
 
-        //int asteroidsSeen2 = countVisibleAsteroids(8, 5);
-        int asteroidsSeen2 = countVisibleAsteroids(9, 7);
+        int asteroidsSeen2 = countVisibleAsteroids(13, 11);
         System.out.println("manual input: " + asteroidsSeen2);
 
-/*  */
+/*  * /
         //iterate over all points
         for (int candidateLine = 0; candidateLine < map.length; candidateLine++) {
             for (int candidateCol = 0; candidateCol < map.length; candidateCol++) {
@@ -62,7 +61,6 @@ public class Part1 {
                 } else if (smallestPrimeFactor == 1) {
                     stepCol  = (col  != candidateCol)  ? 1 : 0;
                     stepLine = (line != candidateLine) ? 1 : 0;
-                    smallestPrimeFactor = Math.max(deltaCol, deltaLine);
                 } else {
                     stepCol  = deltaCol / smallestPrimeFactor;
                     stepLine = deltaLine / smallestPrimeFactor;
@@ -71,14 +69,19 @@ public class Part1 {
                 boolean found = false;
                 int lineSign = (line > candidateLine) ? 1 : -1;
                 int colSign  = (col  > candidateCol)  ? 1 : -1;
-                for (int i = 1; i < smallestPrimeFactor; i++) {
-                    int checkLine = candidateLine + (i * stepLine * lineSign);
-                    int checkCol  = candidateCol  + (i * stepCol  * colSign);
+
+                int i = 1;
+                int checkLine = candidateLine + (i * stepLine * lineSign);
+                int checkCol  = candidateCol  + (i * stepCol  * colSign);
+                while (!(checkCol == col && checkLine == line)) {
                     if (map[checkLine][checkCol] == '#') {
                         System.out.print('h');
                         found = true;
                         break;
                     }
+                    checkLine = candidateLine + (i * stepLine * lineSign);
+                    checkCol  = candidateCol  + (i * stepCol  * colSign);
+                    i++;
                 }
 
                 if (!found) {
@@ -111,7 +114,7 @@ public class Part1 {
 
 
     private static void readMap() throws IOException {
-        ArrayList<String> input = Files.readByLines("src/main/java/y2019/d10/small2.txt");
+        ArrayList<String> input = Files.readByLines("src/main/java/y2019/d10/small5.txt");
         int line = 0;
         for (String sline: input) {
             int col = 0;
@@ -120,7 +123,7 @@ public class Part1 {
                 ++col;
             }
             ++line;
-            System.out.println(line);
+            //System.out.println(line);
         }
     }
 
