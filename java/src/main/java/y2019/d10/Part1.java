@@ -1,5 +1,6 @@
 package y2019.d10;
 
+import common.AocMath;
 import common.Files;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ public class Part1 {
         int asteroidsSeen2 = countVisibleAsteroids(13, 11);
         System.out.println("manual input: " + asteroidsSeen2);
 
-/*  * /
+/*  */
         //iterate over all points
         for (int candidateLine = 0; candidateLine < map.length; candidateLine++) {
             for (int candidateCol = 0; candidateCol < map.length; candidateCol++) {
@@ -51,23 +52,21 @@ public class Part1 {
                 int deltaLine = Math.abs(candidateLine - line);
                 int deltaCol  = Math.abs(candidateCol - col);
 
-                int smallestPrimeFactor = getSmallestCommonPrimeFactor(deltaCol, deltaLine);
                 int stepCol;
                 int stepLine;
-                if (-1 == smallestPrimeFactor) {  // no field inbetween -> visible.
+
+                long gcd = AocMath.greatestCommonDivisor(deltaCol, deltaLine);
+
+                if (1 == gcd) {  // no field inbetween -> visible.
                     System.out.print('S');
                     count++;
                     continue;
-                } else if (smallestPrimeFactor == 1) {
+                } else if (isDiagonal(deltaCol, deltaLine) || deltaCol == 0 || deltaLine == 0) {
                     stepCol  = (col  != candidateCol)  ? 1 : 0;
                     stepLine = (line != candidateLine) ? 1 : 0;
                 } else {
-                    stepCol  = deltaCol;
-                    stepLine = deltaLine;
-                    while (stepCol % smallestPrimeFactor == 0 && stepLine % smallestPrimeFactor == 0) {
-                        stepCol  /= smallestPrimeFactor;
-                        stepLine /= smallestPrimeFactor;
-                    }
+                    stepCol  = deltaCol  / (int)gcd;
+                    stepLine = deltaLine / (int)gcd;
                     // System.out.println("   " + stepCol + ":" + stepLine + "   ");
                 }
 
@@ -97,6 +96,12 @@ public class Part1 {
             System.out.println();
         }
         return count;
+    }
+
+    private static boolean isDiagonal (int deltaCol, int deltaLine) {
+        int absDeltaCol  = Math.abs(deltaCol);
+        int absDeltaLine = Math.abs(deltaLine);
+        return absDeltaCol == absDeltaLine;
     }
 
     private static int getSmallestCommonPrimeFactor(int deltaCol, int deltaLine) {
