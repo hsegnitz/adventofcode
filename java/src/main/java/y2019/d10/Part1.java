@@ -16,8 +16,11 @@ public class Part1 {
 
         int maxSeen = 0;
 
-        int asteroidsSeen2 = countVisibleAsteroids(4, 3);
+        //int asteroidsSeen2 = countVisibleAsteroids(8, 5);
+        int asteroidsSeen2 = countVisibleAsteroids(9, 7);
+        System.out.println("manual input: " + asteroidsSeen2);
 
+/*  */
         //iterate over all points
         for (int candidateLine = 0; candidateLine < map.length; candidateLine++) {
             for (int candidateCol = 0; candidateCol < map.length; candidateCol++) {
@@ -25,10 +28,12 @@ public class Part1 {
                     continue;
                 }
                 int asteroidsSeen = countVisibleAsteroids(candidateLine, candidateCol);
+                System.out.println("" + candidateLine + "x" + candidateCol + ":" + asteroidsSeen);
                 maxSeen = Math.max(maxSeen, asteroidsSeen);
             }
         }
         System.out.println(maxSeen);
+/*  */
     }
 
     private static int countVisibleAsteroids(int candidateLine, int candidateCol) {
@@ -36,9 +41,11 @@ public class Part1 {
         for (int line = 0; line < map.length; line++) {
             for (int col = 0; col < map.length; col++) {
                 if (line == candidateLine && col == candidateCol) {
+                    System.out.print('@');
                     continue;
                 }
                 if (map[line][col] != '#') {
+                    System.out.print('.');
                     continue;
                 }
 
@@ -49,6 +56,7 @@ public class Part1 {
                 int stepCol;
                 int stepLine;
                 if (-1 == smallestPrimeFactor) {  // no field inbetween -> visible.
+                    System.out.print('S');
                     count++;
                     continue;
                 } else if (smallestPrimeFactor == 1) {
@@ -61,21 +69,24 @@ public class Part1 {
                 }
 
                 boolean found = false;
-                int lineSign = (deltaLine > candidateLine) ? 1 : -1;
-                int colSign  = (deltaCol  > candidateCol)  ? 1 : -1;
+                int lineSign = (line > candidateLine) ? 1 : -1;
+                int colSign  = (col  > candidateCol)  ? 1 : -1;
                 for (int i = 1; i < smallestPrimeFactor; i++) {
                     int checkLine = candidateLine + (i * stepLine * lineSign);
                     int checkCol  = candidateCol  + (i * stepCol  * colSign);
                     if (map[checkLine][checkCol] == '#') {
+                        System.out.print('h');
                         found = true;
                         break;
                     }
                 }
 
                 if (!found) {
+                    System.out.print('S');
                     count++;
                 }
             }
+            System.out.println();
         }
         return count;
     }
@@ -100,7 +111,7 @@ public class Part1 {
 
 
     private static void readMap() throws IOException {
-        ArrayList<String> input = Files.readByLines("src/main/java/y2019/d10/small1.txt");
+        ArrayList<String> input = Files.readByLines("src/main/java/y2019/d10/small2.txt");
         int line = 0;
         for (String sline: input) {
             int col = 0;
