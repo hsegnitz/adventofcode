@@ -124,7 +124,7 @@ public class Part1 {
 
 
     private static void readMap() throws IOException {
-        ArrayList<String> input = Files.readByLines("src/main/java/y2019/d10/small5.txt");
+        ArrayList<String> input = Files.readByLines("src/main/java/y2019/d10/in.txt");
         int line = 0;
         for (String sline: input) {
             int col = 0;
