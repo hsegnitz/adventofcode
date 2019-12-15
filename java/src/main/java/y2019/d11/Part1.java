@@ -1,7 +1,5 @@
 package y2019.d11;
 
-import y2015.d06.Instruction;
-
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;

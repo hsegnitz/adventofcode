@@ -189,30 +189,45 @@ public class Part2 {
             if (parameterMode1 == 1) {
                 return parameterValue1;
             }
+
+            long posi = parameterValue1;
             if (parameterMode1 == 2) {
-                return this.program.get(parameterValue1+offset);
+                posi += offset;
             }
-            return this.program.get(parameterValue1);
+            if (posi >= this.program.size()) {
+                return 0L;
+            }
+            return this.program.get(posi);
         }
 
         public long getParameterValue2(long offset) {
             if (parameterMode2 == 1) {
                 return parameterValue2;
             }
+
+            long posi = parameterValue2;
             if (parameterMode2 == 2) {
-                return this.program.get(parameterValue2+offset);
+                posi += offset;
             }
-            return this.program.get(parameterValue2);
+            if (posi >= this.program.size()) {
+                return 0L;
+            }
+            return this.program.get(posi);
         }
 
         public long getParameterValue3(long offset) {
             if (parameterMode3 == 1) {
                 return parameterValue3;
             }
+
+            long posi = parameterValue3;
             if (parameterMode3 == 2) {
-                return this.program.get(parameterValue3+offset);
+                posi += offset;
             }
-            return this.program.get(parameterValue3);
+            if (posi >= this.program.size()) {
+                return 0L;
+            }
+            return this.program.get(posi);
         }
 
         public long getOutPosition(long offset) {
