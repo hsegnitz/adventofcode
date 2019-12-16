@@ -13,10 +13,74 @@ public class Part1 {
     public static void main(String[] args) {
         String out = input;
         for (int i = 0; i < 100; i++) {
-            out = calcPhase(out);
+//            out = calcPhase(out);
+//            System.out.println(out);
         }
 
+        // part 1
         System.out.println(out.substring(0, 8));
+
+        // part2
+        // so, this has to have a secret as we don't have roughly 25hours of CPU time to solve this the brute force way.
+        // * just doing it for the numbers after offset -> nope
+        // * last digit is always the same
+        // * second to last digit rotates in a 10 phase
+        // * the ones before even slower, but they repeat...
+        // * when there are blocks of repeating zeros in one line, the next line has whatever digit is in there repeated in the same place
+        // * to be precise repeated even once more!
+        // * when there are repeated ones, the digits decrease by 1 below the ones
+        // * same with 2s, decreasing by two
+        // * and actually, with modulo applied, it works for all digits  Oo
+        // * sooo.... newline[x] = newline[x-1] - oldline[x] or something
+        // * damnit, that only works for numbers near the end and we need the previous ones anyways...
+        // ... the end is alwoys the same ...
+        // that formula can go the other way round actually => newline[x] = newline[x+1] + oldline[x]   (and mod applied!!!)  !!
+
+
+        // part 2
+        String out2 = longInput(input);
+        System.out.println(out2);
+        int offset = Integer.parseInt(out2.substring(0, 7));
+        System.out.println(offset);
+
+        String remainder = out2.substring(offset);
+        System.out.println(remainder);
+
+        // make the hind part of the string into an array of ints to not go back and forth with a string
+        int[] temp = new int[remainder.length()];
+        int i = 0;
+        for (String x: remainder.split("")) {
+            temp[i++] = Integer.parseInt(x);
+        }
+
+        for (i = temp.length-10; i < temp.length; i++) {
+            System.out.print(temp[i]);
+        }
+        System.out.println();
+
+
+        System.out.println(temp.length);
+        for (i = 0; i < 100; i++) {
+            for (int pos = temp.length - 2; pos >= 0; pos--) {
+                int a = temp[pos + 1];
+                int b = temp[pos];
+                int newNumber = a + b;
+                temp[pos] = Math.abs(newNumber % 10);
+            }
+        }
+
+        for (i = 0; i < 8; i++) {
+            System.out.print(temp[i]);
+        }
+        System.out.println();
+    }
+
+    private static String longInput(String input) {
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < 10000; i++) {
+            out.append(input);
+        }
+        return out.toString();
     }
 
     private static String calcPhase(String input) {
