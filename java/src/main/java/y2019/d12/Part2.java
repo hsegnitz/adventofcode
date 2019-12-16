@@ -1,5 +1,7 @@
 package y2019.d12;
 
+import common.AocMath;
+
 import java.util.ArrayList;
 
 public class Part2 {
@@ -55,19 +57,9 @@ public class Part2 {
 
     private static long leastCommonMultiple(int x, int y, int z) {
         long lcm = x;
-        lcm = (lcm * y) / greatestCommonDivisor(lcm, y);
-        lcm = (lcm * z) / greatestCommonDivisor(lcm, z);
+        lcm = (lcm * y) / AocMath.greatestCommonDivisor(lcm, y);
+        lcm = (lcm * z) / AocMath.greatestCommonDivisor(lcm, z);
         return lcm;
-    }
-
-    private static long greatestCommonDivisor(long a, long b) {
-        if (a == 0 || b == 0) {
-            return a + b;
-        } else {
-            long max = Math.max(a, b);
-            long min = Math.min(a, b);
-            return greatestCommonDivisor(max % min, min);
-        }
     }
 
     private static String extractState(ArrayList<Moon> moons, char dimension) {
