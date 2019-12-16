@@ -227,10 +227,10 @@ public class Part1 {
             if (parameterMode1 == 2) {
                 posi += offset;
             }
-            if (posi >= this.program.size()) {
-                return 0L;
+            if (this.program.containsKey(posi)) {
+                return this.program.get(posi);
             }
-            return this.program.get(posi);
+            return 0L;
         }
 
         public long getParameterValue2(long offset) {
@@ -242,10 +242,10 @@ public class Part1 {
             if (parameterMode2 == 2) {
                 posi += offset;
             }
-            if (posi >= this.program.size()) {
-                return 0L;
+            if (this.program.containsKey(posi)) {
+                return this.program.get(posi);
             }
-            return this.program.get(posi);
+            return 0L;
         }
 
         public long getParameterValue3(long offset) {
@@ -257,10 +257,10 @@ public class Part1 {
             if (parameterMode3 == 2) {
                 posi += offset;
             }
-            if (posi >= this.program.size()) {
-                return 0L;
+            if (this.program.containsKey(posi)) {
+                return this.program.get(posi);
             }
-            return this.program.get(posi);
+            return 0L;
         }
 
         public long getOutPosition(long offset) {
