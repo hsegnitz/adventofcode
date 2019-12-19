@@ -18,6 +18,8 @@ public class Part2 {
                 if (newRow && isAffected) {
                     firstLeft = x;
                     newRow = false;
+                } else if (newRow) {
+                    continue;
                 }
 
                 if (!isAffected(y, x+99)) {
