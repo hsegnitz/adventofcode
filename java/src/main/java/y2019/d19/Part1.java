@@ -11,9 +11,9 @@ public class Part1 {
     public static void main(String[] args) {
 
         int count = 0;
-        IntCodeProgram program = new IntCodeProgram(input);
         for (long y = 0; y < 50; y++) {
             for (long x = 0; x < 50; x++) {
+                IntCodeProgram program = new IntCodeProgram(input);
                 program.addInput(x);
                 program.addInput(y);
 
