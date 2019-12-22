@@ -35,14 +35,24 @@ for this we index position at 0!
  */
 
     public static void main(String[] args) throws FileNotFoundException {
-        ArrayList<String> input = Files.readByLines("src/main/java/y2019/d10/in.txt");
+        ArrayList<String> input = Files.readByLines("src/main/java/y2019/d22/in.txt");
 
-        int sizeOfDeck = 10;
+        int sizeOfDeck = 10007;
         int position = 2019;  // indexed at 0!
 
-        // System.out.println(dealNew(sizeOfDeck, position));
-        // System.out.println(cutCards(sizeOfDeck, position, -8));
-        System.out.println(dealIncrement(sizeOfDeck, position, 4));
+        for (String command: input) {
+            if (command.matches("deal into new stack")) {
+                position = dealNew(sizeOfDeck, position);
+            } else if (command.matches("cut (-?[\\d]+)")) {
+                int amount = Integer.parseInt(command.split(" ")[1]);
+                position = cutCards(sizeOfDeck, position, amount);
+            } else if (command.matches("deal with increment ([\\d]+)")) {
+                int amount = Integer.parseInt(command.split(" ")[3]);
+                position = dealIncrement(sizeOfDeck, position, amount);
+            }
+
+            System.out.println(command.trim() + ": " + position);
+        }
     }
 
     private static int dealNew(int sizeOfDeck, int position) {
@@ -61,7 +71,5 @@ for this we index position at 0!
         tempPosition %= sizeOfDeck;
         return tempPosition;
     }
-
-
 
 }
