@@ -43,15 +43,30 @@ public class Part1 {
             }
 
             mapString = mapToString(newMap);
+            map = newMap;
 
             if (!seen.add(mapString)) {
                 break;
             }
             //System.out.println(mapString);
-            map = newMap;
         }
 
         System.out.println(mapString);
+        System.out.println(biodiversityRating(map));
+    }
+
+    private static int biodiversityRating(boolean[][] inMap) {
+        int exponent = -1;
+        int biodiversityRating = 0;
+        for (boolean[] line: inMap) {
+            for (boolean field: line) {
+                exponent++;
+                if (field) {
+                    biodiversityRating += Math.pow(2, exponent);
+                }
+            }
+        }
+        return biodiversityRating;
     }
 
     private static boolean willLive(int x, int y) {
