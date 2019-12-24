@@ -4,7 +4,7 @@ import java.util.HashSet;
 
 public class Part1 {
 
-    /** demo content */
+    /** demo content * /
     private static boolean[][] map = {
             { false, false, false, false, true  },
             { true,  false, false, true,  false },
@@ -14,13 +14,13 @@ public class Part1 {
     };
     /*     */
 
-    /** real content * /
+    /** real content */
     private static boolean[][] map = {
-            { false, false, false, false, true  },
-            { true,  false, false, true,  false },
-            { true,  false, false, true,  true  },
-            { false, false, true,  false, false },
-            { true,  false, false, false, false }
+            { false, true,  true,  true,  false },
+            { true,  true,  false, false, false },
+            { false, false, false, true,  true  },
+            { false, true,  false, true,  false },
+            { true,  false, true,  false, true  }
     };
     /*     */
 
