@@ -1,5 +1,13 @@
 package y2017.d07;
 
+import common.Files;
+
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 public class Part1 {
 
     /*
@@ -47,5 +55,80 @@ In this example, tknk is at the bottom of the tower (the bottom program), and is
 
 Before you're ready to help them, you need to make sure your information is correct. What is the name of the bottom program?
      */
+
+    public static void main(String[] args) throws FileNotFoundException {
+        ArrayList<String> rawProgram = Files.readByLines("src/main/java/y2017/d07/small.txt");
+        HashMap<String, Program> fullList = new HashMap<String, Program>();
+
+        boolean found = false;
+        while (!found) {
+            found = true;
+            outer:
+            for (String line : rawProgram) {
+                String[] split = line.split(" ");
+                String name = split[0];
+                if (fullList.containsKey(name)) {
+                    continue;
+                }
+
+                int weight = Integer.parseInt(split[1].substring(1, split[1].length() - 1));
+
+                Program currentProgram = new Program(name, weight);
+
+                for (int i = 3; i < split.length; i++) {
+                    String key = split[i].replaceAll(",", "");
+                    if (!fullList.containsKey(key)) {
+                        found = false;
+                        continue outer;
+                    }
+                    currentProgram.addChild(fullList.get(key));
+                }
+                fullList.put(currentProgram.getName(), currentProgram);
+            }
+        }
+
+        for (Map.Entry<String, Program> e: fullList.entrySet()) {
+            if (!e.getValue().hasParent()) {
+                System.out.println(e.getValue().getName());
+            }
+        }
+    }
+
+    private static class Program {
+        private HashMap<String, Program> children = new HashMap<String, Program>();
+        private int weight = 0;
+        private String name;
+        private Program parent;
+
+        public Program(String name, int weight) {
+            this.name   = name;
+            this.weight = weight;
+        }
+
+        public int getWeight() {
+            return weight;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Program getParent() {
+            return parent;
+        }
+
+        public void setParent(Program parent) {
+            this.parent = parent;
+        }
+
+        public boolean hasParent() {
+            return parent != null;
+        }
+
+        public void addChild(Program child) {
+            child.setParent(this);
+            this.children.put(child.getName(), child);
+        }
+    }
 
 }
