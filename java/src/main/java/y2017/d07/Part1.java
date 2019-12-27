@@ -57,7 +57,7 @@ Before you're ready to help them, you need to make sure your information is corr
      */
 
     public static void main(String[] args) throws FileNotFoundException {
-        ArrayList<String> rawProgram = Files.readByLines("src/main/java/y2017/d07/small.txt");
+        ArrayList<String> rawProgram = Files.readByLines("src/main/java/y2017/d07/in.txt");
         HashMap<String, Program> fullList = new HashMap<String, Program>();
 
         boolean found = false;
