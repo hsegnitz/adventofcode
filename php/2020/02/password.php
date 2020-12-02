@@ -18,7 +18,10 @@ class password
         [, $this->lower, $this->upper, $this->character, $this->password] = $out;
     }
 
-    public function isValid(): bool
+    /**
+     * Day 1
+     */
+    public function isValidAtSledRental(): bool
     {
         $filtered = preg_replace(
             '/[^' . $this->character . ']/',
