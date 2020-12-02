@@ -31,4 +31,23 @@ class password
 
         return $this->lower <= strlen($filtered) && $this->upper >= strlen($filtered);
     }
+
+    /**
+     * Day 2
+     */
+    public function isValidInToboggan(): bool
+    {
+        if (strlen($this->password) < $this->lower) {
+            return false;
+        }
+
+        if (strlen($this->password) < $this->upper) {
+            return false;
+        }
+
+        $firstCharMatches  = $this->password[$this->lower - 1] === $this->character;
+        $secondCharMatches = $this->password[$this->upper - 1] === $this->character;
+
+        return $firstCharMatches xor $secondCharMatches;
+    }
 }
