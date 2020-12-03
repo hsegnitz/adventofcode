@@ -1,6 +1,6 @@
 <?php
 
-$map = file('./demo.txt');
+$map = file('./in.txt');
 
 $right = 3;
 $rowLength = strlen(trim($map[0]));
