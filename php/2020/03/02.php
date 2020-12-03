@@ -1,6 +1,6 @@
 <?php
 
-$map = file('./demo.txt');
+$map = file('./in.txt');
 
 function treeCollider(array $map, int $right, int $down): int
 {
