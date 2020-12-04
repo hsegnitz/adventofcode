@@ -3,8 +3,8 @@
 require_once './passport.php';
 
 //$rawInput = file_get_contents('./demo.txt');
-$rawInput = file_get_contents('./demo2.txt');
-//$rawInput = file_get_contents('./in.txt');
+//$rawInput = file_get_contents('./demo2.txt');
+$rawInput = file_get_contents('./in.txt');
 
 $rawPassports = explode("\n\n", $rawInput);
 $countValid1 = $countValid2 = 0;
