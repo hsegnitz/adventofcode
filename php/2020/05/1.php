@@ -49,7 +49,7 @@ class BoardingPass
 
 }
 
-$passes = file('./demo.txt');
+$passes = file('./in.txt');
 array_walk($passes, static function (&$value) { $value = trim($value);});
 
 $highest = -1;
