@@ -49,12 +49,14 @@ class BoardingPass
 
 }
 
-$bp = new BoardingPass('FBFBBFFRLR');
-echo $bp->getRow(), " x ", $bp->getCol(), " => ", $bp->getId();
+$passes = file('./demo.txt');
+array_walk($passes, static function (&$value) { $value = trim($value);});
 
+$highest = -1;
+foreach ($passes as $rawPass) {
+    $bp = new BoardingPass($rawPass);
+    echo $rawPass, ': ', $bp->getRow(), " x ", $bp->getCol(), " => ", $bp->getId(), "\n";
+    $highest = max($highest, $bp->getId());
+}
 
-
-
-
-
-echo "\n";
+echo $highest, "\n";
