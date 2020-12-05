@@ -46,17 +46,17 @@ class BoardingPass
         }
         return $upper;
     }
-
 }
 
 $passes = file('./in.txt');
 array_walk($passes, static function (&$value) { $value = trim($value);});
 
-$highest = -1;
+$seatsTaken = [];
 foreach ($passes as $rawPass) {
     $bp = new BoardingPass($rawPass);
     echo $rawPass, ': ', $bp->getRow(), " x ", $bp->getCol(), " => ", $bp->getId(), "\n";
-    $highest = max($highest, $bp->getId());
+    $seatsTaken[] = $bp->getId();
 }
 
-echo $highest, "\n";
+echo "highest (day one): ",  max($seatsTaken), "\n";
+
