@@ -49,7 +49,7 @@ class BoardingPass
 }
 
 $passes = file('./in.txt');
-array_walk($passes, static function (&$value) { $value = trim($value);});
+array_walk($passes, static function (&$value) { $value = trim($value); });
 
 $seatsTaken = [];
 foreach ($passes as $rawPass) {
@@ -58,5 +58,14 @@ foreach ($passes as $rawPass) {
     $seatsTaken[] = $bp->getId();
 }
 
-echo "highest (day one): ",  max($seatsTaken), "\n";
+$max = max($seatsTaken);
+echo "highest (day one): ",  $max, "\n";
 
+sort($seatsTaken);
+$takenMap = array_flip($seatsTaken);
+
+for ($i = 1; $i < $max; $i++) {
+    if (!isset($takenMap[$i]) && isset($takenMap[$i-1], $takenMap[$i+1])) {
+        echo "My Seat: ", $i, "\n";
+    }
+}
