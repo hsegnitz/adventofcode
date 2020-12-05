@@ -8,7 +8,7 @@ $register = [
     'd' => 0,
 ];
 
-foreach (file('./demo.txt') as $row) {
+foreach (file('./in.txt') as $row) {
     $program[] = explode(' ', trim($row));
 }
 
@@ -29,7 +29,7 @@ while (isset($program[$pointer])) {
             $pointer++;
             break;
         case 'jnz':
-            if ($register[$instruction[1]] === 0) {
+            if (!is_numeric($instruction[1]) && $register[$instruction[1]] === 0) {
                 $pointer++;
             } else {
                 $pointer += $instruction[2];
