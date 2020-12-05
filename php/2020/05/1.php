@@ -9,11 +9,17 @@ class BoardingPass
     public function __construct(string $bsp)
     {
         $this->row = $this->binarySearch(substr($bsp, 0, 7), 'F');
+        $this->col = $this->binarySearch(substr($bsp, 7, 3), 'L');
     }
 
     public function getRow(): int
     {
         return $this->row;
+    }
+
+    public function getCol(): int
+    {
+        return $this->col;
     }
 
     private function binarySearch(string $bsp, string $charForLower): int
@@ -39,7 +45,7 @@ class BoardingPass
 }
 
 $bp = new BoardingPass('FBFBBFFRLR');
-echo $bp->getRow();
+echo $bp->getRow(), " x ", $bp->getCol();
 
 
 
