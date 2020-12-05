@@ -22,6 +22,11 @@ class BoardingPass
         return $this->col;
     }
 
+    public function getId(): int
+    {
+        return ($this->getRow() * 8) + $this->getCol();
+    }
+
     private function binarySearch(string $bsp, string $charForLower): int
     {
         $lower = 0;
@@ -45,7 +50,7 @@ class BoardingPass
 }
 
 $bp = new BoardingPass('FBFBBFFRLR');
-echo $bp->getRow(), " x ", $bp->getCol();
+echo $bp->getRow(), " x ", $bp->getCol(), " => ", $bp->getId();
 
 
 
