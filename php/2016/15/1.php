@@ -16,15 +16,31 @@ $second = 0;
 $i = 0;
 while (true) {
     ++$i;
-    if (0 !== (4 + 1 + $i) % 5) {
+    if (0 !== (10 + 1 + $i) % 13) {
         continue;
     }
 
-    if (0 !== (1 + 2 + $i) % 2) {
+    if (0 !== (15 + 2 + $i) % 17) {
         continue;
     }
 
-    die("turns: " . $i);
+    if (0 !== (17 + 3 + $i) % 19) {
+        continue;
+    }
+
+    if (0 !== (1 + 4 + $i) % 7) {
+        continue;
+    }
+
+    if (0 !== (0 + 5 + $i) % 5) {
+        continue;
+    }
+
+    if (0 !== (1 + 6 + $i) % 3) {
+        continue;
+    }
+
+    die("turns: " . $i . "\n");
 }
 
 
