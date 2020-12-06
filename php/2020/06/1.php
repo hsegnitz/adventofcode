@@ -1,5 +1,7 @@
 <?php
 
+$start = microtime(true);
+
 $input = file_get_contents('./in.txt');
 $groups = explode("\n\n", $input);
 
@@ -11,3 +13,6 @@ foreach ($groups as $group) {
 }
 
 echo $sumCounts, "\n";
+
+echo microtime(true) - $start;
+echo "\n";
