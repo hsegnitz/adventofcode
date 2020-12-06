@@ -40,6 +40,10 @@ while (true) {
         continue;
     }
 
+    if (0 !== (0 + 7 + $i) % 11) {
+        continue;
+    }
+
     die("turns: " . $i . "\n");
 }
 
