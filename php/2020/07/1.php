@@ -1,12 +1,13 @@
 <?php
 
-$input = file('demo.txt');
+$input = file('in.txt');
 
 class bag {
     private string $color;
+    /** @var bag[] */
     private array $children = [];
 
-    /** @var bag[] */
+    /** @var int[] */
     private array $quantities = [];
 
     /** @var bag[] */
@@ -46,6 +47,16 @@ class bag {
             $colors = array_merge($parent->collectParentColors(), $colors);
         }
         return array_unique($colors);
+    }
+
+    public function collectChildQuantities(): int
+    {
+        // $sumOfAllFears = PHP_INT_MAX;
+        $sumOfAllBags = 1;
+        foreach ($this->children as $child) {
+            $sumOfAllBags += $this->quantities[$child->getColor()] * $child->collectChildQuantities();
+        }
+        return $sumOfAllBags;
     }
 }
 
@@ -98,5 +109,8 @@ while (count($instructions) !== count($bagTypes)) {
 
 /** @var bag $shinyGold */
 $shinyGold = $bagTypes['shiny gold'];
+
 $parentColors = $shinyGold->collectParentColors();
-echo count($parentColors)-1, "\n";
+echo "part1: ", count($parentColors)-1, "\n";
+
+echo "part2: ", $shinyGold->collectChildQuantities()-1, "\n";
