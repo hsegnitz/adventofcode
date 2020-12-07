@@ -5,7 +5,11 @@ $input = file('demo.txt');
 class bag {
     private string $color;
     private array $children = [];
+
+    /** @var bag[] */
     private array $quantities = [];
+
+    /** @var bag[] */
     private array $parents = [];
 
     public function __construct(string $color)
@@ -31,6 +35,17 @@ class bag {
     public function addParent(bag $parent): void
     {
         $this->parents[] = $parent;
+    }
+
+    public function collectParentColors(): array
+    {
+        $colors = [
+            $this->color,
+        ];
+        foreach ($this->parents as $parent) {
+            $colors = array_merge($parent->collectParentColors(), $colors);
+        }
+        return array_unique($colors);
     }
 }
 
@@ -80,3 +95,8 @@ while (count($instructions) !== count($bagTypes)) {
         $bagTypes[$color] = $newBag;
     }
 }
+
+/** @var bag $shinyGold */
+$shinyGold = $bagTypes['shiny gold'];
+$parentColors = $shinyGold->collectParentColors();
+echo count($parentColors)-1, "\n";
