@@ -1,5 +1,7 @@
 <?php
 
+$start = microtime(true);
+
 //$input = file('demo2.txt');
 $input = file('in.txt');
 
@@ -53,5 +55,9 @@ for ($i = 0, $iMax = count($instructions); $i < $iMax; $i++) {
 
     if (is_int($result = testProgram($instCopy))) {
         echo $result, "\n";
+        break;
     }
 }
+
+echo microtime(true) - $start;
+echo "\n";

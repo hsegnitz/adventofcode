@@ -1,5 +1,7 @@
 <?php
 
+$start = microtime(true);
+
 //$input = file('demo.txt');
 $input = file('in.txt');
 
@@ -29,4 +31,7 @@ while (!isset($visited[$pointer])) {
     }
 }
 
-echo $accumulator;
+echo $accumulator, "\n";
+
+echo microtime(true) - $start;
+echo "\n";
