@@ -1,4 +1,6 @@
 <?php
+$startTime = microtime(true);
+
 /*
 $input = file('demo.txt');
 $groupLength = 5;
@@ -35,10 +37,23 @@ function findSum($numbers, $target): ?array {
     return null;
 }
 
-
-
+$invalid = -1;
 for ($i = $groupLength; $i < count($numbers); $i++) {
     if (null === findSum(array_slice($numbers, ($i-$groupLength), $groupLength), $numbers[$i])) {
-        echo $numbers[$i], "\n";
+        $invalid = $numbers[$i];
     }
 }
+
+echo "Part 1: ", $invalid, " time: ", (microtime(true) - $startTime), "\nPart 2: ";
+
+$total = count($numbers);
+foreach ($numbers as $key => $num) {
+    for ($length = 2; $length < ($total - $key); $length++) {
+        $slice = array_slice($numbers, $key, $length);
+        if (array_sum($slice) === $invalid) {
+            echo $min = min($slice), " ", $max = max($slice), ": ", $min + $max, "\n";
+        }
+    }
+}
+
+echo "total time: ", (microtime(true) - $startTime), "\n";
