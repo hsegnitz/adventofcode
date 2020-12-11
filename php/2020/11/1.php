@@ -49,10 +49,39 @@ class Ferry {
 
     public function mapNeighboursDay2(): void
     {
-        throw new RuntimeException('not implemented yet');
-
+        for ($row = 0, $rowMax = count($this->seatMap); $row < $rowMax; $row++) {
+            for ($col = 0, $colMax = count($this->seatMap[$row]); $col < $colMax; $col++) {
+                $this->neighbours[$row][$col] = [];
+                $this->neighbours[$row][$col][] = &$this->traceFirstSeat($row, $col, -1, -1);
+                $this->neighbours[$row][$col][] = &$this->traceFirstSeat($row, $col, -1,  0);
+                $this->neighbours[$row][$col][] = &$this->traceFirstSeat($row, $col, -1,  1);
+                $this->neighbours[$row][$col][] = &$this->traceFirstSeat($row, $col,  0, -1);
+                $this->neighbours[$row][$col][] = &$this->traceFirstSeat($row, $col,  0, +1);
+                $this->neighbours[$row][$col][] = &$this->traceFirstSeat($row, $col,  1, -1);
+                $this->neighbours[$row][$col][] = &$this->traceFirstSeat($row, $col,  1,  0);
+                $this->neighbours[$row][$col][] = &$this->traceFirstSeat($row, $col,  1,  1);
+            }
+        }
     }
 
+    private function &traceFirstSeat(int $row, int $col, int $rowInc, int $colInc): string
+    {
+        $i = 1;
+        $newRow = $row + ($i * $rowInc);
+        $newCol = $col + ($i * $colInc);
+
+        while (isset($this->seatMap[$newRow][$newCol]) && '.' === $this->seatMap[$newRow][$newCol]) {
+            $i++;
+            $newRow = $row + ($i * $rowInc);
+            $newCol = $col + ($i * $colInc);
+        }
+
+        if (isset($this->seatMap[$newRow][$newCol])) {
+            return $this->seatMap[$newRow][$newCol];
+        }
+        $blank = '';
+        return $blank;
+    }
 
     public function newStateOfSeat($row, $col): string
     {
@@ -122,7 +151,7 @@ class Ferry {
     }
 }
 
-$ferry = new Ferry($seatMap);
+$ferry = new Ferry($seatMap, true);
 
 echo $ferry->serializeSeatMap($seatMap);
 #die();
