@@ -14,12 +14,45 @@ array_unshift($seatMap, array_fill(0, count($seatMap[0]), '.'));
 
 class Ferry {
     private array $seatMap;
-    private int $changeCounter = 0;
+    private int   $changeCounter = 0;
+    private array $neighbours = [];
+    private int   $tolerance;
 
-    public function __construct(array $seatMap)
+    public function __construct(array $seatMap, bool $secondDay = false)
     {
         $this->seatMap = $seatMap;
+        if ($secondDay) {
+            $this->tolerance = 5;
+            $this->mapNeighboursDay2();
+            return;
+        }
+        $this->tolerance = 4;
+        $this->mapNeighboursDay1();
     }
+
+    public function mapNeighboursDay1(): void
+    {
+        for ($row = 0, $rowMax = count($this->seatMap); $row < $rowMax; $row++) {
+            for ($col = 0, $colMax = count($this->seatMap[$row]); $col < $colMax; $col++) {
+                $this->neighbours[$row][$col] = [];
+                if (isset($this->seatMap[$row-1][$col-1] ) && $this->seatMap[$row-1][$col-1] !== '.') { $this->neighbours[$row][$col][] = &$this->seatMap[$row-1][$col-1]; }
+                if (isset($this->seatMap[$row-1][$col] )   && $this->seatMap[$row-1][$col]   !== '.') { $this->neighbours[$row][$col][] = &$this->seatMap[$row-1][$col]; }
+                if (isset($this->seatMap[$row-1][$col+1] ) && $this->seatMap[$row-1][$col+1] !== '.') { $this->neighbours[$row][$col][] = &$this->seatMap[$row-1][$col+1]; }
+                if (isset($this->seatMap[$row][$col-1] )   && $this->seatMap[$row][$col-1]   !== '.') { $this->neighbours[$row][$col][] = &$this->seatMap[$row][$col-1]; }
+                if (isset($this->seatMap[$row][$col+1] )   && $this->seatMap[$row][$col+1]   !== '.') { $this->neighbours[$row][$col][] = &$this->seatMap[$row][$col+1]; }
+                if (isset($this->seatMap[$row+1][$col-1] ) && $this->seatMap[$row+1][$col-1] !== '.') { $this->neighbours[$row][$col][] = &$this->seatMap[$row+1][$col-1]; }
+                if (isset($this->seatMap[$row+1][$col] )   && $this->seatMap[$row+1][$col]   !== '.') { $this->neighbours[$row][$col][] = &$this->seatMap[$row+1][$col]; }
+                if (isset($this->seatMap[$row+1][$col+1] ) && $this->seatMap[$row+1][$col+1] !== '.') { $this->neighbours[$row][$col][] = &$this->seatMap[$row+1][$col+1]; }
+            }
+        }
+    }
+
+    public function mapNeighboursDay2(): void
+    {
+        throw new RuntimeException('not implemented yet');
+
+    }
+
 
     public function newStateOfSeat($row, $col): string
     {
@@ -28,22 +61,12 @@ class Ferry {
             return '.'; // Floor, floor never changes.
         }
 
-        $neighbours = [];
-        $neighbours[] = $this->seatMap[$row-1][$col-1];
-        $neighbours[] = $this->seatMap[$row-1][$col];
-        $neighbours[] = $this->seatMap[$row-1][$col+1];
-        $neighbours[] = $this->seatMap[$row][$col-1];
-        $neighbours[] = $this->seatMap[$row][$col+1];
-        $neighbours[] = $this->seatMap[$row+1][$col-1];
-        $neighbours[] = $this->seatMap[$row+1][$col];
-        $neighbours[] = $this->seatMap[$row+1][$col+1];
-
-        $counts = array_count_values($neighbours);
+        $counts = array_count_values($this->neighbours[$row][$col]);
         if ($current === 'L' && !isset($counts['#'])) {
             ++ $this->changeCounter;
             return '#';
         }
-        if ($current === '#' && isset($counts['#']) && $counts['#'] >= 4) {
+        if ($current === '#' && isset($counts['#']) && $counts['#'] >= $this->tolerance) {
             ++ $this->changeCounter;
             return 'L';
         }
@@ -77,11 +100,20 @@ class Ferry {
         return $out;
     }
 
+    private function applyNewSeatMap(array $newSeatMap): void
+    {
+        foreach ($newSeatMap as $row => $rowItems) {
+            foreach ($rowItems as $col => $type) {
+                $this->seatMap[$row][$col] = $type;
+            }
+        }
+    }
+
     public function run(): void
     {
         while (true) {
             $newSeatMap = $this->round();
-            $this->seatMap = $newSeatMap;
+            $this->applyNewSeatMap($newSeatMap);
             if ($this->changeCounter === 0) {
                 echo $this->serializeSeatMap($newSeatMap);
                 return;
