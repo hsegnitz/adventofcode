@@ -51,15 +51,16 @@ class Ferry {
     {
         for ($row = 0, $rowMax = count($this->seatMap); $row < $rowMax; $row++) {
             for ($col = 0, $colMax = count($this->seatMap[$row]); $col < $colMax; $col++) {
-                $this->neighbours[$row][$col] = [];
-                $this->neighbours[$row][$col][] = &$this->traceFirstSeat($row, $col, -1, -1);
-                $this->neighbours[$row][$col][] = &$this->traceFirstSeat($row, $col, -1,  0);
-                $this->neighbours[$row][$col][] = &$this->traceFirstSeat($row, $col, -1,  1);
-                $this->neighbours[$row][$col][] = &$this->traceFirstSeat($row, $col,  0, -1);
-                $this->neighbours[$row][$col][] = &$this->traceFirstSeat($row, $col,  0, +1);
-                $this->neighbours[$row][$col][] = &$this->traceFirstSeat($row, $col,  1, -1);
-                $this->neighbours[$row][$col][] = &$this->traceFirstSeat($row, $col,  1,  0);
-                $this->neighbours[$row][$col][] = &$this->traceFirstSeat($row, $col,  1,  1);
+                $samples = [];
+                $samples[] = &$this->traceFirstSeat($row, $col, -1, -1);
+                $samples[] = &$this->traceFirstSeat($row, $col, -1,  0);
+                $samples[] = &$this->traceFirstSeat($row, $col, -1,  1);
+                $samples[] = &$this->traceFirstSeat($row, $col,  0, -1);
+                $samples[] = &$this->traceFirstSeat($row, $col,  0, +1);
+                $samples[] = &$this->traceFirstSeat($row, $col,  1, -1);
+                $samples[] = &$this->traceFirstSeat($row, $col,  1,  0);
+                $samples[] = &$this->traceFirstSeat($row, $col,  1,  1);
+                $this->neighbours[$row][$col] = $samples;
             }
         }
     }
@@ -144,7 +145,7 @@ class Ferry {
             $newSeatMap = $this->round();
             $this->applyNewSeatMap($newSeatMap);
             if ($this->changeCounter === 0) {
-                echo $this->serializeSeatMap($newSeatMap);
+                #echo $this->serializeSeatMap($newSeatMap);
                 return;
             }
         }
@@ -153,7 +154,8 @@ class Ferry {
 
 $ferry = new Ferry($seatMap, true);
 
-echo $ferry->serializeSeatMap($seatMap);
+//echo $ferry->serializeSeatMap($seatMap);
+$ferry->serializeSeatMap($seatMap);
 #die();
 
 $ferry->run();
