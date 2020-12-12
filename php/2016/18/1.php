@@ -40,12 +40,12 @@ function serializeField(array $field): string
     return $ret;
 }
 
-while (count($field) < 40) {
+while (count($field) < 400000) {
     walk($field);
 }
 
 
-echo $s = serializeField($field), "\n";
+$s = serializeField($field);
 echo count_chars($s, 1)[46], "\n";  // 46 === '.'
 
 
