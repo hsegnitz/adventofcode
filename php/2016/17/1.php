@@ -2,18 +2,21 @@
 
 $startTime = microtime(true);
 
-$seed = 'ihgpwlah';
+//$seed = 'ihgpwlah';
 //$seed = 'kglvqrro';
 //$seed = 'ulqzkmiv';
-//$seed = 'lpvhkcbi';  // zeh real one
+$seed = 'lpvhkcbi';  // zeh real one
 
 class maze
 {
     private const OPEN = 'bcdef';
 
+    private array $paths = [];
+
     public function walk(string $passcode, string $path, int $x, int $y): ?int
     {
         if ($x === 3 && $y === 3) {
+            $this->paths[] = $path;
             return strlen($path);
         }
 
@@ -42,8 +45,20 @@ class maze
         return min($results);
     }
 
+    public function getPathByLength(int $length): string
+    {
+        foreach ($this->paths as $path) {
+            if (strlen($path) === $length) {
+                return $path;
+            }
+        }
+        return 'nothing found!';
+    }
+
 }
 
-echo (new maze())->walk($seed, '', 0, 0), "\n";
+$maze = new maze();
+echo $shortestLength = $maze->walk($seed, '', 0, 0), "\n";
+echo $maze->getPathByLength($shortestLength), "\n";
 
 echo "total time: ", (microtime(true) - $startTime), "\n";
