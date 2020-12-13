@@ -1,29 +1,33 @@
 <?php
 
 $startTime = microtime(true);
+/*
 
-class Elf
-{
-    private int $id;
-
-    public function __construct(int $id)
-    {
-        $this->id = $id;
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
-    }
-}
-
-/** @var Elf[] $list * /
-$list = [];
-//for ($i = 1; $i <= 3018458; $i++) {
-for ($i = 1; $i <= 5; $i++) {
-    $list[] = new Elf($i);
-}
+$input = 5; // 2
+$input = 7; // 5
+$input = 9; // 9
+$input = 11; // 2
+$input = 15; // 6
+$input = 17; // 8
+$input = 19; // 11
+$input = 25; // 23
+$input = 27; // 27
+$input = 29; // 2
+$input = 45; // 18
+$input = 53; // 26
+$input = 55; // 29
+ *
+ *
+ *
 /*    */
+
+$elves = 15;
+$sum = array_sum(range(1, ceil($elves/2)));
+echo ($sum % $elves) + 1;
+
+
+/*
+
 
 #$list = range(1, 5);
 $list = range(1, 3018458);
@@ -44,6 +48,6 @@ while (count($list) > 1) {
 }
 
 print_r($list);
+*/
 
-
-echo "total time: ", (microtime(true) - $startTime), "\n";
+echo "\ntotal time: ", (microtime(true) - $startTime), "\n";
