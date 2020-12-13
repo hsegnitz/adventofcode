@@ -16,8 +16,6 @@ foreach ($buses as $offset => $bus) {
     $mods[$bus] = (($bus**2) - $offset) % $bus;   // "bus^2" to prevent negative mods
 }
 
-krsort($mods);
-
 $bus = array_key_first($mods);
 $mod = $mods[$bus];
 unset($mods[$bus]);
