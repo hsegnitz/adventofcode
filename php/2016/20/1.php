@@ -63,6 +63,23 @@ while ($foundSimplification) {
     $ranges = $newRanges;
 }
 
-echo $ranges[0]['upper'] + 1;
-echo "\niterations: ", $iterations;
+echo "part 1: ", $ranges[0]['upper'] + 1;
+echo "\niterations: ", $iterations, "\n";
+
+
+$numberOfWhitelistedIps = 0;
+$current = array_shift($ranges);
+
+while(count($ranges)) {
+    $next = array_shift($ranges);
+
+    // echo $next['lower'], " <-> ", $current['upper'], " = ", $next['lower'] - $current['upper'] -1, "\n";
+
+    $numberOfWhitelistedIps += ($next['lower'] - $current['upper'] - 1);
+
+    $current = $next;
+}
+
+
+echo "\npart 2: ", $numberOfWhitelistedIps;
 echo "\ntotal time: ", (microtime(true) - $startTime), "\n";
