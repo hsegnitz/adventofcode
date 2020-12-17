@@ -14,9 +14,7 @@ foreach ($input as $posY => $row) {
     foreach(str_split(trim($row)) as $posX => $char) {
         $matrix[ConwayCubes::$startW][ConwayCubes::$startZ][ConwayCubes::$startY + $posY][ConwayCubes::$startX+$posX] = $char;
     }
-    ksort($matrix[ConwayCubes::$startW][ConwayCubes::$startZ][ConwayCubes::$startY + $posY]);
 }
-ksort($matrix[ConwayCubes::$startW][ConwayCubes::$startZ]);
 
 class ConwayCubes {
     public static int $startX;
@@ -37,13 +35,9 @@ class ConwayCubes {
                     for ($x = self::$startX; $x <= -1 * self::$startX; $x++) {
                         $newMatrix[$w][$z][$y][$x] = self::newState($matrix, $x, $y, $z, $w);
                     }
-                    ksort($newMatrix[$w][$z][$y]);
                 }
-                ksort($newMatrix[$w][$z]);
             }
-            ksort($newMatrix[$w]);
         }
-        ksort($newMatrix);
 
         return $newMatrix;
     }
