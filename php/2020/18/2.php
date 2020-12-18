@@ -2,7 +2,7 @@
 
 $startTime = microtime(true);
 
-$input = file(__DIR__ . '/demo.txt');
+$input = file(__DIR__ . '/in.txt');
 
 function solve(string $string): int
 {
@@ -28,10 +28,11 @@ function solve(string $string): int
             throw new RuntimeException('regex don\'t match'); // [sic]  --  sing it to "papa don't preach"
         }
 
-        $string = str_replace(
-            $out[1],
+        $string = preg_replace(
+            '/' . preg_quote($out[1], '/') . '/',
             $out[2] + $out[3],
-            $string
+            $string,
+            1
         );
     }
 
@@ -42,14 +43,15 @@ function solve(string $string): int
             throw new RuntimeException('regex don\'t match'); // [sic]  --  sing it to "papa don't preach"
         }
 
-        $string = str_replace(
-            $out[1],
+        $string = preg_replace(
+            '/' . preg_quote($out[1], '/') . '/',
             $out[2] * $out[3],
-            $string
+            $string,
+            1
         );
     }
 
-    if (!is_numeric($string)) {
+    if (!preg_match('/^\d+$/', $string)) {
         throw new RuntimeException('you are wrong! ' . $string);
     }
 
