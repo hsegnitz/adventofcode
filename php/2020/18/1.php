@@ -7,10 +7,18 @@ $input = file(__DIR__ . '/demo.txt');
 function solve(string $string): int
 {
     $string = trim($string);
-    /**
+
     while (false !== strpos($string, '(')) {
-        // recursively replace innermost parentheses until non left
-    }*/
+        if (! preg_match('/\(([^()]+)\)/', $string, $out)) {
+            throw new RuntimeException('regex don\'t match'); // [sic]  --  sing it to "papa don't preach"
+        }
+
+        $string = str_replace(
+            '(' . $out[1] . ')',
+            solve($out[1]),
+            $string
+        );
+    }
 
     // from here on no parentheses left!
 
@@ -32,7 +40,7 @@ function solve(string $string): int
 }
 
 
-echo solve($input[0]), "\n";
+echo solve($input[1]), "\n";
 die();
 
 
