@@ -2,7 +2,7 @@
 
 $startTime = microtime(true);
 
-$input = file(__DIR__ . '/demo.txt');
+$input = file(__DIR__ . '/in.txt');
 
 function solve(string $string): int
 {
@@ -40,16 +40,14 @@ function solve(string $string): int
 }
 
 
-echo solve($input[1]), "\n";
-die();
-
-
 $solutions = [];
 foreach ($input as $row) {
-
+    $solutions[] = solve($row);
 }
 
+print_r($solutions);
 
+echo array_sum($solutions);
 
 echo "\ntotal time: ", (microtime(true) - $startTime), "\n";
 
