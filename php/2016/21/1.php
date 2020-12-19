@@ -122,7 +122,7 @@ class ReverseScrambler extends Scrambler {
         $temp .= strrev(substr($input, $this->posX, ($this->posY - $this->posX + 1)));
 
         if ($this->posY < strlen($input)-1) {
-            $temp .= substr($input, $this->posY);
+            $temp .= substr($input, $this->posY+1);
         }
 
         return $temp;
@@ -197,11 +197,12 @@ class ScramblerFactory
     }
 }
 
-$password = 'abcde';
+//$password = 'abcde';
+$password = 'abcdefgh';
 
-foreach (file(__DIR__ . '/demo.txt') as $row) {
+foreach (file(__DIR__ . '/in.txt') as $row) {
     $scrambler = ScramblerFactory::getScrambler($row);
-    echo $password = $scrambler->process($password), "\n";
+    echo $password = $scrambler->process($password), "  (", trim($row), ")\n";
 }
 
 
