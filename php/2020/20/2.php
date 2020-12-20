@@ -4,7 +4,7 @@ $startTime = microtime(true);
 
 require __DIR__ . '/Tile.php';
 
-$rawInput = file_get_contents(__DIR__ . '/demo.txt');
+$rawInput = trim(file_get_contents(__DIR__ . '/in.txt'));
 
 $tiles = [];
 foreach (explode("\n\n", $rawInput) as $rawTile) {
@@ -13,9 +13,6 @@ foreach (explode("\n\n", $rawInput) as $rawTile) {
 }
 
 $edgeSize = sqrt(count($tiles));
-
-// to be smart: a border tile has one edge that is not found anywhere -- flipped or regular!
-// AND edge tiles have two unmatched ones.
 
 // we deliberately check a -> b and then b -> a again, as we might need that for lookup later.
 $matchesPerTile = [];
@@ -31,24 +28,28 @@ $matchesPerTile[$k1] = [];
     }
 }
 
+/*
+$debug = [];
+foreach ($matchesPerTile as $tileK => $matchingTiles) {
+    $debug[$tileK] = count($matchingTiles);
+}
+
+print_r(array_count_values($debug));
+#die();
+*/
+
+
 $corners = [];
-$edges  = [];
 foreach ($matchesPerTile as $tileK => $matchingTiles) {
     if (count($matchingTiles) === 2) {
         $corners[$tileK] = $tiles[$tileK];
-        unset($tiles[$tileK]);
-    }
-    if (count($matchingTiles) === 3) {
-        $edges[$tileK] = $tiles[$tileK];
-        unset($tiles[$tileK]);
     }
 }
 
-// tiles is now only the center mass of 4-edge-matching tiles
+
+
 
 #print_r($corners);
-
-#echo count($edges);  // 4(0)?   !
 
 // pick any corner, make it 0, 0
 
@@ -56,11 +57,11 @@ $firstKey = array_key_first($corners);
 
 $grid = [
     0 => [
-        0 => $corners[$firstKey],
+        0 => clone $corners[$firstKey],
     ],
 ];
 
-unset ($corners[$firstKey]);
+unset ($tiles[$firstKey]);
 
 
 // find out which edges match
@@ -88,74 +89,59 @@ if ($topMatches && $leftMatches) {
 }
 
 
-// go for the first row, find 10 more tiles and their rotation and flippiness to match the upper edge, then match corner tile
-// match X times the right corner of the current one
-for ($x = 0; $x < $edgeSize-2; $x++) {
-    $cur = $grid[0][$x];
-    /**
-     * @var int $edgeKey
-     * @var Tile $edgeTile
-     */
-    foreach ($matchesPerTile[$cur->getId()] as $edgeKey => $edgeTile) {
-        if (!isset($edges[$edgeKey])) {
-            continue; // because not an edge, we can save the effort!
+// assemble the grid by matching the rows
+
+for ($y = 0; $y < $edgeSize; $y++) {
+    for ($x = 0; $x < $edgeSize; $x++) {
+        if ($x ===0 && $y === 0) {
+            continue;
         }
 
-        $rightEdge = $cur->getAppliedRight();
-        foreach ([false, true] as $flip) {
-            $edgeTile->setFlipped($flip);
-            foreach (Tile::ORIENTATIONS as $orientation) {
-                $edgeTile->setOrientation($orientation);
-                if ($rightEdge === $edgeTile->getAppliedLeft()) {
-                    $grid[0][$x+1] = $edgeTile;
-                    unset($edges[$edgeKey]);
-                    break 3;
+        if ($x === 0) {
+            $cur = $grid[$y-1][$x];
+            foreach ($matchesPerTile[$cur->getId()] as $tile) {
+                if (!isset($tiles[$tile->getId()])) {
+                    continue; // piece already taken rotating them would destroy the grid!
+                }
+
+                $bottomEdge = $cur->getAppliedBottom();
+                foreach ([false, true] as $flip) {
+                    $tile->setFlipped($flip);
+                    foreach (Tile::ORIENTATIONS as $orientation) {
+                        $tile->setOrientation($orientation);
+                        if ($bottomEdge === $tile->getAppliedTop()) {
+                            $grid[$y][$x] = $tile;
+                            unset($tiles[$tile->getId()]);
+                            continue 4;
+                        }
+                    }
                 }
             }
         }
-    }
-}
 
-// add top right corner
-$cur = $grid[0][$edgeSize-2];
-foreach ($matchesPerTile[$cur->getId()] as $edgeKey => $edgeTile) {
-    if (!isset($corners[$edgeKey])) {
-        continue; // because not a corner, we can save the effort!
-    }
-
-    $rightEdge = $cur->getAppliedRight();
-    foreach ([false, true] as $flip) {
-        $edgeTile->setFlipped($flip);
-        foreach (Tile::ORIENTATIONS as $orientation) {
-            $edgeTile->setOrientation($orientation);
-            if ($rightEdge === $edgeTile->getAppliedLeft()) {
-                $grid[0][$edgeSize-1] = $edgeTile;
-                unset($corners[$edgeKey]);
-                break 3;
-            }
-        }
-    }
-}
-
-// assemble all future rows by adding the only ones that can fit from their top layer
-// brute force without doing extra stuff for edges,  TABLEFLIP
-for ($y = 0; $y < $edgeSize -1; $y++) {
-    for ($x = 0; $x < $edgeSize; $x++) {
-       $cur = $grid[$y][$x];
-        foreach ($matchesPerTile[$cur->getId()] as $edgeKey => $edgeTile) {
-            if (!isset($edges[$edgeKey]) && !isset($corners[$edgeKey]) && !isset($tiles[$edgeKey])) {
-                continue; // because not an edge, we can save the effort!
+        $cur = $grid[$y][$x-1];
+        foreach ($matchesPerTile[$cur->getId()] as $tile) {
+            if (!isset($tiles[$tile->getId()])) {
+                continue; // pice already taken rotating them would destroy the grid!
             }
 
-            $bottomEdge = $cur->getAppliedBottom();
+            $rightEdge = $cur->getAppliedRight();
             foreach ([false, true] as $flip) {
-                $edgeTile->setFlipped($flip);
+                $tile->setFlipped($flip);
                 foreach (Tile::ORIENTATIONS as $orientation) {
-                    $edgeTile->setOrientation($orientation);
-                    if ($bottomEdge === $edgeTile->getAppliedTop()) {
-                        $grid[$y+1][$x] = $edgeTile;
-                        unset($edges[$edgeKey], $corners[$edgeKey], $tiles[$edgeKey]);
-                        break 3;
+                    $tile->setOrientation($orientation);
+                    if ($rightEdge === $tile->getAppliedLeft()) {
+/*                        if ($y > 0) {
+                            $bottomEdge = $grid[$y-1][$x]->getAppliedBottom();
+                            if ($bottomEdge !== $tile->getAppliedTop()) {
+                                continue;
+                            }
+                        }*/
+/*                        if (isset($grid[$y][$x])) {
+                            throw new RuntimeException('FUCK');
+                        }*/
+                        $grid[$y][$x] = clone $tile;
+                        unset($tiles[$tile->getId()]);
                     }
                 }
             }
@@ -164,6 +150,7 @@ for ($y = 0; $y < $edgeSize -1; $y++) {
 }
 
 
+/*
 //debug
 foreach ($grid as $row) {
     foreach ($row as $tile) {
@@ -171,7 +158,7 @@ foreach ($grid as $row) {
     }
     echo "\n";
 }
-
+*/
 
 // assemble image by returning the correct orientation and flip minus edges
 $bigGrid = [];
@@ -239,7 +226,7 @@ function huntMonsters(string $map): string
     return $map;
 }
 
-echo $mapWithHighlights;
+#echo $mapWithHighlights;
 
 echo "\n";
 $cnt = count_chars($mapWithHighlights, 1);
