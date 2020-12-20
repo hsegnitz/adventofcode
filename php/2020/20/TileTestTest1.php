@@ -35,7 +35,7 @@ Tile 9871:
 tile;
 
     const TILE3 = <<<tile
-Tile 9871:
+Tile 9841:
 .#..xba#..
 #.####...#
 .....#..##

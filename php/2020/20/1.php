@@ -17,7 +17,7 @@ foreach (explode("\n\n", $rawInput) as $rawTile) {
 // we deliberately check a -> b and then b -> a again, as we might need that for lookup later.
 $matchesPerTile = [];
 foreach ($tiles as $k1 => $tile1) {
-$matchesPerTile[$k1] = [];
+    $matchesPerTile[$k1] = [];
     foreach ($tiles as $k2 => $tile2) {
         if ($k1 === $k2) {
             continue;

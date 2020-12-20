@@ -22,13 +22,7 @@ class Tile {
     private string $bottom;
 
     private string $orientation = self::ORIENTATION_TOP;
-    private bool $flippedHorz = false;
-    private bool $flippedVert = false;
-
-    private ?Tile $topNeighbour;
-    private ?Tile $leftNeighbour;
-    private ?Tile $rightNeighbour;
-    private ?Tile $bottomNeighbour;
+    private bool $flipped = false;
 
     public function __construct(string $rawTile)
     {
@@ -48,38 +42,6 @@ class Tile {
     }
 
     /**
-     * @return Tile|null
-     */
-    public function getTopNeighbour(): ?Tile
-    {
-        return $this->topNeighbour;
-    }
-
-    /**
-     * @return Tile|null
-     */
-    public function getLeftNeighbour(): ?Tile
-    {
-        return $this->leftNeighbour;
-    }
-
-    /**
-     * @return Tile|null
-     */
-    public function getRightNeighbour(): ?Tile
-    {
-        return $this->rightNeighbour;
-    }
-
-    /**
-     * @return Tile|null
-     */
-    public function getBottomNeighbour(): ?Tile
-    {
-        return $this->bottomNeighbour;
-    }
-
-    /**
      * @return int
      */
     public function getId(): int
@@ -89,33 +51,21 @@ class Tile {
 
     public function getTop(): string
     {
-        if ($this->flippedHorz) {
-            return strrev($this->top);
-        }
         return $this->top;
     }
 
     public function getLeft(): string
     {
-        if ($this->flippedHorz) {
-            return $this->right;
-        }
         return $this->left;
     }
 
     public function getRight(): string
     {
-        if ($this->flippedHorz) {
-            return $this->left;
-        }
         return $this->right;
     }
 
     public function getBottom(): string
     {
-        if ($this->flippedHorz) {
-            return strrev($this->bottom);
-        }
         return $this->bottom;
     }
 
@@ -124,41 +74,166 @@ class Tile {
         $this->orientation = $orientation;
     }
 
-    public function setFlippedHorz(bool $flippedHorz): void
+    public function setFlipped(bool $flipped): void
     {
-        $this->flippedHorz = $flippedHorz;
+        $this->flipped = $flipped;
     }
 
-    public function setFlippedVert(bool $flippedVert): void
+    public function getOrientation(): string
     {
-        $this->flippedVert = $flippedVert;
+        return $this->orientation;
+    }
+
+    public function isFlipped(): bool
+    {
+        return $this->flipped;
+    }
+
+
+
+    /*
+     * returns the own matching edge's position with the foreign edge and flippiness.
+     * tB  =>  top edge matches the inverse of the foreign bottom edge
+     */
+    public function findMatchingEdgesAndOrientation(Tile $tile): ?string
+    {
+        $ownEdges = [
+            't' => $this->top,
+            'l' => $this->left,
+            'r' => $this->right,
+            'b' => $this->bottom,
+        ];
+        $foreignEdges = [
+            $tile->getTop() => 't',
+            $tile->getLeft() => 'l',
+            $tile->getRight() => 'r',
+            $tile->getBottom() => 'b',
+            strrev($tile->getTop()) => 'T',
+            strrev($tile->getLeft()) => 'L',
+            strrev($tile->getRight()) => 'R',
+            strrev($tile->getBottom()) => 'B',
+        ];
+
+        foreach ($ownEdges as $k => $edge) {
+            if (isset($foreignEdges[$edge])) {
+                return $k . $foreignEdges[$edge];
+            }
+        }
+        return null;
     }
 
     public function hasMatchingEdge(Tile $tile): bool
     {
-        $ownEdges = [
-            $this->top,
-            $this->left,
-            $this->right,
-            $this->bottom,
-        ];
-        $foreignEdges = [
-            $tile->getTop() => true,
-            $tile->getLeft() => true,
-            $tile->getRight() => true,
-            $tile->getBottom() => true,
-            strrev($tile->getTop()) => true,
-            strrev($tile->getLeft()) => true,
-            strrev($tile->getRight()) => true,
-            strrev($tile->getBottom()) => true,
-        ];
-
-        foreach ($ownEdges as $edge) {
-            if (isset($foreignEdges[$edge])) {
-                return true;
-            }
-        }
-        return false;
+        return null !== $this->findMatchingEdgesAndOrientation($tile);
     }
+
+    public function getAppliedTop(): string
+    {
+        switch ($this->getOrientation()) {
+            case self::ORIENTATION_TOP:
+                if ($this->isFlipped()) {
+                    return strrev($this->getTop());
+                }
+                return $this->getTop();
+            case self::ORIENTATION_LEFT:
+                if ($this->isFlipped()) {
+                    return $this->getLeft();
+                }
+                return $this->getRight();
+            case self::ORIENTATION_BOTTOM:
+                if ($this->isFlipped()) {
+                    return $this->getBottom();
+                }
+                return strrev($this->getBottom());
+            case self::ORIENTATION_RIGHT:
+                if ($this->isFlipped()) {
+                    return strrev($this->getRight());
+                }
+                return strrev($this->getLeft());
+        }
+        throw new RuntimeException('Are we in the right dimension?!');
+    }
+
+    public function getAppliedBottom(): string
+    {
+        switch ($this->getOrientation()) {
+            case self::ORIENTATION_TOP:
+                if ($this->isFlipped()) {
+                    return strrev($this->getBottom());
+                }
+                return $this->getBottom();
+            case self::ORIENTATION_LEFT:
+                if ($this->isFlipped()) {
+                    return $this->getRight();
+                }
+                return $this->getLeft();
+            case self::ORIENTATION_BOTTOM:
+                if ($this->isFlipped()) {
+                    return $this->getTop();
+                }
+                return strrev($this->getTop());
+            case self::ORIENTATION_RIGHT:
+                if ($this->isFlipped()) {
+                    return strrev($this->getLeft());
+                }
+                return strrev($this->getRight());
+        }
+        throw new RuntimeException('Are we in the right dimension?!');
+    }
+
+    public function getAppliedLeft(): string
+    {
+        switch ($this->getOrientation()) {
+            case self::ORIENTATION_TOP:
+                if ($this->isFlipped()) {
+                    return $this->getRight();
+                }
+                return $this->getLeft();
+            case self::ORIENTATION_LEFT:
+                if ($this->isFlipped()) {
+                    return $this->getTop();
+                }
+                return strrev($this->getTop());
+            case self::ORIENTATION_BOTTOM:
+                if ($this->isFlipped()) {
+                    return strrev($this->getLeft());
+                }
+                return strrev($this->getRight());
+            case self::ORIENTATION_RIGHT:
+                if ($this->isFlipped()) {
+                    return strrev($this->getBottom());
+                }
+                return $this->getBottom();
+        }
+        throw new RuntimeException('Are we in the right dimension?!');
+    }
+
+    public function getAppliedRight(): string
+    {
+        switch ($this->getOrientation()) {
+            case self::ORIENTATION_TOP:
+                if ($this->isFlipped()) {
+                    return $this->getLeft();
+                }
+                return $this->getRight();
+            case self::ORIENTATION_LEFT:
+                if ($this->isFlipped()) {
+                    return $this->getBottom();
+                }
+                return strrev($this->getBottom());
+            case self::ORIENTATION_BOTTOM:
+                if ($this->isFlipped()) {
+                    return strrev($this->getRight());
+                }
+                return strrev($this->getLeft());
+            case self::ORIENTATION_RIGHT:
+                if ($this->isFlipped()) {
+                    return strrev($this->getTop());
+                }
+                return $this->getTop();
+        }
+        throw new RuntimeException('Are we in the right dimension?!');
+    }
+
 
 }
