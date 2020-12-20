@@ -37,8 +37,8 @@ class Tile {
 
         $this->top    = implode('', $this->content[0]);
         $this->left   = implode('', array_column($this->content, 0));
-        $this->right  = implode('', array_column($this->content, 9));
-        $this->bottom = implode('', $this->content[9]);
+        $this->right  = implode('', array_column($this->content, count($this->content)-1));
+        $this->bottom = implode('', $this->content[count($this->content)-1]);
     }
 
     /**
@@ -98,10 +98,10 @@ class Tile {
     public function findMatchingEdgesAndOrientation(Tile $tile): ?string
     {
         $ownEdges = [
-            't' => $this->top,
-            'l' => $this->left,
-            'r' => $this->right,
-            'b' => $this->bottom,
+            't' => $this->getAppliedTop(),
+            'l' => $this->getAppliedLeft(),
+            'r' => $this->getAppliedRight(),
+            'b' => $this->getAppliedBottom(),
         ];
         $foreignEdges = [
             $tile->getTop() => 't',
@@ -235,5 +235,72 @@ class Tile {
         throw new RuntimeException('Are we in the right dimension?!');
     }
 
+    public function getCroppedAndAlignedContent(): array
+    {
+        $cropped = [];
+        for ($y = 1; $y < count($this->content)-1; $y++) {
+            $cropped[] = array_slice($this->content[$y], 1, count($this->content[$y]) - 2);
+        }
 
+        if ($this->getOrientation() === self::ORIENTATION_TOP) {
+            if ($this->isFlipped()) {
+                return $this->flipCols($cropped);
+            }
+            return $cropped;
+        }
+
+        if ($this->getOrientation() === self::ORIENTATION_BOTTOM)
+        {
+            if ($this->isFlipped()) {
+                return array_reverse($cropped);
+            }
+            return array_reverse($this->flipCols($cropped));
+        }
+
+        if ($this->isFlipped()) {
+            $cropped = $this->flipCols($cropped);
+        }
+
+        if ($this->getOrientation() === self::ORIENTATION_LEFT)
+        {
+            return $this->rotateLeft($cropped);
+        }
+
+        return $this->rotateRight($cropped);
+    }
+
+    private function flipCols($grid): array
+    {
+        $newCropped = [];
+        foreach ($grid as $row) {
+            $newCropped[] = array_reverse($row);
+        }
+        return $newCropped;
+    }
+
+    private function rotateLeft($grid): array
+    {
+        $new = [];
+        $len = count($grid);
+
+        for ($y = 0; $y < $len; $y++) {
+            for ($x = 0; $x < $len; $x++) {
+                $new[$y][$x] = $grid[$x][$len-1-$y];
+            }
+        }
+        return $new;
+    }
+
+    private function rotateRight($grid): array
+    {
+        $new = [];
+        $len = count($grid);
+
+        for ($y = 0; $y < $len; $y++) {
+            for ($x = 0; $x < $len; $x++) {
+                $new[$y][$x] = $grid[$len-1-$x][$y];
+            }
+        }
+        return $new;
+    }
 }

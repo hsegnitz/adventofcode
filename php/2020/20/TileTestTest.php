@@ -99,4 +99,41 @@ tile;
         $this->assertEquals(self::EDGE_RIGHT_FLIPPED, $tile->getAppliedRight());
     }
 
+    public function testCroppedContentFacingTop(): void
+    {
+        $tile = new Tile(self::TILE);
+        $expected = $this->getContentAsArray();
+        $this->assertEquals($expected, $tile->getCroppedAndAlignedContent());
+
+        $expected = array_map("array_reverse", $expected);
+        $tile->setFlipped(true);
+        $this->assertEquals($expected, $tile->getCroppedAndAlignedContent());
+    }
+
+    public function testCroppedContentFacingBottom(): void
+    {
+        $tile = new Tile(self::TILE);
+        $tile->setOrientation(Tile::ORIENTATION_BOTTOM);
+        $expected = array_reverse(array_map("array_reverse", $this->getContentAsArray()));
+        $this->assertEquals($expected, $tile->getCroppedAndAlignedContent());
+
+        $expected = array_map("array_reverse", $expected);
+        $tile->setFlipped(true);
+        $this->assertEquals($expected, $tile->getCroppedAndAlignedContent());
+    }
+
+    private function getContentAsArray(): array
+    {
+        return [
+            str_split('#..#....'),
+            str_split('...##..#'),
+            str_split('###.#...'),
+            str_split('#.##.###'),
+            str_split('#...#.##'),
+            str_split('#.#.#..#'),
+            str_split('.#....#.'),
+            str_split('##...#.#'),
+        ];
+    }
 }
+
