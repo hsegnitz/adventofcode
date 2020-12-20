@@ -192,21 +192,59 @@ foreach ($grid as $row) {
     // $bigGrid[] = [];
 }
 
+// just for show!
+$monster = <<<MONSTER
+                  # 
+#    ##    ##    ###
+ #  #  #  #  #  #   
+MONSTER;
 
-/*
-$bigGrid = flip($bigGrid);
-$bigGrid = rotateLeft($bigGrid);
-*/
+
+foreach ([false, true] as $flip) {
+    if ($flip) {
+        $bigGrid = flip($bigGrid);
+    }
+    foreach ([0, 1, 2, 3] as $numRot) {   // the fourth iteration rotates back to original, so the first is already rotated, who cares, right?
+        $bigGrid = rotateLeft($bigGrid);
+        $mapAsString = '';
+        foreach ($bigGrid as $row) {
+            $mapAsString .= implode('', $row) . "\n";
+        }
+        $mapWithHighlights = huntMonsters($mapAsString);
+        if ($mapWithHighlights !== $mapAsString) {
+            break 2;
+        }
+    }
+}
 
 //debug
-foreach ($bigGrid as $row) {
-    echo implode('', $row), "\n";
+//echo $mapAsString, "\n";
+
+
+// this is almost silly, but well, who doesn't love their regex!
+function huntMonsters(string $map): string
+{
+    $depth = strpos($map, "\n") - 20;
+
+    $replace = '\1O\2O\3OO\4OO\5OOO\6O\7O\8O\9O\10O\11O\12';
+
+    for ($i = 0; $i < $depth; $i++) {
+        $search = "/(.{{$i}}.{18})#(..*\n.{{$i}})#(....)##(....)##(....)###(.*\n.{{$i}}.)#(..)#(..)#(..)#(..)#(..)#(.)/";
+        $count = 1;
+        while ($count > 0) {
+            $map = preg_replace($search, $replace, $map, -1, $count);
+        }
+    }
+
+    return $map;
 }
+
+echo $mapWithHighlights;
+
 echo "\n";
+$cnt = count_chars($mapWithHighlights, 1);
 
-
-
-
+echo $cnt[ord('#')];
 
 
 
