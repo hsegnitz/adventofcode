@@ -17,6 +17,16 @@ class Program {
         $this->weight = $weight;
     }
 
+    // this is total, including children!
+    public function getTotalWeight(): int
+    {
+        $weight = $this->weight;
+        foreach ($this->children as $child) {
+            $weight += $child->getTotalWeight();
+        }
+        return $weight;
+    }
+
     public function getWeight(): int
     {
         return $this->weight;
@@ -46,6 +56,34 @@ class Program {
     {
         $child->setParent($this);
         $this->children[$child->getName()] = $child;
+    }
+
+    public function isStable(): bool
+    {
+        if (count($this->children) <= 1) {
+            return true;
+        }
+
+        $weights = [];
+        foreach ($this->children as $child) {
+            $weights[] = $child->getTotalWeight();
+        }
+
+        $first = array_pop($weights);
+        foreach ($weights as $weight) {
+            if ($weight !== $first) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @return Program[]
+     */
+    public function getChildren(): array
+    {
+        return $this->children;
     }
 }
 
@@ -83,6 +121,34 @@ foreach ($allPrograms as $program) {
         break;
     }
 }
+
+// find one that is stable but the parent isn't.
+foreach ($allPrograms as $program) {
+    if (!$program->hasParent()) {
+        continue;
+    }
+
+    if ($program->isStable() && !$program->getParent()->isStable()) {
+        $unstableParent = $program->getParent();
+        break;
+    }
+}
+
+$weights = [];
+foreach ($unstableParent->getChildren() as $child) {
+    $weights[$child->getName()] = $child->getTotalWeight();
+}
+
+$counts = array_count_values($weights);
+
+#print_r($counts);
+$oddValue = array_flip($counts)[1];
+unset($counts[$oddValue]);
+$conformingValue = array_keys($counts)[0];
+
+$oddChild = $allPrograms[array_flip($weights)[$oddValue]];
+
+echo $oddChild->getWeight() + ($conformingValue - $oddValue), "\n";
 
 
 echo "total time: ", (microtime(true) - $startTime), "\n";
