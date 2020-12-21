@@ -6,7 +6,7 @@ $banks = explode("\t", file_get_contents(__DIR__ . '/in.txt'));
 $banks = array_map('intval', $banks);
 
 $seen = [
-    $hash = implode('|', $banks) => true,
+    $hash = implode('|', $banks) => 0,
 ];
 
 $cycles = 0;
@@ -19,12 +19,16 @@ while (true) {
     if (isset($seen[$hash])) {
         break;
     }
-    $seen[$hash] = true;
+    $seen[$hash] = $cycles;
 }
 
 #print_r($seen);
 
 echo $cycles, "\n";
+
+echo "Part 2: first duplicate 'hash': ", $hash, "\n", ($cycles - $seen[$hash]), "\n";
+
+
 
 echo "total time: ", (microtime(true) - $startTime), "\n";
 
