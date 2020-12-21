@@ -87,9 +87,11 @@ Before you're ready to help them, you need to make sure your information is corr
             }
         }
 
+        Program root;
         for (Map.Entry<String, Program> e: fullList.entrySet()) {
             if (!e.getValue().hasParent()) {
-                System.out.println(e.getValue().getName());
+                root = e.getValue();
+                System.out.println(root.getName());
             }
         }
     }
@@ -129,6 +131,8 @@ Before you're ready to help them, you need to make sure your information is corr
             child.setParent(this);
             this.children.put(child.getName(), child);
         }
+
+        
     }
 
 }
