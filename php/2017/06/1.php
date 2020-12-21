@@ -2,7 +2,7 @@
 
 $startTime = microtime(true);
 
-$banks = explode("\t", file_get_contents(__DIR__ . '/demo.txt'));
+$banks = explode("\t", file_get_contents(__DIR__ . '/in.txt'));
 $banks = array_map('intval', $banks);
 
 $seen = [
@@ -22,7 +22,7 @@ while (true) {
     $seen[$hash] = true;
 }
 
-print_r($seen);
+#print_r($seen);
 
 echo $cycles, "\n";
 
@@ -36,21 +36,8 @@ function distribute (array $banks): array
     $toSpread = $banks[$indexOfLargest];
     $banks[$indexOfLargest] = 0;
 
-    $incrBy = (int)ceil($toSpread / $numBanks);
-
-    if ($toSpread % $numBanks === 0) {
-        foreach ($banks as &$value) {
-            $value += $incrBy;
-        }
-        return $banks;
-    }
-
-    for ($i = $indexOfLargest + 1; $i <= $indexOfLargest + ($toSpread % $numBanks); $i++) {
-        $banks[$i % $numBanks] += $incrBy;
-    }
-
-    for ($j = $i % $numBanks; $j <= $indexOfLargest; $j++) {
-        $banks[$j] += $incrBy -1;
+    for ($i = $indexOfLargest + 1; $i <= $indexOfLargest + $toSpread; $i++) {
+        ++$banks[$i % $numBanks];
     }
 
     return $banks;
