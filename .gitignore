@@ -3,3 +3,7 @@ vendor
 java/.gradle/
 
 java/build/
+
+php/.phpunit.result.cache
+
+php/tools/
