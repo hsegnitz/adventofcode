@@ -5,7 +5,7 @@ $startTime = microtime(true);
 $player1 = [];
 $player2 = [];
 
-[$rawPlayer1, $rawPlayer2] = explode("\n\n", trim(file_get_contents(__DIR__ . '/demo.txt')));
+[$rawPlayer1, $rawPlayer2] = explode("\n\n", trim(file_get_contents(__DIR__ . '/in.txt')));
 
 $split = explode("\n", $rawPlayer1);
 array_shift($split);
@@ -20,17 +20,14 @@ $player2 = array_map("intval", $split);
 // return ["player(1|2)", [...cards...]]
 function playGame(array $player1, array $player2): array
 {
-    $seen1 = [];
-    $seen2 = [];
+    $seen = [];
     while (true) {
-        $hash1 = implode(",", $player1);
-        $hash2 = implode(",", $player2);
-        if (isset($seen1[$hash1]) || isset($seen2[$hash2])) {
+        $hash = implode(",", $player1) . '|' . implode(",", $player2);
+        if (isset($seen[$hash])) {
             #echo "Player 1 wins";
             return ["player1", $player1];
         }
-        $seen1[$hash1] = true;
-        $seen2[$hash2] = true;
+        $seen[$hash] = true;
 
         $card1 = array_shift($player1);
         $card2 = array_shift($player2);
