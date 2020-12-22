@@ -197,15 +197,41 @@ class ScramblerFactory
     }
 }
 
-//$password = 'abcde';
-$password = 'abcdefgh';
+class HashAlgo
+{
+    /** @var Scrambler[] */
+    private array $scramblers = [];
 
-foreach (file(__DIR__ . '/in.txt') as $row) {
-    $scrambler = ScramblerFactory::getScrambler($row);
-    echo $password = $scrambler->process($password), "  (", trim($row), ")\n";
+    public function __construct(array $instructions)
+    {
+        foreach ($instructions as $row) {
+            $this->scramblers[] = ScramblerFactory::getScrambler($row);
+        }
+    }
+
+    public function __invoke(string $input): string
+    {
+        foreach ($this->scramblers as $scrambler) {
+            $input = $scrambler->process($input);
+        }
+        return $input;
+    }
 }
 
 
+//$password = 'abcde';
+$password = 'abcdefgh';
 
+$hashAlgo = new HashAlgo(file(__DIR__ . '/in.txt'));
+
+echo $hashAlgo($password), "\n";
+
+$count = 0;
+$expect = 'fbgdceah';
+while (($hash = $hashAlgo($password)) !== $expect) {
+    ++$count;
+    $password = str_shuffle($password);
+}
+echo $password, "\n", $count;
 
 echo "\ntotal time: ", (microtime(true) - $startTime), "\n";
