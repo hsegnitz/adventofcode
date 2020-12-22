@@ -1,0 +1,14 @@
+version: '3.3'
+
+services:
+  aoc:
+    build: .
+    volumes:
+      - type: bind
+        source: .
+        target: /var/www
+        read_only: false
+    networks:
+      default:
+        aliases:
+          - aoc.local
