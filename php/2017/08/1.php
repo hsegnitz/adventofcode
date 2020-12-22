@@ -5,6 +5,7 @@ $startTime = microtime(true);
 $input = file(__DIR__ . '/in.txt');
 
 $registers = [];
+$allTimeMax = PHP_INT_MIN;
 foreach ($input as $line) {
     [$registerToModify, $incDec, $diff, $if, $registerToCheck, $comparison, $valueToCheck] = explode(" ", trim($line));
     if ($if !== 'if') {
@@ -55,9 +56,12 @@ foreach ($input as $line) {
         default:
             throw new RuntimeException('WTF?! ' . $comparison);
     }
+    $allTimeMax = max($allTimeMax, ...array_values($registers));
 }
 
-echo max($registers), "\n";
+echo "Part 1: ", max($registers), "\n";
+echo "Part 2: ", $allTimeMax, "\n";
+
 
 
 echo "total time: ", (microtime(true) - $startTime), "\n";
