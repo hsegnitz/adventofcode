@@ -10,7 +10,7 @@ $gg = new GarbageGourmet($input);
 
 echo $gg->score(), "\n";
 
-
+echo $gg->getGarbageSize(), "\n";
 
 echo "total time: ", (microtime(true) - $startTime), "\n";
 
