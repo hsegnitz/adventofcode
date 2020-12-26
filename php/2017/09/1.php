@@ -4,7 +4,11 @@ require __DIR__ . '/GarbageGourmet.php';
 
 $startTime = microtime(true);
 
-$input = file(__DIR__ . '/in.txt');
+$input = trim(file_get_contents(__DIR__ . '/in.txt'));
+
+$gg = new GarbageGourmet($input);
+
+echo $gg->score(), "\n";
 
 
 
