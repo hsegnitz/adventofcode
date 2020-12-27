@@ -2,67 +2,48 @@
 
 use JetBrains\PhpStorm\Pure;
 
+// double height grid
+// https://www.redblobgames.com/grids/hexagons/#distances
+
 class HexGrid
 {
-    private int $posQ;
-    private int $posR;
+    private int $x;
+    private int $y;
 
-    public function __construct(int $posQ = 0, int $posR = 0)
+    public function __construct(int $x = 0, int $y = 0)
     {
-        $this->posQ = $posQ;
-        $this->posR = $posR;
+        $this->x = $x;
+        $this->y = $y;
     }
 
     private function step(string $direction): void
     {
         switch ($direction) {
             case "n":
-                --$this->posR;
+                $this->y -= 2;
                 break;
             case "s":
-                ++$this->posR;
+                $this->y += 2;
                 break;
             case "nw":
-                $this->posR -= ($this->posQ % 2 === 0) ? 1 : 0;
-                --$this->posQ;
+                --$this->x;
+                --$this->y;
                 break;
             case "sw":
-                $this->posR += $this->posQ % 2;
-                --$this->posQ;
+                --$this->x;
+                ++$this->y;
                 break;
             case "ne":
-                $this->posR -= ($this->posQ % 2 === 0) ? 1 : 0;
-                ++$this->posQ;
+                ++$this->x;
+                --$this->y;
                 break;
             case "se":
-                $this->posR += $this->posQ % 2;
-                ++$this->posQ;
+                ++$this->x;
+                ++$this->y;
                 break;
             default:
                 throw new RuntimeException('WTF?|' . $direction);
         }
-    }
-
-    private function hexDistance(int $aq, int $ar, int $bq, int $br): int
-    {
-        [$ax, $ay, $az] = $this->oddq2cube($aq, $ar);
-        [$bx, $by, $bz] = $this->oddq2cube($bq, $br);
-        return $this->cubeDistance($ax, $ay, $az, $bx, $by, $bz);
-    }
-
-    #[Pure]
-    private function cubeDistance(int $ax, int $ay, int $az, int $bx, int $by, int $bz): int
-    {
-        return (abs($ax - $bx) + abs($ay - $by) + abs($az - $bz)) / 2;
-    }
-
-    private function oddq2cube(int $q, int $r): array
-    {
-        $x = $q;
-        $z = $r - ($x - ($x&1)) / 2;
-        $y = - $x-$z;
-
-        return [$x, $y, $z];
     }
 
     public function path(string $instructions): void
@@ -72,8 +53,11 @@ class HexGrid
         }
     }
 
-    public function getDistanceTo(int $refQ = 0, int $refR = 0): int
+    #[Pure]
+    public function getDistanceTo(int $refX = 0, int $refY = 0): int
     {
-        return $this->hexDistance($this->posQ, $this->posR, $refQ, $refR);
+        $dx = abs($this->x - $refX);
+        $dy = abs($this->y - $refY);
+        return $dx + max (0, ($dy-$dx)/2);
     }
 }

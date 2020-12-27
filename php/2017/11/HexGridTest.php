@@ -34,10 +34,10 @@ class HexGridTest extends TestCase
     {
         return [
             [0,  0,  0],
-            [1,  0,  1],
+            [1,  0,  2],
             [1,  1,  0],
             [1,  1, -1],
-            [1,  0, -1],
+            [1,  0, -2],
             [1, -1,  0],
             [1, -1, -1],
             [2,  2,  1],
@@ -48,9 +48,15 @@ class HexGridTest extends TestCase
     {
         return [
             ['ne,ne,ne', 3],
+            ['se,se,se', 3],
             ['ne,ne,sw,sw', 0],
             ['ne,ne,s,s', 2],
+            ['nw,nw', 2],
+            ['sw,sw', 2],
+            ['n', 1],
+            ['s', 1],
             ['se,sw,se,sw,sw', 3],
+            ['ne,se,ne,se,ne,se', 6],
         ];
     }
 }
