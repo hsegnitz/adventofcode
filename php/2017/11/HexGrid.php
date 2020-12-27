@@ -9,6 +9,7 @@ class HexGrid
 {
     private int $x;
     private int $y;
+    private int $maxDistance = 0;
 
     public function __construct(int $x = 0, int $y = 0)
     {
@@ -50,6 +51,7 @@ class HexGrid
     {
         foreach (explode(',', $instructions) as $direction) {
             $this->step($direction);
+            $this->maxDistance = max($this->maxDistance, $this->getDistanceTo());
         }
     }
 
@@ -60,4 +62,10 @@ class HexGrid
         $dy = abs($this->y - $refY);
         return $dx + max (0, ($dy-$dx)/2);
     }
+
+    public function getMaxDistance(): int
+    {
+        return $this->maxDistance;
+    }
+
 }
