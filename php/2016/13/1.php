@@ -2,7 +2,8 @@
 
 // "1" == asc(49)
 
-class PathFinder {
+class PathFinder
+{
 
     private int $seed;
     private int $targetX;
@@ -16,7 +17,7 @@ class PathFinder {
 
     public function __construct(int $seed, int $targetX, int $targetY)
     {
-        $this->seed    = $seed;
+        $this->seed = $seed;
         $this->targetX = $targetX;
         $this->targetY = $targetY;
     }
@@ -90,6 +91,18 @@ class PathFinder {
 
         return min($results);
     }
+
+    public function countVisitedSpots(int $maxDistance): int
+    {
+        $count = 0;
+        foreach ($this->visitedSpots as $spot => $distance) {
+            if ($distance > $maxDistance) {
+                continue;
+            }
+            ++$count;
+        }
+        return $count;
+    }
 }
 
 //$pathFinder = new PathFinder(10, 1, 1);
@@ -102,6 +115,8 @@ class PathFinder {
 /*  */
 $pathFinder = new PathFinder(1350, 31, 39);
 echo $pathFinder->walk(1, 1, 0), "\n";
+echo $pathFinder->countVisitedSpots(50), "\n";
+
 /*   * /
 for ($y = 0; $y < 50; $y++) {
     for ($x = 0; $x < 50; $x++) {
