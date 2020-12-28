@@ -2,18 +2,17 @@
 
 // "1" == asc(49)
 
-// we (try to) solve this with recursion!!!111oneeleven
-// we keep a list of already visited places and how many steps away they are.
-// we check if we can walk into a direction and if that direction hasn't been visited before
-// if it is so, we return back. When the right coordinates are found, we DIE with distance.
-
 class PathFinder {
 
     private int $seed;
     private int $targetX;
     private int $targetY;
 
+    private array $map = [];
+
     private array $visitedSpots = [];
+
+    private int $shortestPath = PHP_INT_MAX;
 
     public function __construct(int $seed, int $targetX, int $targetY)
     {
@@ -22,44 +21,51 @@ class PathFinder {
         $this->targetY = $targetY;
     }
 
-    private function isOpen(int $x, int $y): bool
+    public function isOpen(int $x, int $y): bool
     {
-        $num = ($x * $x) + (3 * $x) + (2 * $x * $y) + $y + ($y * $y);
-        $num += $this->seed;
-        $binary = base_convert($num, 10, 2);
-        $chars = count_chars($binary, 1);
-        return $chars[49] % 2 === 0;
+        if (!isset($this->map[$y][$x])) {
+            if (!isset($this->map[$y])) {
+                $this->map[$y] = [];
+            }
+            $num = ($x * $x) + (3 * $x) + (2 * $x * $y) + $y + ($y * $y);
+            $num += $this->seed;
+            $binary = base_convert($num, 10, 2);
+            $chars = count_chars($binary, 1);
+            $this->map[$y][$x] = ($chars[49] % 2 === 0);
+        }
+
+        return $this->map[$y][$x];
     }
 
-    private function hasBeenAlreadyVisited(int $x, int $y, int $newDistance): bool
+    private function registerVisitedAndGetDistance(int $x, int $y, int $newDistance): int
     {
-        if (!isset($this->visitedSpots[$y])) {
-            $this->visitedSpots[$y] = [
-                $x => $newDistance
-            ];
-            return false;
+        $coord = "{$x},{$y}";
+        if (!isset($this->visitedSpots[$coord])) {
+            $this->visitedSpots[$coord] = $newDistance;
+            return PHP_INT_MAX;
         }
-        if (!isset($this->visitedSpots[$y][$x])) {
-            $this->visitedSpots[$y][$x] = $newDistance;
-            return false;
-        }
-        $this->visitedSpots[$y][$x] = min($this->visitedSpots[$y][$x], $newDistance);
-        return true;
+        $this->visitedSpots[$coord] = min($newDistance, $this->visitedSpots[$coord]);
+        return $this->visitedSpots[$coord];
     }
 
     public function walk(int $x, int $y, int $newDistance): int
     {
         if ($this->targetX === $x && $this->targetY === $y) {
-            return $newDistance;
+            $this->shortestPath = min($newDistance, $this->shortestPath);
+            return $this->shortestPath;
         }
 
-        if (!$this->isOpen($x, $y)) {
+        // either too far away or a wall
+        if ($newDistance > 200 || !$this->isOpen($x, $y)) {
             return 0;
         }
 
-        if ($this->hasBeenAlreadyVisited($x, $y, $newDistance)) {
+        // if not visited, we get PHP_INT_MAX so this means we continue from here as we obviously found a shorter path
+        if ($newDistance > $this->registerVisitedAndGetDistance($x, $y, $newDistance)) {
             return 0;
         }
+
+        #echo $x, ",", $y, "\n";
 
         $results = [];
         if (($x > 0) && 0 < ($temp = $this->walk($x - 1, $y, $newDistance + 1))) {
@@ -86,10 +92,20 @@ class PathFinder {
     }
 }
 
-/*
+//$pathFinder = new PathFinder(10, 1, 1);
+//echo $pathFinder->walk(1, 1, 1), "\n";
+
+#$pathFinder = new PathFinder(10, 7, 4);
+#echo $pathFinder->walk(1, 1, 0), "\n";
+
+
+/*  */
+$pathFinder = new PathFinder(1350, 31, 39);
+echo $pathFinder->walk(1, 1, 0), "\n";
+/*   * /
 for ($y = 0; $y < 50; $y++) {
     for ($x = 0; $x < 50; $x++) {
-        if (isOpen($x, $y)) {
+        if ($pathFinder->isOpen($x, $y)) {
             echo ".";
         } else {
             echo "#";
@@ -97,13 +113,5 @@ for ($y = 0; $y < 50; $y++) {
     }
     echo "\n";
 }
-*/
 
-//$pathFinder = new PathFinder(10, 1, 1);
-//echo $pathFinder->walk(1, 1, 1), "\n";
-
-//$pathFinder = new PathFinder(10, 7, 4);
-//echo $pathFinder->walk(1, 1, 0), "\n";
-
-$pathFinder = new PathFinder(1350, 31, 39);
-echo $pathFinder->walk(1, 1, 0), "\n";
+/*   */
