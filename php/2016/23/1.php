@@ -2,13 +2,13 @@
 
 $program = [];
 $register = [
-    'a' => 0,
+    'a' => 7,
     'b' => 0,
     'c' => 0,
     'd' => 0,
 ];
 
-foreach (file(__DIR__ . '/demo.txt') as $row) {
+foreach (file(__DIR__ . '/in.txt') as $row) {
     $program[] = explode(' ', trim($row));
 }
 
