@@ -3,7 +3,7 @@
 $startTime = microtime(true);
 
 $map = [];
-foreach (file(__DIR__ . '/demo.txt') as $line) {
+foreach (file(__DIR__ . '/in.txt') as $line) {
     $map[] = str_split(trim($line));
 }
 
@@ -20,8 +20,8 @@ foreach ($map as $rowNum => $row) {
 }
 
 #print_r($specialCoords);
-
-// find the shortest routes between those coords  (from day 13?)
+#die();
+// find the shortest routes between those coords  (from day 13?) -- needs optimisation
 class PathFinder
 {
     private array $map;
@@ -46,14 +46,6 @@ class PathFinder
         $this->targetY = $targetY;
     }
 
-    public function isOpen(int $x, int $y): bool
-    {
-        if (!isset($this->map[$y][$x])) {
-            throw new OutOfBoundsException('wandering off the map, do we?');
-        }
-        return $this->map[$y][$x] !== '#';
-    }
-
     private function registerVisitedAndGetDistance(int $x, int $y, int $newDistance): int
     {
         $coord = "{$x},{$y}";
@@ -73,13 +65,13 @@ class PathFinder
         }
 
         // either too far away or a wall
-        if ($newDistance > 500 || !$this->isOpen($x, $y)) {
-            return 0;
+        if ($newDistance > 4000 || $this->map[$y][$x] === '#') {
+            return 5000;
         }
 
         // if not visited, we get PHP_INT_MAX so this means we continue from here as we obviously found a shorter path
-        if ($newDistance > $this->registerVisitedAndGetDistance($x, $y, $newDistance)) {
-            return 0;
+        if ($newDistance >= $this->registerVisitedAndGetDistance($x, $y, $newDistance)) {
+            return 5000;
         }
 
         #echo $x, ",", $y, "\n";
@@ -102,7 +94,7 @@ class PathFinder
         }
 
         if ($results === []) {
-            return 0;
+            return 5000;
         }
 
         return min($results);
@@ -112,6 +104,7 @@ class PathFinder
 $pathFinder = new PathFinder($map);
 
 $distances = [];
+
 foreach ($specialCoords as $a => $ca) {
     foreach ($specialCoords as $b => $cb) {
         if ($a === $b) {
@@ -128,6 +121,23 @@ foreach ($specialCoords as $a => $ca) {
         $distances[$b][$a] = $distance;
     }
 }
+
+/*
+$chain = [0, 1, 6, 4, 5, 7, 3, 2];
+
+$prev = array_shift($chain);
+
+while (null !== ($next = array_shift($chain))) {
+    $pathFinder->setTarget($specialCoords[$prev]['col'], $specialCoords[$prev]['row']);
+    $distance = $pathFinder->walk($specialCoords[$next]['col'], $specialCoords[$next]['row'], 0);
+    $distances[$prev][$next] = $distance;
+    $distances[$next][$prev] = $distance;
+    $prev = $next;
+}
+/* * /
+ print_r($distances);
+ die();
+*/
 
 // travelling salesman brute force
 
@@ -166,11 +176,14 @@ foreach ($paths as $path) {
     if ($path[0] !== 0) {
         continue;
     }
-    $allDistances[] = totalDistance($path);
+    $td = totalDistance($path);
+    if ($td < 1094) {
+        $allDistances[$td] = $path;
+    }
 }
 
 print_r($allDistances);
 
-echo min($allDistances);
+echo min(array_keys($allDistances));
 
 echo "\ntotal time: ", (microtime(true) - $startTime), "\n";
