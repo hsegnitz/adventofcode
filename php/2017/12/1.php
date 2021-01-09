@@ -3,7 +3,7 @@
 $startTime = microtime(true);
 
 $pipes = [];
-foreach (file(__DIR__ . '/demo.txt') as $num => $rawLine) {
+foreach (file(__DIR__ . '/in.txt') as $num => $rawLine) {
     if (preg_match('/(\d+) <-> ([\d, ]+)/', $rawLine, $out)) {
         $pipes[$out[1]] = explode(', ', $out[2]);
     } else {
