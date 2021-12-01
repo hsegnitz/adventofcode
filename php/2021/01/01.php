@@ -1,9 +1,9 @@
 <?php
 
+$startTime = microtime(true);
+
 #$input = file('./example.txt');
 $input = file('./in.txt');
-
-print_r($input);
 
 $count = 0;
 
@@ -13,4 +13,5 @@ for($i = 1, $iMax = count($input); $i < $iMax; $i++) {
     }
 }
 
-echo $count;
+echo $count, "\ntotal time: ", (microtime(true) - $startTime), "\n";
+

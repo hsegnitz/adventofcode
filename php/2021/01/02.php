@@ -1,20 +1,17 @@
 <?php
 
+$startTime = microtime(true);
+
 #$input = file('./example.txt');
 $input = file('./in.txt');
 
 $count = 0;
 
 for($i = 3, $iMax = count($input); $i < $iMax; $i++) {
-    $sumA = array_sum(
-        array_slice($input, $i-3, 3)
-    );
-    $sumB = array_sum(
-        array_slice($input, $i-2, 3)
-    );
-    if ($sumA < $sumB) {
+    if ((int)$input[$i-3] < (int)$input[$i]) {
         $count++;
     }
 }
 
-echo $count;
+echo $count, "\ntotal time: ", (microtime(true) - $startTime), "\n";
+
