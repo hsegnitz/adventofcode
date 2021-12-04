@@ -17,14 +17,18 @@ foreach($input as $row) {
     $scanners[] = new scanner((int)$split[0], (int)$split[1]);
 }
 
-$tripSeverity = 0;
-foreach ($scanners as $scanner) {
-    if ($scanner->isHitWhenStartedAt(0)) {
-        $tripSeverity += $scanner->getSeverity();
+$delay = -1;
+while (true) {
+    $delay++;
+    foreach ($scanners as $scanner) {
+        if ($scanner->isHitWhenStartedAt($delay)) {
+            continue 2;
+        }
     }
+    break;
 }
 
-echo $tripSeverity;
+echo $delay;
 
 echo "\ntotal time: ", number_format(microtime(true) - $startTime, 6), "\n";
 
