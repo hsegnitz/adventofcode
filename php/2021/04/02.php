@@ -2,41 +2,6 @@
 
 $startTime = microtime(true);
 
-#$input = file('./example.txt');
-$input = file('./in.txt');
-
-$first = array_shift($input);
-$numbers = explode(",", trim($first));
-
-$rawBoards = array_chunk($input, 6);
-
-$boards = [];
-foreach ($rawBoards as $rawBoard) {
-    array_shift($rawBoard);
-    $boards[] = new board($rawBoard);
-}
-
-$boardsWinAfter = [];
-foreach ($boards as $board) {
-    foreach ($numbers as $numNum => $num) {
-        $board->registerNumber((int)$num);
-        if ($board->isWinner()) {
-            $boardsWinAfter[$numNum] = $board;
-            break;
-        }
-    }
-}
-
-ksort($boardsWinAfter);
-
-/** @var board $last */
-$last = array_pop($boardsWinAfter);
-
-$result = $last->getScore();
-
-echo $result, "\ntotal time: ", (microtime(true) - $startTime), "\n";
-
-
 
 class board {
 
@@ -104,3 +69,40 @@ class board {
         return $this->lastNumber * $this->getSumUnmarked();
     }
 }
+
+
+#$input = file('./example.txt');
+$input = file('./in.txt');
+
+$first = array_shift($input);
+$numbers = explode(",", trim($first));
+
+$rawBoards = array_chunk($input, 6);
+
+$boards = [];
+foreach ($rawBoards as $rawBoard) {
+    array_shift($rawBoard);
+    $boards[] = new board($rawBoard);
+}
+
+$boardsWinAfter = [];
+foreach ($boards as $board) {
+    foreach ($numbers as $numNum => $num) {
+        $board->registerNumber((int)$num);
+        if ($board->isWinner()) {
+            $boardsWinAfter[$numNum] = $board;
+            break;
+        }
+    }
+}
+
+ksort($boardsWinAfter);
+
+/** @var board $last */
+$last = array_pop($boardsWinAfter);
+
+$result = $last->getScore();
+
+echo $result, "\ntotal time: ", (microtime(true) - $startTime), "\n";
+
+
