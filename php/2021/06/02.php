@@ -17,7 +17,7 @@ foreach ($fish as $fishTimer) {
 }
 
 
-for ($day = 0; $day < 80; $day++) {
+for ($day = 0; $day < 256; $day++) {
     $newCounts = [];
 
     foreach ($counts as $fishTimer => $count) {
