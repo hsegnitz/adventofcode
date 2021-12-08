@@ -2,77 +2,152 @@
 
 $startTime = microtime(true);
 
-$input = file('example0.txt');
+#$input = file('example0.txt');
 #$input = file('example1.txt');
-#$input = file('./in.txt');
+$input = file('./in.txt');
 
 class SegmentedDisplay {
 
-    private const CANDIDATE_LIST = ['a' => true, 'b' => true, 'c' => true, 'd' => true, 'e' => true, 'f' => true, 'g' => true];
-
-    private array $candidates = [
-        0 => self::CANDIDATE_LIST,
-        1 => self::CANDIDATE_LIST,
-        2 => self::CANDIDATE_LIST,
-        3 => self::CANDIDATE_LIST,
-        4 => self::CANDIDATE_LIST,
-        5 => self::CANDIDATE_LIST,
-        6 => self::CANDIDATE_LIST,
-    ];
-
     private array $digitMap = [];
 
-    // we start assuming that all segments could be lit by all wires.
-    // each count of digits has a certain "antipattern" - segments that can't be lit.
-    // so we remove those from the respective sets
     public function deduceWirePattern (string $observed): void
     {
-        foreach (explode(' ', $observed) as $pattern) {
+        $charCounts = count_chars($observed, 1);
+
+        $segmentMap = [];
+        $eightTimes = [];
+        $sevenTimes = [];
+        // the easies:
+        foreach ($charCounts as $char => $count) {
+            switch ($count) {
+                case 4:
+                    $segmentMap['e'] = chr($char);
+                    break;
+                case 6:
+                    $segmentMap['b'] = chr($char);
+                    break;
+                case 9:
+                    $segmentMap['f'] = chr($char);
+                    break;
+                case 7:
+                    $sevenTimes[] = chr($char);
+                    break;
+                case 8:
+                    $eightTimes[] = chr($char);
+                    break;
+            }
+        }
+
+        $patterns = explode(' ', $observed);
+
+        $patternMap = [];
+
+        foreach ($patterns as $pattern) {
             $patt = str_split(trim($pattern));
-            switch (strlen(trim($pattern))) {
+            sort($patt);
+            $pat = implode('', $patt);
+
+            switch (strlen($pat)) {
                 case 2:
-                    $this->removeCandidates($patt, [0, 1, 3, 4, 6]);
+                    $this->digitMap[$pat] = 1;
+                    $patternMap[1] = $patt;
                     break;
                 case 3:
-                    $this->removeCandidates($patt, [1, 3, 4, 6]);
+                    $this->digitMap[$pat] = 7;
+                    $patternMap[7] = $patt;
                     break;
                 case 4:
-                    $this->removeCandidates($patt, [0, 4, 6]);
+                    $this->digitMap[$pat] = 4;
+                    $patternMap[4] = $patt;
+                    break;
+                case 7:
+                    $this->digitMap[$pat] = 8;
+                    $patternMap[8] = $patt;
                     break;
                 case 5:
                 case 6:
-                case 7:
-                    # those are useless :(
                     break;
                 default:
                     throw new Exception('invalid pattern: ' . $pattern);
             }
         }
+
+
+        $diff = array_diff($patternMap[7], $patternMap[1]);
+        $segmentMap['a'] = array_pop($diff);
+
+        $diff = array_diff($eightTimes, [$segmentMap['a']]);
+        $segmentMap['c'] = array_pop($diff);
+
+        $testForFour = [
+            $segmentMap['b'],
+            $segmentMap['c'],
+            $segmentMap['f'],
+            $sevenTimes[0],
+        ];
+        sort($testForFour);
+
+        if ($patternMap[4] === $testForFour) {
+            $segmentMap['d'] = $sevenTimes[0];
+            $segmentMap['g'] = $sevenTimes[1];
+        } else {
+            $segmentMap['d'] = $sevenTimes[1];
+            $segmentMap['g'] = $sevenTimes[0];
+        }
+
+        $patt = [$segmentMap['a'], $segmentMap['b'], $segmentMap['c'],                   $segmentMap['e'], $segmentMap['f'], $segmentMap['g']];
+        sort ($patt);
+        $this->digitMap[implode($patt)] = 0;
+
+        $patt = [$segmentMap['a'],                   $segmentMap['c'], $segmentMap['d'], $segmentMap['e'],                   $segmentMap['g']];
+        sort ($patt);
+        $this->digitMap[implode($patt)] = 2;
+
+        $patt = [$segmentMap['a'],                   $segmentMap['c'], $segmentMap['d'],                   $segmentMap['f'], $segmentMap['g']];
+        sort ($patt);
+        $this->digitMap[implode($patt)] = 3;
+
+        $patt = [$segmentMap['a'], $segmentMap['b'],                   $segmentMap['d'],                   $segmentMap['f'], $segmentMap['g']];
+        sort ($patt);
+        $this->digitMap[implode($patt)] = 5;
+
+        $patt = [$segmentMap['a'], $segmentMap['b'],                   $segmentMap['d'], $segmentMap['e'], $segmentMap['f'], $segmentMap['g']];
+        sort ($patt);
+        $this->digitMap[implode($patt)] = 6;
+
+        $patt = [$segmentMap['a'], $segmentMap['b'], $segmentMap['c'], $segmentMap['d'],                   $segmentMap['f'], $segmentMap['g']];
+        sort ($patt);
+        $this->digitMap[implode($patt)] = 9;
     }
 
-    private function removeCandidates(array $patt, array $positions): void
+    public function parseNumber(string $out): int
     {
-        foreach ($positions as $pos) {
-            foreach (array_keys(self::CANDIDATE_LIST) as $letter) {
-                if (in_array($letter, $patt)) {
-                    continue;
-                }
-                unset ($this->candidates[$pos][$letter]);
-            }
+        $patterns = explode(' ', $out);
+
+        $digits = '';
+
+        foreach ($patterns as $pattern) {
+            $patt = str_split(trim($pattern));
+            sort($patt);
+            $pat = implode('', $patt);
+
+            $digits .= $this->digitMap[$pat];
         }
+
+        return (int)$digits;
     }
 }
 
-
-
+$sum = 0;
 foreach ($input as $line) {
     [$in, $out] = explode(' | ', $line);
     $segmentedDisplay = new SegmentedDisplay();
     $segmentedDisplay->deduceWirePattern($in);
-    print_r($segmentedDisplay);
+
+    $sum += $segmentedDisplay->parseNumber($out);
 }
 
-
+echo $sum;
 
 echo "\ntotal time: ", (microtime(true) - $startTime), "\n";
 
