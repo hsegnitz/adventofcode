@@ -2,10 +2,10 @@
 
 $startTime = microtime(true);
 
-$input = file('./example0.txt');
+#$input = file('./example0.txt');
 #$input = file('./example1.txt');
 #$input = file('./example2.txt');
-#$input = file('./in.txt');
+$input = file('./in.txt');
 
 // strategy notes:
 // there seems to be no LARGE-LARGE edge, so we basically can't get an endless loop
