@@ -46,7 +46,7 @@ for ($i = 0, $max = strlen($polymer)-1; $i < $max; $i++) {
 
 for ($i = 0; $i < 40; $i++) {
     $counts = step($counts, $instructions);
-    echo "$i: ", array_sum($counts), "\n";
+    #echo "$i: ", array_sum($counts), "\n";
 }
 
 $elementCount = [];
