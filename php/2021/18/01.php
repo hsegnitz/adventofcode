@@ -6,9 +6,9 @@ $startTime = microtime(true);
 #$input = file('./example0.txt', FILE_IGNORE_NEW_LINES);
 #$input = file('./example1.txt', FILE_IGNORE_NEW_LINES);
 #$input = file('./example2.txt', FILE_IGNORE_NEW_LINES);
-$input = file('./example3.txt', FILE_IGNORE_NEW_LINES);
+#$input = file('./example3.txt', FILE_IGNORE_NEW_LINES);
 #$input = file('./example4.txt', FILE_IGNORE_NEW_LINES);
-#$input = file('./in.txt', FILE_IGNORE_NEW_LINES);
+$input = file('./in.txt', FILE_IGNORE_NEW_LINES);
 
 class SnailfishNumber {
 
@@ -212,6 +212,13 @@ class SnailfishNumber {
 
         return false;
     }
+
+    public function getMagnitude(): int
+    {
+        return
+            (($this->x instanceof self) ? $this->x->getMagnitude() * 3 : $this->x * 3)
+            + (($this->y instanceof self) ? $this->y->getMagnitude() * 2 : $this->y * 2);
+    }
 }
 
 
@@ -225,7 +232,7 @@ foreach ($originalNumbers as $on) {
     $first->add($on);
 }
 
-echo $first;
+echo $first, "\n", $first->getMagnitude();
 
 echo "\ntotal time: ", (microtime(true) - $startTime), "\n";
 
