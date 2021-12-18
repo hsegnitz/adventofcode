@@ -12,6 +12,8 @@ $input = file('./example.txt', FILE_IGNORE_NEW_LINES);
 
 class SnailfishNumber {
 
+    private static array $stackOfNumbers = [];
+
     public function __construct(private $x, private $y, private ?SnailfishNumber $parent = null)
     {
         if ($x instanceof self) {
@@ -32,7 +34,7 @@ class SnailfishNumber {
         return '[' . $this->x . ',' . $this->y . ']';
     }
 
-    public static function fromString(string $line, ?SnailfishNumber $parent = null): SnailfishNumber
+    public static function fromString(string $line): SnailfishNumber
     {
         // find the comma at bracket count 0
         $bracketCount = 0;
@@ -73,11 +75,13 @@ class SnailfishNumber {
     public function reduce(): void
     {
         while (true) {
+            self::$stackOfNumbers = [];
+            $this->refreshStackOfNumbers('');
             if ($this->explode()) {
                 // there was an explosion -> another round
                 continue;
             }
-            if ($this->split()) {
+            if ($this->split('')) {
                 // there was a split -> another round
                 continue;
             }
@@ -85,24 +89,62 @@ class SnailfishNumber {
         }
     }
 
+    private function refreshStackOfNumbers(string $address = ''): void
+    {
+        if ($this->x instanceof self) {
+            $this->x->refreshStackOfNumbers($address . 'x');
+        } else {
+            self::$stackOfNumbers[$address . 'x'] =& $this->x;
+        }
+
+        if ($this->y instanceof self) {
+            $this->y->refreshStackOfNumbers($address . 'y');
+        } else {
+            self::$stackOfNumbers[$address . 'y'] =& $this->y;
+        }
+    }
+
     /**
      * @param int $depth
      * @return bool returns true if there was an explosion necessary
      */
-    private function explode(int $depth = 0): bool
+    private function explode(int $depth = 0, $address = ''): bool
     {
-        if ($this->x instanceof self && $this->x->explode($depth+1)) {
-            return true;
-        }
-        if ($this->y instanceof self && $this->y->explode($depth+1)) {
-            return true;
-        }
         if ($depth === 4) {
-            $this->parent->addLeft($this->x);
-            $this->parent->addRight($this->y);
+            $stack = array_keys(self::$stackOfNumbers);
+            $lookForThisX = $address . 'x';
+            while (current($stack) !== $lookForThisX) {
+                next($stack);
+            }
+            $addressForPrevious = prev($stack);
+
+            reset($stack);
+            $lookForThisY = $address . 'y';
+            while (current($stack) !== $lookForThisY) {
+                next($stack);
+            }
+            $addressForNext = next($stack);
+
+            if ($addressForPrevious) {
+                self::$stackOfNumbers[$addressForPrevious] += $this->x;
+            }
+
+            if ($addressForNext) {
+                self::$stackOfNumbers[$addressForNext] += $this->y;
+            }
+
             $this->parent->destroyMe($this);
             return true;
         }
+
+        if (($this->x instanceof self) && $this->x->explode($depth + 1, $address . 'x')) {
+            return true;
+        }
+
+        if (($this->y instanceof self) && $this->y->explode($depth + 1, $address . 'y')) {
+            return true;
+        }
+
         return false;
     }
 
@@ -142,6 +184,32 @@ class SnailfishNumber {
      */
     private function split(): bool
     {
+        if ($this->x instanceof self) {
+            if ($this->x->split()) {
+                return true;
+            }
+        } elseif ($this->x > 9) {
+            $this->x = new self(
+                floor($this->x / 2),
+                ceil($this->x / 2),
+                $this
+            );
+            return true;
+        }
+
+        if ($this->y instanceof self) {
+            if ($this->y->split()) {
+                return true;
+            }
+        } elseif ($this->y > 9) {
+            $this->y = new self(
+                floor($this->y / 2),
+                ceil($this->y / 2),
+                $this
+            );
+            return true;
+        }
+
         return false;
     }
 }
