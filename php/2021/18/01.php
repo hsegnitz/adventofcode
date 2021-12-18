@@ -2,10 +2,10 @@
 
 $startTime = microtime(true);
 
-$input = file('./example.txt', FILE_IGNORE_NEW_LINES);
+#$input = file('./example.txt', FILE_IGNORE_NEW_LINES);
 #$input = file('./example0.txt', FILE_IGNORE_NEW_LINES);
 #$input = file('./example1.txt', FILE_IGNORE_NEW_LINES);
-#$input = file('./example2.txt', FILE_IGNORE_NEW_LINES);
+$input = file('./example2.txt', FILE_IGNORE_NEW_LINES);
 #$input = file('./example3.txt', FILE_IGNORE_NEW_LINES);
 #$input = file('./example4.txt', FILE_IGNORE_NEW_LINES);
 #$input = file('./in.txt', FILE_IGNORE_NEW_LINES);
