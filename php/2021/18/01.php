@@ -46,6 +46,13 @@ class SnailfishNumber {
         }
         throw new RuntimeException('This should not happen.');
     }
+
+    public function add($summand): void
+    {
+        $this->x = new self($this->x, $this->y);
+        $this->y = $summand;
+    }
+
 }
 
 
@@ -54,11 +61,12 @@ foreach ($input as $line) {
     $originalNumbers[] = SnailfishNumber::fromString($line);
 }
 
+$first = array_shift($originalNumbers);
 foreach ($originalNumbers as $on) {
-    echo $on, "\n";
+    $first->add($on);
 }
 
-
+echo $first;
 
 echo "\ntotal time: ", (microtime(true) - $startTime), "\n";
 
