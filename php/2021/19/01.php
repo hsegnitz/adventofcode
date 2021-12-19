@@ -34,6 +34,13 @@ class Coord {
             $this->z + $v->z,
         );
     }
+
+    public function manhattanDistance(Coord $coord2): int
+    {
+        return abs($coord2->x - $this->x) +
+            abs($coord2->y - $this->y) +
+            abs($coord2->z - $this->z);
+    }
 }
 
 class Vector extends Coord {
@@ -329,7 +336,17 @@ foreach ($scannerByParent as $parent => $children) {
     echo "\n";
 }
 
-echo count($beacons);
+echo count($beacons), "\n";
+
+$maxDistance = 0;
+foreach ($lockedScanners as $scannerA) {
+    foreach ($lockedScanners as $scannerB) {
+        $maxDistance = max($maxDistance, $scannerA->getOffset()->manhattanDistance($scannerB->getOffset()));
+    }
+}
+
+
+echo $maxDistance;
 
 
 echo "\ntotal time: ", (microtime(true) - $startTime), "\n";
