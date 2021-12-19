@@ -296,7 +296,7 @@ while (count($scanners) > 0) {
         }
 
         echo $bestMatchMax = max(array_keys($bestMatchesPerScanner));
-        if ($bestMatchMax < 72) {
+        if ($bestMatchMax < 12) {
             continue;
         }
         $bestScannerNum = $bestMatchesPerScanner[$bestMatchMax];
