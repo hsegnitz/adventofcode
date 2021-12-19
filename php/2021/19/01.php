@@ -3,8 +3,8 @@
 $startTime = microtime(true);
 
 #$input = explode("\n\n", file_get_contents('./example0.txt'));
-$input = explode("\n\n", file_get_contents('./example1.txt'));
-#$input = explode("\n\n", file_get_contents('./in.txt'));
+#$input = explode("\n\n", file_get_contents('./example1.txt'));
+$input = explode("\n\n", file_get_contents('./in.txt'));
 
 
 class Coord {
@@ -225,7 +225,7 @@ class Scanner
         }
 
         $localCoords = $this->getBeacons();
-        $otherCoords = $other->getBeacons();
+        $otherCoords = $other->getCoordinatesWithOffset();
 
         $offsetMatchCounts = [];
         foreach ($commonVectors as $cv) {
@@ -263,9 +263,8 @@ foreach ($input as $block) {
 
 $scannerByParent = [0 => []];
 $root = $scanners[0];
-$currentScanner = $scanners[0];
 unset($scanners[0]);
-$lockedScanners = [$currentScanner->getId() => $currentScanner];
+$lockedScanners = [$root->getId() => $root];
 while (count($scanners) > 0) {
     foreach ($lockedScanners as $currentScanner) {
         $bestMatchesPerScanner = [];
@@ -285,7 +284,7 @@ while (count($scanners) > 0) {
         }
 
         echo $bestMatchMax = max(array_keys($bestMatchesPerScanner));
-        if ($bestMatchMax < 12) {
+        if ($bestMatchMax < 72) {
             continue;
         }
         $bestScannerNum = $bestMatchesPerScanner[$bestMatchMax];
@@ -300,7 +299,6 @@ while (count($scanners) > 0) {
             $scannerByParent[$currentScanner->getId()] = [];
         }
         $scannerByParent[$currentScanner->getId()][] = $bestScanner;
-        $currentScanner = $bestScanner;
 
         echo "\n";
         if (count($scanners) < 1) {
@@ -309,27 +307,21 @@ while (count($scanners) > 0) {
     }
 }
 
-echo "Original Fliptation and Offsets\n";
-foreach ($lockedScanners as $id => $scanner) {
-    echo "{$id}: ", $scanner->getChosenTransformer(), ' ', $scanner->getOffset(), "\n";
-}
-
 $beacons = [];
 foreach ($root->getCoordinatesWithOffset() as $coord) {
     $beacons[(string)$coord] = $coord;
 }
 
-$offset = new Vector(0, 0, 0);
 foreach ($scannerByParent as $parent => $children) {
+    echo $parent, ": ";
+    /** @var Scanner $child */
     foreach ($children as $child) {
-        $child->setOffset(
-            $lockedScanners[$parent]->getOffset()->add($child->getOffset())
-        );
-
+        echo $child->getId(), ", ";
         foreach ($child->getCoordinatesWithOffset() as $coord) {
             $beacons[(string)$coord] = $coord;
         }
     }
+    echo "\n";
 }
 
 echo count($beacons);
