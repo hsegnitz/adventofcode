@@ -261,38 +261,52 @@ foreach ($input as $block) {
 
 // let's find best candidates and lock their alignment
 
+$scannerByParent = [0 => []];
+$root = $scanners[0];
 $currentScanner = $scanners[0];
 unset($scanners[0]);
 $lockedScanners = [$currentScanner->getId() => $currentScanner];
 while (count($scanners) > 0) {
-    $bestMatchesPerScanner = [];
-    $bestTransformationPerScanner = [];
-    $currentVectors = $currentScanner->getVectors();
-    foreach ($scanners as $num => $scanner) {
-        echo ",";
-        $bestMatchesPerTransformation = [];
-        foreach ($transformations as $transformation) {
-            echo ".";
-            $testVectors = $scanner->getVectorsForTransformer($transformation);
-            $bestMatchesPerTransformation[count(array_intersect($currentVectors, $testVectors))] = $transformation;
+    foreach ($lockedScanners as $currentScanner) {
+        $bestMatchesPerScanner = [];
+        $bestTransformationPerScanner = [];
+        $currentVectors = $currentScanner->getVectors();
+        foreach ($scanners as $num => $scanner) {
+            echo ",";
+            $bestMatchesPerTransformation = [];
+            foreach ($transformations as $transformation) {
+#                echo ".";
+                $testVectors = $scanner->getVectorsForTransformer($transformation);
+                $bestMatchesPerTransformation[count(array_intersect($currentVectors, $testVectors))] = $transformation;
+            }
+            $max = max(array_keys($bestMatchesPerTransformation));
+            $bestMatchesPerScanner[$max] = $num;
+            $bestTransformationPerScanner[$num] = $bestMatchesPerTransformation[$max];
         }
-        $max = max(array_keys($bestMatchesPerTransformation));
-        $bestMatchesPerScanner[$max] = $num;
-        $bestTransformationPerScanner[$num] = $bestMatchesPerTransformation[$max];
+
+        echo $bestMatchMax = max(array_keys($bestMatchesPerScanner));
+        if ($bestMatchMax < 12) {
+            continue;
+        }
+        $bestScannerNum = $bestMatchesPerScanner[$bestMatchMax];
+        $bestScanner = $scanners[$bestScannerNum];
+        unset($scanners[$bestScannerNum]);
+
+        $bestScanner->setChosenTransformer($bestTransformationPerScanner[$bestScannerNum]);
+        $bestScanner->computeOffsetVector($currentScanner);
+
+        $lockedScanners[$bestScanner->getId()] = $bestScanner;
+        if (!isset($scannerByParent[$currentScanner->getId()])) {
+            $scannerByParent[$currentScanner->getId()] = [];
+        }
+        $scannerByParent[$currentScanner->getId()][] = $bestScanner;
+        $currentScanner = $bestScanner;
+
+        echo "\n";
+        if (count($scanners) < 1) {
+            break 2;
+        }
     }
-
-    echo $bestMatchMax = max(array_keys($bestMatchesPerScanner));
-    $bestScannerNum = $bestMatchesPerScanner[$bestMatchMax];
-    $bestScanner = $scanners[$bestScannerNum];
-    unset($scanners[$bestScannerNum]);
-
-    $bestScanner->setChosenTransformer($bestTransformationPerScanner[$bestScannerNum]);
-    $bestScanner->computeOffsetVector($currentScanner);
-
-    $lockedScanners[$bestScanner->getId()] = $bestScanner;
-    $currentScanner = $bestScanner;
-
-    echo "\n";
 }
 
 echo "Original Fliptation and Offsets\n";
@@ -301,12 +315,20 @@ foreach ($lockedScanners as $id => $scanner) {
 }
 
 $beacons = [];
-$slidingOffset = new Vector(0, 0, 0);
-foreach ($lockedScanners as $id => $scanner) {
-    $slidingOffset = $slidingOffset->add($scanner->getOffset());
-    $scanner->setOffset($slidingOffset);
-    foreach ($scanner->getCoordinatesWithOffset() as $coord) {
-        $beacons[(string)$coord] = $coord;
+foreach ($root->getCoordinatesWithOffset() as $coord) {
+    $beacons[(string)$coord] = $coord;
+}
+
+$offset = new Vector(0, 0, 0);
+foreach ($scannerByParent as $parent => $children) {
+    foreach ($children as $child) {
+        $child->setOffset(
+            $lockedScanners[$parent]->getOffset()->add($child->getOffset())
+        );
+
+        foreach ($child->getCoordinatesWithOffset() as $coord) {
+            $beacons[(string)$coord] = $coord;
+        }
     }
 }
 
