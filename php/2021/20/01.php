@@ -47,23 +47,23 @@ function getNumCoords(int $y, int $x): array
 function padImage(array $image, int &$minX, int &$minY, int &$maxX, int &$maxY, string $padWith): array
 {
     // line above and below
-    foreach ([$minY-2, $minY-1, $maxY+1, $maxY+2] as $y) {
-        for ($x = $minX-2; $x <= $maxX+2; $x++) {
+    foreach ([$minY-1, $maxY+1] as $y) {
+        for ($x = $minX-1; $x <= $maxX+1; $x++) {
             $image["{$y},{$x}"] = $padWith;
         }
     }
 
     // col left and right
     for ($y = $minY; $y <= $maxY; $y++) {
-        foreach ([$minX-2, $minX-1, $maxX+1, $maxX+2] as $x) {
+        foreach ([$minX-1, $maxX+1] as $x) {
             $image["{$y},{$x}"] = $padWith;
         }
     }
 
-    $minX-=2;
-    $minY-=2;
-    $maxX+=2;
-    $maxY+=2;
+    $minX-=1;
+    $minY-=1;
+    $maxX+=1;
+    $maxY+=1;
 
     ksort($image);
 
@@ -106,7 +106,9 @@ for ($i = 0; $i < 50; $i++) {
     $image = padImage($image, $minX, $minY, $maxX, $maxY, $i%2);
     $image = apply($image, $algo, $i%2);
     #out($image, $minX, $minY, $maxX, $maxY);
-    echo "$i: ", array_count_values($image)['1'], "\n";
+    if ($i === 1 || $i === 49) {
+        echo "$i: ", array_count_values($image)['1'], "\n";
+    }
 }
 
 
