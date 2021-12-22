@@ -4,6 +4,7 @@ $startTime = microtime(true);
 
 #$input = file('./example0.txt', FILE_IGNORE_NEW_LINES);
 #$input = file('./example1.txt', FILE_IGNORE_NEW_LINES);
+#$input = file('./example2.txt', FILE_IGNORE_NEW_LINES);
 $input = file('./in.txt', FILE_IGNORE_NEW_LINES);
 
 $matrix = [];
