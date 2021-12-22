@@ -58,7 +58,7 @@ class Cube
                         $cutsZ[$z],
                         $cutsZ[$z+1],
                     );
-                    if ($this->fullyContains($testCube) && !$b->fullyContains($testCube)) {
+                    if ($testCube->volume() > 0 && $this->fullyContains($testCube) && !$b->fullyContains($testCube)) {
                         $newCubes[] = $testCube;
                     }
                 }
