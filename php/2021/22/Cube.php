@@ -18,7 +18,9 @@ class Cube
 
     public function intersectsWith(Cube $otherCube): bool
     {
-
+        return ($this->xFrom < $otherCube->xTo) && ($this->xTo > $otherCube->xFrom)
+            && ($this->yFrom < $otherCube->yTo) && ($this->yTo > $otherCube->yFrom)
+            && ($this->zFrom < $otherCube->zTo) && ($this->zTo > $otherCube->zFrom);
     }
 
     public function fullyContains(Cube $otherCube): bool
@@ -28,7 +30,5 @@ class Cube
             && ($this->zFrom <= $otherCube->zFrom) && ($this->zTo >= $otherCube->zTo);
     }
 
-
-
-
+    
 }
