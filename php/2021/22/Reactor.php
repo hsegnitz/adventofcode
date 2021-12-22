@@ -5,23 +5,47 @@ class Reactor
     /** @var Cube[] */
     private array $cubes = [];
 
+    // Strategy:
+    // we reduce our new cube to an arbitrary set of smaller cubes by repeatedly removing the
+    // portions we already have in $this->cubes.
+    // this should work without the cursed recursion TM
     public function add(Cube $cube): void
     {
+        $incomingCubes = [$cube];
         foreach ($this->cubes as $thisCube) {
-            if ($thisCube->fullyContains($cube)) {
-                return;
+            $newCubes = [];
+            foreach ($incomingCubes as $incubus) {
+                if ($thisCube->fullyContains($incubus)) {
+                    continue;
+                }
+
+                if (!$incubus->intersectsWith($thisCube)) {
+                    $newCubes[] = $incubus;
+                    continue;
+                }
+
+                foreach ($incubus->subtract($thisCube) as $tempCube) {
+                    $newCubes[] = $tempCube;
+                }
             }
-            if ($thisCube->intersectsWith($cube)) {
-                throw new RuntimeException('Nobody expects cubes to overlap, right?');
+            $incomingCubes = $newCubes;
+        }
+
+        if ($incomingCubes !== []) {
+            foreach ($incomingCubes as $inc) {
+                $this->cubes[] = $inc;
             }
         }
-        $this->cubes[] = $cube;
     }
 
+    /**
+     * remove all points within $cube from the collective - if they are already set.
+     */
     public function remove(Cube $cube): void
     {
         $newCubes = [];
         foreach ($this->cubes as $thisCube) {
+            //
             if (!$cube->intersectsWith($thisCube)) {
                 $newCubes[] = $thisCube;
                 continue;
@@ -31,6 +55,10 @@ class Reactor
                 continue;
             }
 
+            $subCubes = $thisCube->subtract($cube);
+            foreach ($subCubes as $sub) {
+                $newCubes[] = $sub;
+            }
         }
         $this->cubes = $newCubes;
     }

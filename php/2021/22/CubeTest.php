@@ -8,7 +8,7 @@ class CubeTest extends TestCase
 {
     public function testVolume(): void
     {
-        $cube = new Cube(-1, 1, -1, 1, -1, 1);
+        $cube = new Cube(-1, 2, -1, 2, -1, 2);
         $this->assertEquals(27, $cube->volume());
     }
 
@@ -44,6 +44,29 @@ class CubeTest extends TestCase
         $this->assertFalse($outsider->intersectsWith($outer));
     }
 
+    public function testAdjacent(): void
+    {
+        $a = new Cube(0, 10, 0, 10, 0, 10);
+        $b = new Cube(10, 20, 0, 10, 0, 10);
+        $this->assertFalse($a->intersectsWith($b));
+        $this->assertFalse($b->intersectsWith($a));
+    }
 
+    public function testLayerOfOne(): void
+    {
+        $a = new Cube(0, 11, 0, 10, 0, 10);
+        $b = new Cube(10, 20, 0, 10, 0, 10);
+        $this->assertTrue($a->intersectsWith($b));
+    }
 
+    public function testFullyContainsWhenAtEdge(): void
+    {
+        $a = new Cube(0, 11, 0, 11, 0, 11);
+        $b = new Cube(0, 5, 0, 5, 0, 5);
+        $this->assertTrue($a->fullyContains($b));
+
+        $a = new Cube(0, 11, 0, 11, 0, 11);
+        $b = new Cube(5, 11, 1, 5, 1, 5);
+        $this->assertTrue($a->fullyContains($b));
+    }
 }

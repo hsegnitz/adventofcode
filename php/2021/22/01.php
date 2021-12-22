@@ -22,9 +22,13 @@ foreach ($input as $line) {
     $zFrom = max($zFrom, -50);
     $zTo   = min($zTo,    50);
 
-    for ($x = $xFrom; $x <= $xTo; $x++) {
-        for ($y = $yFrom; $y <= $yTo; $y++) {
-            for ($z = $zFrom; $z <= $zTo; $z++) {
+    ++$xTo;
+    ++$yTo;
+    ++$zTo;
+
+    for ($x = $xFrom; $x < $xTo; $x++) {
+        for ($y = $yFrom; $y < $yTo; $y++) {
+            for ($z = $zFrom; $z < $zTo; $z++) {
                 if ($onOff === 'on') {
                     $matrix["{$x},{$y},{$z}"] = true;
                 } else {
