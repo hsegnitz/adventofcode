@@ -11,6 +11,8 @@ foreach ($input as $line) {
 }
 
 
+
+
 class ALU
 {
     private int $w = 0;
@@ -118,15 +120,15 @@ class ALU
 
 $alu = new ALU($program);
 #for ($i = 11111111111111; $i < 100000000000000; $i++) {
-for ($i = 100000000000000; $i > 11111111111111 ; --$i) {
-    if (str_contains((string)$i, '0')) {
-        continue;
-    }
+#for ($i = 100000000000000; $i > 11111111111111 ; --$i) {
+#    if (str_contains((string)$i, '0')) {
+#        continue;
+#    }
 
-    if ($alu->run((string)$i)) {
-        echo $i, "\n";
-    }
+if ($alu->run("97919997299495")) {
+    echo "success\n";
 }
+#}
 
 echo "\ntotal time: ", (microtime(true) - $startTime), "\n";
 
