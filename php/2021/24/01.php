@@ -128,6 +128,10 @@ $alu = new ALU($program);
 if ($alu->run("97919997299495")) {
     echo "success\n";
 }
+
+if ($alu->run("51619131181131")) {
+    echo "success\n";
+}
 #}
 
 echo "\ntotal time: ", (microtime(true) - $startTime), "\n";
