@@ -2,8 +2,8 @@
 
 $startTime = microtime(true);
 
-$input = '...........A..BBBBBCCCCDDDD';
-#$input = "...........BDDACCBDBBACDACA";
+#$input = '...........A..BBBBBCCCCDDDD';
+$input = "...........BDDACCBDBBACDACA";
 #$input = '...........DDDBCCBADBAABACC';
 
 const TARGET_STATE = '...........AAAABBBBCCCCDDDD';
@@ -53,16 +53,16 @@ function legalMovesFromState(string $state): Generator
             continue;
         }
 
-        if ($state[$pos + 1] === '.') {
-            if ($state[$pos + 2] === '.') {
-                if ($state[$pos + 3] === '.') {
-                    yield switchPositions($state, $pos, $pos + 3) => COSTS[$type] * 3;
-                } else {
-                    yield switchPositions($state, $pos, $pos + 2) => COSTS[$type] * 2;
-                }
-            } else {
-                yield switchPositions($state, $pos, $pos + 1) => COSTS[$type];
-            }
+        if (substr($state, $pos + 1, 3) === ".{$type}{$type}") {
+            yield switchPositions($state, $pos, $pos + 1) => COSTS[$type];
+            continue;
+        }
+        if (substr($state, $pos + 1, 3) === "..{$type}") {
+            yield switchPositions($state, $pos, $pos + 2) => COSTS[$type] * 2;
+            continue;
+        }
+        if (substr($state, $pos + 1, 3) === "...") {
+            yield switchPositions($state, $pos, $pos + 3) => COSTS[$type] * 3;
         }
     }
 
@@ -72,18 +72,24 @@ function legalMovesFromState(string $state): Generator
             continue;
         }
 
-        if ($state[$pos+1] !== '.' && $state[$pos+1] !== $type) {
-            yield switchPositions($state, $pos, $pos+1) => COSTS[$type];
+        $check = substr($state, $pos, 2);
+        $pattern = "/^\.[^{$type}.]$/";
+        if (preg_match($pattern, $check)) {
+            yield switchPositions($state, $pos, $pos+1) => COSTS[$state[$pos+1]];
             continue;
         }
 
-        if ($state[$pos+1] === '.' && $state[$pos+2] !== '.' && $state[$pos+2] !== $type) {
-            yield switchPositions($state, $pos, $pos+2) => COSTS[$type] * 2;
+        $check = substr($state, $pos, 3);
+        $pattern = "/^\.\.[^{$type}.]$/";
+        if (preg_match($pattern, $check)) {
+            yield switchPositions($state, $pos, $pos+2) => COSTS[$state[$pos+2]] * 2;
             continue;
         }
 
-        if ($state[$pos+1] === '.' && $state[$pos+2] === '.' && $state[$pos+3] !== '.' && $state[$pos+3] !== $type) {
-            yield switchPositions($state, $pos, $pos+3) => COSTS[$type] * 3;
+        $pattern = "/^\.\.\.[^{$type}.]$/";
+        $check = substr($state, $pos, 4);
+        if (preg_match($pattern, $check)) {
+            yield switchPositions($state, $pos, $pos+3) => COSTS[$state[$pos+3]] * 3;
         }
     }
 
