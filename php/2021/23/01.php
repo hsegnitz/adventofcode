@@ -14,7 +14,14 @@ const COSTS = [
     'D' => 1000,
 ];
 
-const ENTRANCES = [2, 4, 6, 8];
+const ENTRANCES = [
+    'A' => 2,
+    'B' => 4,
+    'C' => 6,
+    'D' => 8,
+];
+
+// "the floor is lava" tiles
 const ROOMTOPS = [
     'A' => 11,
     'B' => 13,
@@ -53,16 +60,77 @@ function legalMovesFromState(string $state): Generator
         }
     }
 
+    // go over things in the hallway and move them to the rooms -- only if the way is free.
+    for ($i = 0; $i < 11; $i++) {
+        if ($state[$i] === '.') {  // empty tiles we can ignore
+            continue;
+        }
 
+        $currentCritter = $state[$i];
+        $targetTile = ROOMTOPS[$currentCritter];
+        if ($state[$targetTile] !== '.') {  // topmost tile in target room occupied -- can't move
+            continue;
+        }
+        if ($state[$targetTile + 1] !== '.' && $state[$targetTile] !== $currentCritter ) { // bottom part in target room occupied by different race
+            continue;
+        }
+
+        $entrance = ENTRANCES[$currentCritter];
+        if ($entrance > $i) {
+            $checkAgainst = str_pad('.', ($entrance - $i), '.');
+            if (substr($state, $i+1, $entrance - $i) === $checkAgainst) {
+                yield [switchPositions($state, $i, $targetTile) => (COSTS[$currentCritter] * ($entrance - $i + 1))];
+            }
+        } elseif ($entrance < $i) {
+            $checkAgainst = str_pad('.', ($i - $entrance), '.');
+            if (substr($state, $entrance+1, $i - $entrance) === $checkAgainst) {
+                yield [switchPositions($state, $i, $targetTile) => (COSTS[$currentCritter] * ($i - $entrance + 1))];
+            }
+        }
+
+    }
+
+    // find all possible places to move into from the top of the room - only if top of room is occupied
+    // and critter is not
+    foreach (ROOMTOPS as $critterType => $position) {
+        if ($state[$position] === '.') {  // empty tiles we can ignore
+            continue;
+        }
+
+        $currentCritter = $state[$position];
+        $tileContentBelow = $state[$position+1];
+        // making sure the things stay in their room when they are already in their target room and do not block something.
+        if ($critterType === $currentCritter && ($tileContentBelow === '.' || $tileContentBelow === $critterType)) {
+            continue;
+        }
+
+        // now we go left and right, skipping the roomtops and aborting the mission should we encounter an
+        // occupied tile
+
+        $entrance = ENTRANCES[$critterType];
+        //left
+        for ($pos = $entrance; $pos >= 0; $pos--) {
+            if ($state[$pos] !== '.') {  // topmost tile in target room occupied -- can't move
+                break;
+            }
+            if (in_array($pos, ENTRANCES)) {
+                continue;
+            }
+            yield [switchPositions($state, $position, $pos) => (COSTS[$currentCritter] * ($entrance - $pos + 1))];
+        }
+
+        //right
+        for ($pos = $entrance; $pos <= 11; $pos++) {
+            if ($state[$pos] !== '.') {  // topmost tile in target room occupied -- can't move
+                break;
+            }
+            if (in_array($pos, ENTRANCES)) {
+                continue;
+            }
+            yield [switchPositions($state, $position, $pos) => (COSTS[$currentCritter] * ($pos - $entrance + 1))];
+        }
+    }
 }
-
-
-
-
-
-
-
-
 
 
 
