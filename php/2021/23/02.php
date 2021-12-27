@@ -3,8 +3,8 @@
 $startTime = microtime(true);
 
 #$input = '...........A..BBBBBCCCCDDDD';
-$input = "...........BDDACCBDBBACDACA";
-#$input = '...........DDDBCCBADBAABACC';
+#$input = "...........BDDACCBDBBACDACA";
+$input = '...........DDDBCCBADBAABACC';
 
 const TARGET_STATE = '...........AAAABBBBCCCCDDDD';
 
@@ -53,41 +53,41 @@ function legalMovesFromState(string $state): Generator
             continue;
         }
 
-        if (substr($state, $pos + 1, 3) === ".{$type}{$type}") {
-            yield switchPositions($state, $pos, $pos + 1) => COSTS[$type];
+        $check = substr($state, $pos + 1, 3);
+        if ($check === "...") {
+            yield switchPositions($state, $pos, $pos + 3) => COSTS[$type] * 3;
             continue;
         }
-        if (substr($state, $pos + 1, 3) === "..{$type}") {
+        if ($check === "..{$type}") {
             yield switchPositions($state, $pos, $pos + 2) => COSTS[$type] * 2;
             continue;
         }
-        if (substr($state, $pos + 1, 3) === "...") {
-            yield switchPositions($state, $pos, $pos + 3) => COSTS[$type] * 3;
+        if ($check === ".{$type}{$type}") {
+            yield switchPositions($state, $pos, $pos + 1) => COSTS[$type];
         }
     }
 
     // move 'em up should they not be in their room, and the top position is empty
+    // well and also if they block something
     foreach (ROOMTOPS as $type => $pos) {
         if ($state[$pos] !== '.') {
             continue;
         }
 
-        $check = substr($state, $pos, 2);
-        $pattern = "/^\.[^{$type}.]$/";
+        $check = substr($state, $pos, 4);
+        $pattern = "/^(\.[^{$type}.]..|\.{$type}[^{$type}.].|\.{$type}.[^{$type}.])$/";
         if (preg_match($pattern, $check)) {
             yield switchPositions($state, $pos, $pos+1) => COSTS[$state[$pos+1]];
             continue;
         }
 
-        $check = substr($state, $pos, 3);
-        $pattern = "/^\.\.[^{$type}.]$/";
+        $pattern = "/^(\.\.[^{$type}.].|\.\.{$type}[^{$type}.])$/";
         if (preg_match($pattern, $check)) {
             yield switchPositions($state, $pos, $pos+2) => COSTS[$state[$pos+2]] * 2;
             continue;
         }
 
         $pattern = "/^\.\.\.[^{$type}.]$/";
-        $check = substr($state, $pos, 4);
         if (preg_match($pattern, $check)) {
             yield switchPositions($state, $pos, $pos+3) => COSTS[$state[$pos+3]] * 3;
         }
@@ -113,7 +113,8 @@ function legalMovesFromState(string $state): Generator
         $entrance = ENTRANCES[$currentCritter];
         if ($entrance > $i) {
             $checkAgainst = str_pad('.', ($entrance - $i), '.');
-            if (substr($state, $i+1, $entrance - $i) === $checkAgainst) {
+            $actual = substr($state, $i+1, $entrance - $i);
+            if ($actual === $checkAgainst) {
                 yield switchPositions($state, $i, $targetTile) => (COSTS[$currentCritter] * ($entrance - $i + 1));
             }
         } elseif ($entrance < $i) {
@@ -136,7 +137,7 @@ function legalMovesFromState(string $state): Generator
         $currentCritter = $state[$position];
         // making sure the things stay in their room when they are already in their target room and do not block something.
         $roomContent = substr($state, $position+1, 3);
-        if ($critterType === $currentCritter && (preg_match('/^[.' . $currentCritter . ']{3}$/', $roomContent))) {
+        if ($critterType === $currentCritter && preg_match('/^[.' . $currentCritter . ']{3}$/', $roomContent)) {
             continue;
         }
 
@@ -180,6 +181,47 @@ function out(string $state, int $cost): void
     echo "  #########\n\n";
 }
 
+/*
+
+$testCases = [
+    '...........BDDACCBDBBACDACA',
+    '..........DBDDACCBDBBAC.ACA',
+    '..........DBDDACCBDBBACA.CA', #
+    'A.........DBDDACCBDBBAC..CA',
+    'A........BDBDDACCBD.BAC..CA',
+
+    'A........BDBDDACCBDB.AC..CA',
+    'A......B.BDBDDACCBD..AC..CA',
+    'A......B.BDBDDACCBDA..C..CA',
+    'AA.....B.BDBDDACCBD...C..CA',
+    'AA...C.B.BDBDDA.CBD...C..CA', #
+
+    'AA.....B.BDBDDA.CBDC..C..CA', #
+    'AA.....B.BDBDDA.CBD..CC..CA',
+    'AA.....B.BDBDDAC.BD..CC..CA',#
+    'AA...C.B.BDBDDA..BD..CC..CA',#
+    'AA.....B.BDBDDA..BDC.CC..CA',#
+
+    'AA.....B.BDBDDA..BD.CCC..CA',
+    'AA.....B.BDBDDAB..D.CCC..CA',#
+];
+
+for ($i = 0; $i < count($testCases)-1; $i++) {
+    foreach (legalMovesFromState($testCases[$i]) as $move => $cost) {
+        if ($move === $testCases[$i+1]) {
+            echo "FOUND: ", $testCases[$i], ' => ', $testCases[$i+1], "\n";
+            continue 2;
+        }
+    }
+    die ('not found! :(');
+}
+
+
+die ("all done, feed me more!\n");
+
+*/
+
+
 // list of shortest ways to achieve a state;
 $allStates = [
     $input => 0,
@@ -202,7 +244,6 @@ while (count($stack)) {
 }
 
 echo $allStates[TARGET_STATE];
-
 
 echo "\ntotal time: ", (microtime(true) - $startTime), "\n";
 
