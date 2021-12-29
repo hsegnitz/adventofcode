@@ -172,6 +172,7 @@ function totalDistance(array $points): int
 
 $allDistances = [];
 foreach ($paths as $path) {
+    $path[] = 0;
     $td = totalDistance($path);
     $allDistances[$td] = $path;
 }
