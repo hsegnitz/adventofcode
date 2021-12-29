@@ -2,10 +2,24 @@
 
 $startTime = microtime(true);
 
+// strategy
+// find shortest paths between all the points
+// permutate all of them to find the smallest combination
+
+
 $map = [];
-foreach (file(__DIR__ . '/in.txt') as $line) {
-    $map[] = str_split(trim($line));
+
+/*     * /
+foreach (file(__DIR__ . '/demo.txt', FILE_IGNORE_NEW_LINES) as $line) {
+    $map[] = str_split($line);
 }
+/*     */
+
+/*   */
+foreach (file(__DIR__ . '/in.txt', FILE_IGNORE_NEW_LINES) as $line) {
+    $map[] = str_split($line);
+}
+/*  */
 
 $specialCoords = [];
 foreach ($map as $rowNum => $row) {
@@ -19,127 +33,103 @@ foreach ($map as $rowNum => $row) {
     }
 }
 
-#print_r($specialCoords);
-#die();
-// find the shortest routes between those coords  (from day 13?) -- needs optimisation
-class PathFinder
+//print_r($specialCoords);
+//die();
+
+class AdventOfHeap extends SplMinHeap
 {
-    private array $map;
-
-    private int $targetX;
-    private int $targetY;
-
-    private array $visitedSpots;
-
-    private int $shortestPath;
-
-    public function __construct(array $map)
+    protected function compare(mixed $value1, mixed $value2): int
     {
-        $this->map = $map;
-    }
-
-    public function setTarget(int $targetX, int $targetY)
-    {
-        $this->shortestPath = PHP_INT_MAX;
-        $this->visitedSpots = [];
-        $this->targetX = $targetX;
-        $this->targetY = $targetY;
-    }
-
-    private function registerVisitedAndGetDistance(int $x, int $y, int $newDistance): int
-    {
-        $coord = "{$x},{$y}";
-        if (!isset($this->visitedSpots[$coord])) {
-            $this->visitedSpots[$coord] = $newDistance;
-            return PHP_INT_MAX;
-        }
-        $this->visitedSpots[$coord] = min($newDistance, $this->visitedSpots[$coord]);
-        return $this->visitedSpots[$coord];
-    }
-
-    public function walk(int $x, int $y, int $newDistance): int
-    {
-        if ($this->targetX === $x && $this->targetY === $y) {
-            $this->shortestPath = min($newDistance, $this->shortestPath);
-            return $this->shortestPath;
-        }
-
-        // either too far away or a wall
-        if ($newDistance > 4000 || $this->map[$y][$x] === '#') {
-            return 5000;
-        }
-
-        // if not visited, we get PHP_INT_MAX so this means we continue from here as we obviously found a shorter path
-        if ($newDistance >= $this->registerVisitedAndGetDistance($x, $y, $newDistance)) {
-            return 5000;
-        }
-
-        #echo $x, ",", $y, "\n";
-
-        $results = [];
-        if (($x > 0) && 0 < ($temp = $this->walk($x - 1, $y, $newDistance + 1))) {
-            $results[] = $temp;
-        }
-
-        if (($x < 1000) && 0 < ($temp = $this->walk($x + 1, $y, $newDistance + 1))) {
-            $results[] = $temp;
-        }
-
-        if (($y > 0) && 0 < ($temp = $this->walk($x, $y - 1, $newDistance + 1))) {
-            $results[] = $temp;
-        }
-
-        if (($y < 1000) && 0 < ($temp = $this->walk($x, $y + 1, $newDistance + 1))) {
-            $results[] = $temp;
-        }
-
-        if ($results === []) {
-            return 5000;
-        }
-
-        return min($results);
+        return $value2['distance'] - $value1['distance'];
     }
 }
 
-$pathFinder = new PathFinder($map);
+
+class Solver {
+    private array $visited = [];
+    private AdventOfHeap $heap;
+    private string $finalCoord;
+
+    public function __construct(
+        private array $map,
+        private int $startX,
+        private int $startY,
+        private int $targetX,
+        private int $targetY,
+    ) {
+        $this->finalCoord = "{$this->targetX},{$this->targetY}";
+        $this->heap = new AdventOfHeap();
+        $this->heap->insert(['x' => $this->startX, 'y' => $this->startY, 'distance' => 0]);
+    }
+
+    private function getNeighbours(int $x, int $y): Generator
+    {
+        if (isset($this->map[$y-1][$x]) && $this->map[$y-1][$x] !== '#') {
+            yield ['x' => $x,   'y' => $y-1, 'distance' => 1];
+        }
+        if (isset($this->map[$y][$x-1]) && $this->map[$y][$x-1] !== '#') {
+            yield ['x' => $x-1, 'y' => $y,   'distance' => 1];
+        }
+        if (isset($this->map[$y][$x+1]) && $this->map[$y][$x+1] !== '#') {
+            yield ['x' => $x+1, 'y' => $y,   'distance' => 1];
+        }
+        if (isset($this->map[$y+1][$x]) && $this->map[$y+1][$x] !== '#') {
+            yield ['x' => $x,   'y' => $y+1, 'distance' => 1];
+        }
+    }
+
+    public function walk(): void
+    {
+        while (true) {
+            $current = $this->heap->extract();
+
+            foreach ($this->getNeighbours($current['x'], $current['y']) as $next) {
+                $coord = $next['x'] . "," .  $next['y'];
+                if (isset($this->visited[$coord])) {
+                    continue;
+                }
+                $next['distance'] += $current['distance'];
+                $this->heap->insert($next);
+                $this->visited[$coord] = $next['distance'];
+
+                if ($coord === $this->finalCoord) {
+                    return;
+                }
+            }
+        }
+    }
+
+    public function getDistanceOfFinalTile(): int
+    {
+        return $this->visited[$this->finalCoord];
+    }
+}
 
 $distances = [];
 
-foreach ($specialCoords as $a => $ca) {
-    foreach ($specialCoords as $b => $cb) {
-        if ($a === $b) {
+ksort($specialCoords);
+
+foreach ($specialCoords as $num => $coords) {
+    foreach ($specialCoords as $num2 => $coords2) {
+        if ($num === $num2) {
             continue;
         }
+        $solver = new Solver(
+            $map,
+            $coords['col'],
+            $coords['row'],
+            $coords2['col'],
+            $coords2['row'],
+        );
 
-        if (isset($distances[$a][$b])) {
-            continue;
-        }
+        $solver->walk();
 
-        $pathFinder->setTarget($ca['col'], $ca['row']);
-        $distance = $pathFinder->walk($cb['col'], $cb['row'], 0);
-        $distances[$a][$b] = $distance;
-        $distances[$b][$a] = $distance;
+        $distances[$num][$num2] = $solver->getDistanceOfFinalTile();
+        $distances[$num2][$num] = $solver->getDistanceOfFinalTile();
     }
 }
 
-/*
-$chain = [0, 1, 6, 4, 5, 7, 3, 2];
-
-$prev = array_shift($chain);
-
-while (null !== ($next = array_shift($chain))) {
-    $pathFinder->setTarget($specialCoords[$prev]['col'], $specialCoords[$prev]['row']);
-    $distance = $pathFinder->walk($specialCoords[$next]['col'], $specialCoords[$next]['row'], 0);
-    $distances[$prev][$next] = $distance;
-    $distances[$next][$prev] = $distance;
-    $prev = $next;
-}
-/* * /
- print_r($distances);
- die();
-*/
-
-// travelling salesman brute force
+#print_r($distances);
 
 function permutatePaths(array $prev, array $options): array
 {
@@ -158,7 +148,16 @@ function permutatePaths(array $prev, array $options): array
     return $ret;
 }
 
-$paths = permutatePaths([], array_keys($specialCoords));
+$keys = array_keys($specialCoords);
+unset($keys[0]);
+
+#print_r($keys);
+#die();
+
+$paths = permutatePaths([0], $keys);
+
+#print_r($paths);
+#die();
 
 function totalDistance(array $points): int
 {
@@ -173,13 +172,8 @@ function totalDistance(array $points): int
 
 $allDistances = [];
 foreach ($paths as $path) {
-    if ($path[0] !== 0) {
-        continue;
-    }
     $td = totalDistance($path);
-    if ($td < 1094) {
-        $allDistances[$td] = $path;
-    }
+    $allDistances[$td] = $path;
 }
 
 print_r($allDistances);
