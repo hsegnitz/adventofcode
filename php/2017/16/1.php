@@ -2,10 +2,10 @@
 
 $startTime = microtime(true);
 
-$input = file_get_contents('./demo.txt');
-$order = implode('', range('a', 'e'));
-#$input = file_get_contents('./in.txt');
-#$order = implode('', range('a', 'p'));
+#$input = file_get_contents('./demo.txt');
+#$order = implode('', range('a', 'e'));
+$input = file_get_contents('./in.txt');
+$order = implode('', range('a', 'p'));
 
 $input = explode(',', $input);
 
