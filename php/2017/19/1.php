@@ -26,7 +26,7 @@ foreach ($map[$currentRow] as $colNum => $cell) {
     }
 }
 
-function walk(array $map, int &$currentCol, int &$currentRow, Directions $direction, array &$foundLetters): ?Directions
+function walk(array $map, int &$currentCol, int &$currentRow, Directions $direction, array &$foundLetters, int &$steps): ?Directions
 {
     $cell = '';
     while ($cell !== '+' && isset($map[$currentRow][$currentCol])) {
@@ -45,9 +45,11 @@ function walk(array $map, int &$currentCol, int &$currentRow, Directions $direct
                 break;
         }
 
-        if (!isset($map[$currentRow][$currentCol])) {
+        if (!isset($map[$currentRow][$currentCol]) || $map[$currentRow][$currentCol] === ' ') {
             return null;
         }
+
+        $steps++;
 
         $cell = $map[$currentRow][$currentCol];
         if (preg_match('/[A-Z]/', $cell)) {
@@ -76,11 +78,13 @@ function walk(array $map, int &$currentCol, int &$currentRow, Directions $direct
 
 $direction = Directions::DOWN;
 $foundLetters = [];
+$steps = 0;
 
-while (null !== ($direction = walk($map, $currentCol, $currentRow, $direction, $foundLetters))) {
+while (null !== ($direction = walk($map, $currentCol, $currentRow, $direction, $foundLetters, $steps))) {
     echo $direction->value, "\n";
 }
 
+echo $steps+1, "\n";
 echo implode('', $foundLetters);
 
 echo "\ntotal time: ", number_format(microtime(true) - $startTime, 6), "\n";
