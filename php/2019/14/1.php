@@ -50,12 +50,12 @@ class Recipe {
     }
 }
 
-$input = file('./small1.txt', FILE_IGNORE_NEW_LINES);
-//$input = file('./small2.txt', FILE_IGNORE_NEW_LINES);
-//$input = file('./small3.txt', FILE_IGNORE_NEW_LINES);
-//$input = file('./small4.txt', FILE_IGNORE_NEW_LINES);
-//$input = file('./small5.txt', FILE_IGNORE_NEW_LINES);
-//$input = file('./in.txt', FILE_IGNORE_NEW_LINES);
+#$input = file('./small1.txt', FILE_IGNORE_NEW_LINES);
+#$input = file('./small2.txt', FILE_IGNORE_NEW_LINES);
+#$input = file('./small3.txt', FILE_IGNORE_NEW_LINES);
+#$input = file('./small4.txt', FILE_IGNORE_NEW_LINES);
+#$input = file('./small5.txt', FILE_IGNORE_NEW_LINES);
+$input = file('./in.txt', FILE_IGNORE_NEW_LINES);
 
 $recipes = [];
 foreach ($input as $line) {
@@ -72,10 +72,10 @@ $inventoryOfNeeds = ['FUEL' => 1];
 $excessAmounts = [];
 
 while (count($inventoryOfNeeds) > 1 || !isset($inventoryOfNeeds['ORE'])) {
-    $newNeeds = [];
+    $newNeeds = ['ORE' => 0];
     foreach ($inventoryOfNeeds as $need => $quantityOfNeed) {
         if ($need === 'ORE') {
-            $newNeeds['ORE'] = $quantityOfNeed;
+            $newNeeds['ORE'] += $quantityOfNeed;
             continue;
         }
         $recipe = $recipes[$need];
