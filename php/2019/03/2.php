@@ -44,26 +44,46 @@ class Path
 
     private function walk(): void
     {
-        $x = $y = 0;
+        $x = $y = $step = 0;
         foreach ($this->directions as $a) {
             if ($a->getDirection() === Orientation::R) {
                 for ($i = 0; $i < $a->getLength(); $i++) {
-                    $this->occupiedCoordinates[(++$x . 'x' . $y)] = true;
+                    ++$step;
+                    $coord = (++$x . 'x' . $y);
+                    if (isset($this->occupiedCoordinates[$coord])) {
+                        continue;
+                    }
+                    $this->occupiedCoordinates[$coord] = $step;
                 }
             }
             if ($a->getDirection() === Orientation::L) {
                 for ($i = 0; $i < $a->getLength(); $i++) {
-                    $this->occupiedCoordinates[(--$x . 'x' . $y)] = true;
+                    ++$step;
+                    $coord = (--$x . 'x' . $y);
+                    if (isset($this->occupiedCoordinates[$coord])) {
+                        continue;
+                    }
+                    $this->occupiedCoordinates[$coord] = $step;
                 }
             }
             if ($a->getDirection() === Orientation::U) {
                 for ($i = 0; $i < $a->getLength(); $i++) {
-                    $this->occupiedCoordinates[($x . 'x' . ++$y)] = true;
+                    ++$step;
+                    $coord = ($x . 'x' . ++$y);
+                    if (isset($this->occupiedCoordinates[$coord])) {
+                        continue;
+                    }
+                    $this->occupiedCoordinates[$coord] = $step;
                 }
             }
             if ($a->getDirection() === Orientation::D) {
                 for ($i = 0; $i < $a->getLength(); $i++) {
-                    $this->occupiedCoordinates[($x . 'x' . --$y)] = true;
+                    ++$step;
+                    $coord = ($x . 'x' . --$y);
+                    if (isset($this->occupiedCoordinates[$coord])) {
+                        continue;
+                    }
+                    $this->occupiedCoordinates[$coord] = $step;
                 }
             }
         }
@@ -80,14 +100,13 @@ $input = file('./in.txt', FILE_IGNORE_NEW_LINES);
 $a = new Path($input[0]);
 $b = new Path($input[1]);
 
-$intersection = array_intersect_assoc($a->getOccupiedCoordinates(), $b->getOccupiedCoordinates());
+$intersection = array_intersect_key($a->getOccupiedCoordinates(), $b->getOccupiedCoordinates());
 
-$distances = [];
-foreach (array_keys($intersection) as $coordinatePair) {
-    $xxx = explode('x', $coordinatePair);
-    $distances[] = abs($xxx[0]) + abs($xxx[1]);
+$shortest = PHP_INT_MAX;
+foreach (array_keys($intersection) as $coord) {
+    $shortest = min(($a->getOccupiedCoordinates()[$coord] + $b->getOccupiedCoordinates()[$coord]), $shortest);
 }
 
-echo min($distances);
+echo $shortest;
 
 echo "\ntotal time: ", number_format(microtime(true) - $startTime, 6), "\n";
