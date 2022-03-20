@@ -21,34 +21,34 @@ class Instruction {
 
     public function __construct(private IntCodeProgram $program, int $position)
     {
-        $this->parseInstruction(program.get(position));
-        switch (opcode) {
+        $this->parseInstruction($program->get($position));
+        switch ($this->opcode) {
             case 1:
             case 2:
             case 7:
             case 8:
-                $step = 4;
-                parameterValue1 = program.get(position + 1);
-                parameterValue2 = program.get(position + 2);
-                outPosition = program.get(position + 3);
-                outParameterMode = parameterMode3;
+                $this->step = 4;
+                $this->parameterValue1  = $program->get($position + 1);
+                $this->parameterValue2  = $program->get($position + 2);
+                $this->outPosition      = $program->get($position + 3);
+                $this->outParameterMode = $this->parameterMode3;
                 break;
             case 3:
-                $step = 2;
-                outPosition = program.get(position + 1);
-                outParameterMode = parameterMode1;
+                $this->step = 2;
+                $this->outPosition = $program->get($position + 1);
+                $this->outParameterMode = $this->parameterMode1;
                 break;
             case 4:
             case 9:
-                $step = 2;
-                parameterValue1 = program.get(position + 1);
+                $this->step = 2;
+                $this->parameterValue1 = $program->get($position + 1);
                 break;
             case 5:
             case 6:
-                $step = 3;
-                parameterValue1 = program.get(position + 1);
-                parameterValue2 = program.get(position + 2);
-                outParameterMode = parameterMode2;
+                $this->step = 3;
+                $this->parameterValue1  = $program->get($position + 1);
+                $this->parameterValue2  = $program->get($position + 2);
+                $this->outParameterMode = $this->parameterMode2;
                 break;
         }
     }
@@ -61,15 +61,17 @@ class Instruction {
         }
 
         $temp = (string)$instruction;
-        this.opcode = Integer.parseInt(temp.substring(temp.length() - 2));
-        if (temp.length() > 2) {
-            this.parameterMode1 = Integer.parseInt(temp.substring(temp.length() - 3, temp.length() - 2));
+        $length = strlen($temp);
+
+        $this->opcode = (int)substr($temp, -2);
+        if ($length > 2) {
+            $this->parameterMode1 = (int)$temp[$length - 3];
         }
-        if (temp.length() > 3) {
-            this.parameterMode2 = Integer.parseInt(temp.substring(temp.length() - 4, temp.length() - 3));
+        if ($length > 3) {
+            $this->parameterMode2 = (int)$temp[$length - 4];
         }
-        if (temp.length() > 4) {
-            this.parameterMode3 = Integer.parseInt(temp.substring(temp.length() - 5, temp.length() - 4));
+        if ($length > 4) {
+            $this->parameterMode3 = (int)$temp[$length - 5];
         }
     }
 
@@ -83,56 +85,59 @@ class Instruction {
         return $this->step;
     }
 
-    public long getParameterValue1(long offset) {
-        if (parameterMode1 == 1) {
-            return parameterValue1;
+    public function getParameterValue1(int $offset): int
+    {
+        if ($this->parameterMode1 === 1) {
+            return $this->parameterValue1;
         }
 
-        long posi = parameterValue1;
-        if (parameterMode1 == 2) {
-            posi += offset;
+        $posi = $this->parameterValue1;
+        if ($this->parameterMode1 === 2) {
+            $posi += $offset;
         }
-        if (this.program.containsKey(posi)) {
-            return this.program.get(posi);
+        if ($this->program->containsKey($posi)) {
+            return $this->program->get($posi);
         }
-        return 0L;
+        return 0;
     }
 
-    public long getParameterValue2(long offset) {
-        if (parameterMode2 == 1) {
-            return parameterValue2;
+    public function getParameterValue2(int $offset): int
+    {
+        if ($this->parameterMode2 === 1) {
+            return $this->parameterValue2;
         }
 
-        long posi = parameterValue2;
-        if (parameterMode2 == 2) {
-            posi += offset;
+        $posi = $this->parameterValue2;
+        if ($this->parameterMode2 === 2) {
+            $posi += $offset;
         }
-        if (this.program.containsKey(posi)) {
-            return this.program.get(posi);
+        if ($this->program->containsKey($posi)) {
+            return $this->program->get($posi);
         }
-        return 0L;
+        return 0;
     }
 
-    public long getParameterValue3(long offset) {
-        if (parameterMode3 == 1) {
-            return parameterValue3;
+    public function getParameterValue3(int $offset): int
+    {
+        if ($this->parameterMode3 === 1) {
+            return $this->parameterValue3;
         }
 
-        long posi = parameterValue3;
-        if (parameterMode3 == 2) {
-            posi += offset;
+        $posi = $this->parameterValue3;
+        if ($this->parameterMode3 === 2) {
+            $posi += $offset;
         }
-        if (this.program.containsKey(posi)) {
-            return this.program.get(posi);
+        if ($this->program->containsKey($posi)) {
+            return $this->program->get($posi);
         }
-        return 0L;
+        return 0;
     }
 
-    public long getOutPosition(long offset) {
-        if (outParameterMode == 2) {
-            return outPosition+offset;
+    public function getOutPosition(int $offset): int
+    {
+        if ($this->outParameterMode === 2) {
+            return $this->outPosition + $offset;
         }
-        return outPosition;
+        return $this->outPosition;
     }
-
 }

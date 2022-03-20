@@ -1,84 +1,93 @@
 <?php
 
-class IntCodeProgram {
+class IntCodeProgram
+{
+    private const END = 99;
 
-    private LinkedHashMap<Long, Long> program = new LinkedHashMap<>();
+    private array $input = [];
 
-        private LinkedList<Long> input = new LinkedList<>();
+    private int $pointer = 0;
 
-        private long pointer = 0L;
+    private int $relativeBaseOffset = 0;
 
-        private long relativeBaseOffset = 0L;
+    public function __construct(private array $program)
+    {
+    }
 
-        public IntCodeProgram(long[] program) {
-            long pos = 0L;
-            for (long instruction: program) {
-                this.program.put(pos++, instruction);
+    public function addInput(int $input): void
+    {
+        $this->input[] = $input;
+    }
+
+    public function get(int $position): int
+    {
+        return $this->program[$position];
+    }
+
+    public function containsKey(int $position): bool
+    {
+        return isset($this->program[$position]);
+    }
+
+    public function run(): int
+    {
+        while (true) {
+            if ($this->program[$this->pointer] === self::END) {
+                return -1;
             }
-        }
-
-        public void addInput(long input) {
-    this.input.addLast(input);
-}
-
-        public long run() {
-            while (true) {
-                if (this.program.get(this.pointer) == end) {
-                    return -1;
-                }
-                Instruction inst = new Instruction(this.program, this.pointer);
-                switch (inst.getOpcode()) {
-                    case 1:
-                        this.program.put(inst.getOutPosition(relativeBaseOffset), inst.getParameterValue1(relativeBaseOffset) + inst.getParameterValue2(relativeBaseOffset));
-                        this.pointer += inst.getStep();
-                        break;
-                    case 2:
-                        this.program.put(inst.getOutPosition(relativeBaseOffset), inst.getParameterValue1(relativeBaseOffset) * inst.getParameterValue2(relativeBaseOffset));
-                        this.pointer += inst.getStep();
-                        break;
-                    case 3:
-                        long inp = this.input.removeFirst();
-                        this.program.put(inst.getOutPosition(relativeBaseOffset), inp);
-                        this.pointer += inst.getStep();
-                        break;
-                    case 4:
-                        this.pointer += inst.getStep();
-                        return inst.getParameterValue1(relativeBaseOffset);
-                    case 5:
-                        if (inst.getParameterValue1(relativeBaseOffset) != 0) {
-                            this.pointer = inst.getParameterValue2(relativeBaseOffset);
-                        } else {
-                            this.pointer += inst.getStep();
-                        }
-                        break;
-                    case 6:
-                        if (inst.getParameterValue1(relativeBaseOffset) == 0) {
-                            this.pointer = inst.getParameterValue2(relativeBaseOffset);
-                        } else {
-                            this.pointer += inst.getStep();
-                        }
-                        break;
-                    case 7:
-                        if (inst.getParameterValue1(relativeBaseOffset) < inst.getParameterValue2(relativeBaseOffset)) {
-                            this.program.put(inst.getOutPosition(relativeBaseOffset), 1L);
-                        } else {
-                            this.program.put(inst.getOutPosition(relativeBaseOffset), 0L);
-                        }
-                        this.pointer += inst.getStep();
-                        break;
-                    case 8:
-                        if (inst.getParameterValue1(relativeBaseOffset) == inst.getParameterValue2(relativeBaseOffset)) {
-                            this.program.put(inst.getOutPosition(relativeBaseOffset), 1L);
-                        } else {
-                            this.program.put(inst.getOutPosition(relativeBaseOffset), 0L);
-                        }
-                        this.pointer += inst.getStep();
-                        break;
-                    case 9:
-                        this.relativeBaseOffset += inst.getParameterValue1(relativeBaseOffset);
-                        this.pointer += inst.getStep();
-                        break;
-                }
+            $inst = new Instruction($this, $this->pointer);
+            switch ($inst->getOpcode()) {
+                case 1:
+                    $this->program[$inst->getOutPosition($this->relativeBaseOffset)] = $inst->getParameterValue1($this->relativeBaseOffset) + $inst->getParameterValue2($this->relativeBaseOffset);
+                    $this->pointer += $inst->getStep();
+                    break;
+                case 2:
+                    $this->program[$inst->getOutPosition($this->relativeBaseOffset)] = $inst->getParameterValue1($this->relativeBaseOffset) * $inst->getParameterValue2($this->relativeBaseOffset);
+                    $this->pointer += $inst->getStep();
+                    break;
+                case 3:
+                    $inp = array_shift($this->input);
+                    $this->program[$inst->getOutPosition($this->relativeBaseOffset)] = $inp;
+                    $this->pointer += $inst->getStep();
+                    break;
+                case 4:
+                    $this->pointer += $inst->getStep();
+                    return $inst->getParameterValue1($this->relativeBaseOffset);
+                case 5:
+                    if ($inst->getParameterValue1($this->relativeBaseOffset) !== 0) {
+                        $this->pointer = $inst->getParameterValue2($this->relativeBaseOffset);
+                    } else {
+                        $this->pointer += $inst->getStep();
+                    }
+                    break;
+                case 6:
+                    if ($inst->getParameterValue1($this->relativeBaseOffset) === 0) {
+                        $this->pointer = $inst->getParameterValue2($this->relativeBaseOffset);
+                    } else {
+                        $this->pointer += $inst->getStep();
+                    }
+                    break;
+                case 7:
+                    if ($inst->getParameterValue1($this->relativeBaseOffset) < $inst->getParameterValue2($this->relativeBaseOffset)) {
+                        $this->program[$inst->getOutPosition($this->relativeBaseOffset)] = 1;
+                    } else {
+                        $this->program[$inst->getOutPosition($this->relativeBaseOffset)] = 0;
+                    }
+                    $this->pointer += $inst->getStep();
+                    break;
+                case 8:
+                    if ($inst->getParameterValue1($this->relativeBaseOffset) === $inst->getParameterValue2($this->relativeBaseOffset)) {
+                        $this->program[$inst->getOutPosition($this->relativeBaseOffset)] = 1;
+                    } else {
+                        $this->program[$inst->getOutPosition($this->relativeBaseOffset)] = 0;
+                    }
+                    $this->pointer += $inst->getStep();
+                    break;
+                case 9:
+                    $this->$this->relativeBaseOffset += $inst->getParameterValue1($this->relativeBaseOffset);
+                    $this->pointer += $inst->getStep();
+                    break;
             }
         }
     }
+}
