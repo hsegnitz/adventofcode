@@ -24,7 +24,23 @@ class Solver {
             }
         }
 
-        echo ($this->countChars($candidate, "1") * $this->countChars($candidate, "2"));
+        echo ($this->countChars($candidate, "1") * $this->countChars($candidate, "2")), "\n\n";
+
+        for ($y = 0; $y < $this->height; $y++) {
+            for ($x = 0; $x < $this->width; $x++) {
+                $offset = ($y * $this->width) + $x;
+                while ("2" === $input[$offset]) {
+                    $offset += $step;
+                }
+
+                if ("1" === $input[$offset]) {
+                    echo "X";
+                } else {
+                    echo " ";
+                }
+            }
+            echo "\n";
+        }
     }
 
     private function countChars(string $input, string $character): int {
