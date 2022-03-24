@@ -84,7 +84,7 @@ class IntCodeProgram
                     $this->pointer += $inst->getStep();
                     break;
                 case 9:
-                    $this->$this->relativeBaseOffset += $inst->getParameterValue1($this->relativeBaseOffset);
+                    $this->relativeBaseOffset += $inst->getParameterValue1($this->relativeBaseOffset);
                     $this->pointer += $inst->getStep();
                     break;
             }
