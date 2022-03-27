@@ -30,4 +30,9 @@ class math {
 
         return -1;
     }
+
+    public static function taxiDistance(int $startX, int $endX, int $startY, int $endY, int $startZ = 0, int $endZ = 0): int
+    {
+        return abs($endX - $startX) + abs($endY - $startY) + abs($endZ - $startZ);
+    }
 }
