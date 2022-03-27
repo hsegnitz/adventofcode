@@ -29,6 +29,8 @@ class Solver
             $this->field[] = array_fill(0, 200, 0);
         }
 
+        $this->field[100][100] = 1;
+
         $program = new \IntCodeProgram($this->input);
 
         $posX = 100;
@@ -55,16 +57,27 @@ class Solver
             $this->seen["{$posX}:{$posY}"] = true;
             $heading = $this->turn($output, $heading);
             switch ($heading) {
-                case Directions::NORTH: $posY++; break;
+                case Directions::NORTH: $posY--; break;
                 case Directions::EAST:  $posX++; break;
-                case Directions::SOUTH: $posY--; break;
+                case Directions::SOUTH: $posY++; break;
                 case Directions::WEST:  $posX--; break;
             }
         }
 
         echo count($this->seen);
+
+        $this->printMap();
     }
 
+    private function printMap(): void
+    {
+        foreach ($this->field as $row) {
+            foreach ($row as $field) {
+                echo $field === 0 ? ' ' : '#';
+            }
+            echo "\n";
+        }
+    }
 
     private function turn(int $command, Directions $current): Directions {
         if (1 === $command) {
