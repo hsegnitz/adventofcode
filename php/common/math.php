@@ -35,4 +35,14 @@ class math {
     {
         return abs($endX - $startX) + abs($endY - $startY) + abs($endZ - $startZ);
     }
+
+    public static function leastCommonMultiple(int $x, int ...$moreVars): int {
+        $lcm = $x;
+        foreach ($moreVars as $anotherVar) {
+            $lcm = ($lcm * $anotherVar) / self::greatestCommonDivisor($lcm, $anotherVar);
+        }
+        return $lcm;
+    }
+
+
 }
