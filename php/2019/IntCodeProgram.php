@@ -10,7 +10,7 @@ class IntCodeProgram
 
     private int $relativeBaseOffset = 0;
 
-    public function __construct(private array $program)
+    public function __construct(private array $program, private ?Closure $inputFunction = null)
     {
     }
 
@@ -46,7 +46,11 @@ class IntCodeProgram
                     $this->pointer += $inst->getStep();
                     break;
                 case 3:
-                    $inp = array_shift($this->input);
+                    if (null !== $this->inputFunction) {
+                        $inp = $this->inputFunction->call($this);
+                    } else {
+                        $inp = array_shift($this->input);
+                    }
                     $this->program[$inst->getOutPosition($this->relativeBaseOffset)] = $inp;
                     $this->pointer += $inst->getStep();
                     break;
