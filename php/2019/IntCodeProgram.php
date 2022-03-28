@@ -33,7 +33,7 @@ class IntCodeProgram
     {
         while (true) {
             if ($this->program[$this->pointer] === self::END) {
-                return -1;
+                return -2;
             }
             $inst = new Instruction($this, $this->pointer);
             switch ($inst->getOpcode()) {

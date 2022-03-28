@@ -39,7 +39,7 @@ class Solver
         $heading = Directions::NORTH;
 
         $output = 0;
-        while ($output !== -1) {
+        while ($output !== -2) {
             $program->addInput($this->field[$posY][$posX]);
 
             $output = $program->run();

@@ -59,7 +59,7 @@ class Solver
     {
         $out = [];
         $output = 0;
-        while ($output !== -1) {
+        while ($output !== -2) {
             $output = $program->run();
             $out[] = $output;
         }

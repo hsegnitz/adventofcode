@@ -19,7 +19,7 @@ class Solver
         $program->addInput(2);
 
         $output = 0;
-        while ($output != -1) {
+        while ($output !== -2) {
             $output = $program->run();
             echo $output, "\n";
         }
