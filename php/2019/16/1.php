@@ -22,8 +22,55 @@ class Solver
 
         // part 1
         echo substr($out, 0, 8);
+
+// part2
+// so, this has to have a secret as we don't have roughly 25hours of CPU time to solve this the brute force way.
+// * just doing it for the numbers after offset -> nope
+// * last digit is always the same
+// * second to last digit rotates in a 10 phase
+// * the ones before even slower, but they repeat...
+// * when there are blocks of repeating zeros in one line, the next line has whatever digit is in there repeated in the same place
+// * to be precise repeated even once more!
+// * when there are repeated ones, the digits decrease by 1 below the ones
+// * same with 2s, decreasing by two
+// * and actually, with modulo applied, it works for all digits  Oo
+// * sooo.... newline[x] = newline[x-1] - oldline[x] or something
+// * damnit, that only works for numbers near the end and we need the previous ones anyways...
+// ... the end is alwoys the same ...
+// that formula can go the other way round actually => newline[x] = newline[x+1] + oldline[x]   (and mod applied!!!)  !!
+
+
+        // part 2
+        $out2 = $this->longInput($this->input);
+        echo $out2, "\n";
+        $offset = (int)substr($out2, 0, 7);
+        echo $offset, "\n";
+
+        $remainder = substr($out2, $offset);
+        echo $remainder, "\n";
+
+        // make the hind part of the string into an array of ints to not go back and forth with a string
+        $temp = str_split($remainder);
+
+        for ($i = 0; $i < 100; $i++) {
+            for ($pos = count($temp) - 2; $pos >= 0; $pos--) {
+                $a = $temp[$pos + 1];
+                $b = $temp[$pos];
+                $newNumber = $a + $b;
+                $temp[$pos] = abs($newNumber % 10);
+            }
+        }
+
+        for ($i = 0; $i < 8; $i++) {
+            echo $temp[$i];
+        }
     }
-    
+
+    private function longInput(string $input): string
+    {
+        return str_repeat($input, 10000);
+    }
+
     private function calcPhase(string $input): string
     {
         $out = '';
