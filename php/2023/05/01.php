@@ -1,6 +1,6 @@
 <?php
 
-namespace Year2023\Day05;
+namespace Year2023\Day05\Part1;
 
 #$input = file_get_contents('example.txt');
 $input = file_get_contents('input.txt');

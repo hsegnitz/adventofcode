@@ -2,66 +2,12 @@
 
 namespace Year2023\Day05;
 
-$input = file_get_contents('example.txt');
-#$input = file_get_contents('input.txt');
+$start = microtime(true);
 
-class Map
-{
-    /** @var Range[] */
-    private array $ranges = [];
-    public function __construct(string $input)
-    {
-        $lines = explode("\n", $input);
-        array_shift($lines);
-        foreach ($lines as $line) {
-            $this->ranges[] = new Range($line);
-        }
-    }
+#$input = file_get_contents('example.txt');
+$input = file_get_contents('input.txt');
 
-    /**
-     * @param SeedRange $in
-     * @return SeedRange[]
-     */
-    public function convert(SeedRange $in): array
-    {
-        foreach ($this->ranges as $range) {
-            if (null !== ($result = $range->convert($in))) {
-                return $result;
-            }
-        }
-        return $in;
-    }
-}
-
-class Range
-{
-    private int $destination;
-    private int $source;
-    private int $length;
-    public function __construct(string $input)
-    {
-        [$this->destination, $this->source, $this->length] = explode(" ", $input);
-    }
-
-    /**
-     * @param SeedRange $in
-     * @return array|SeedRange[]|null
-     */
-    public function convert(SeedRange $in): ?array
-    {
-        if ($in >= $this->source && $in <= $this->source + $this->length) {
-            return $in - ($this->source - $this->destination);
-        }
-        return null;
-    }
-}
-
-class SeedRange
-{
-    public function __construct(public readonly int $lower, public readonly int $upper)
-    {}
-}
-
+include '02-classes.php';
 
 $blocks = explode("\n\n", $input);
 $seeds = explode(" ", array_shift($blocks));
@@ -77,23 +23,22 @@ foreach ($blocks as $block) {
     $maps[] = new Map($block);
 }
 
+$outSeedRanges = $seedRanges;
+usort($outSeedRanges, function (SeedRange $a, SeedRange $b) {
+    return $a->lower <=> $b->lower;
+});
 
-
-
-
-$locations = [];
-foreach ($seeds as $seed) {
-    $location = $seed;
-    foreach ($maps as $map) {
-        $location = $map->convert($location);
-    }
-
-    $locations[] = $location;
-    echo $seed, " -> ", $location, "\n";
+foreach ($maps as $map) {
+    $outSeedRanges = $map->convert($outSeedRanges);
+    usort($outSeedRanges, function (SeedRange $a, SeedRange $b) {
+        return $a->lower <=> $b->lower;
+    });
 }
 
-echo "lowest: ", min($locations);
+
+echo $outSeedRanges[0]->lower;
 
 echo "\n";
 
-
+echo microtime(true) - $start;
+echo "\n";
