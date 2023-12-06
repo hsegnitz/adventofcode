@@ -1,5 +1,8 @@
 <?php
 
+$start = microtime(true);
+
+
 #$lines = file('example.txt', FILE_IGNORE_NEW_LINES);
 $lines = file('input.txt', FILE_IGNORE_NEW_LINES);
 
@@ -14,3 +17,6 @@ foreach ($lines as $line) {
 }
 
 echo $sum, "\n";
+
+echo microtime(true) - $start;
+echo "\n";

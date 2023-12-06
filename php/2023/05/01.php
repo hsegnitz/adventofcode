@@ -2,6 +2,8 @@
 
 namespace Year2023\Day05\Part1;
 
+$start = microtime(true);
+
 #$input = file_get_contents('example.txt');
 $input = file_get_contents('input.txt');
 
@@ -75,3 +77,5 @@ echo "lowest: ", min($locations);
 echo "\n";
 
 
+echo microtime(true) - $start;
+echo "\n";

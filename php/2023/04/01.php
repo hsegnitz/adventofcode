@@ -2,6 +2,8 @@
 
 namespace Year2023\Day04;
 
+$start = microtime(true);
+
 #$lines = file('example.txt', FILE_IGNORE_NEW_LINES);
 $lines = file('input.txt', FILE_IGNORE_NEW_LINES);
 
@@ -58,3 +60,5 @@ foreach ($cards as $card) {
 
 echo array_sum($counts), "\n";
 
+echo microtime(true) - $start;
+echo "\n";

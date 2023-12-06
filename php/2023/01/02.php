@@ -1,20 +1,24 @@
 <?php
 
+$start = microtime(true);
+
 #$lines = file('example2.txt', FILE_IGNORE_NEW_LINES);
 $lines = file('input.txt', FILE_IGNORE_NEW_LINES);
 
 $sum = 0;
 foreach ($lines as $line) {
-    echo $line, " > ";
+#    echo $line, " > ";
     $first = findDigitForward($line);
     $last = findDigitBackward($line);
     $num = $first . $last;
-    echo $num, "\n";
+#    echo $num, "\n";
     $sum += (int)$num;
 }
 
 echo $sum, "\n";
 
+echo microtime(true) - $start;
+echo "\n";
 
 
 
@@ -60,8 +64,8 @@ function findDigitForward(string $line): int
 function findDigitBackward(string $line): int
 {
     for ($i = strlen($line); $i > 0; $i--) {
-        echo $substr = substr($line, 0, $i);
-        echo "\n";
+        $substr = substr($line, 0, $i);
+        #echo "\n";
         if (str_ends_with($substr, 'one') || str_ends_with($substr, '1')) {
             return 1;
         }
