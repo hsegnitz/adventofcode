@@ -69,7 +69,7 @@ class Hand {
             return;
         }
 
-        // fullHouse  -- cards are ordered, they are the same if first and penultimate have the same value
+        // fullHouse
         if (($this->cards[0] === $this->cards[1] && $this->cards[2] === $this->cards[4]) || ($this->cards[0] === $this->cards[2] && $this->cards[3] === $this->cards[4])) {
             $this->sortScore += self::SORT_SCORES['fullHouse'];
             return;
@@ -82,7 +82,11 @@ class Hand {
         }
 
         // twoPair
-        if (($this->cards[0] === $this->cards[1] && $this->cards[2] === $this->cards[3]) || ($this->cards[1] === $this->cards[2] && $this->cards[3] === $this->cards[4])) {
+        if (
+            ($this->cards[0] === $this->cards[1] && $this->cards[2] === $this->cards[3])
+            || ($this->cards[1] === $this->cards[2] && $this->cards[3] === $this->cards[4])
+            || ($this->cards[0] === $this->cards[1] && $this->cards[3] === $this->cards[4])
+        ) {
             $this->sortScore += self::SORT_SCORES['twoPair'];
             return;
         }
