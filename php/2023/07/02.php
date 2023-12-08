@@ -150,8 +150,8 @@ usort($hands, function (Hand $a, Hand $b) {
 
 $sum = 0;
 foreach ($hands as $pos => $hand) {
-    echo $hand->getSortScore(), " ", $hand->raw, ": ", ($pos + 1), " * ", $hand->getBid(), " => ", ($partScore = (($pos + 1) * $hand->getBid())), "\n";
-    $sum += $partScore;
+    #echo $hand->getSortScore(), " ", $hand->raw, ": ", ($pos + 1), " * ", $hand->getBid(), " => ", ($partScore = (($pos + 1) * $hand->getBid())), "\n";
+    $sum += (($pos + 1) * $hand->getBid());
 }
 
 echo "\n", $sum, "\n";
