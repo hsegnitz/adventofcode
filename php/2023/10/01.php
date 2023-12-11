@@ -1,6 +1,6 @@
 <?php
 
-namespace Year2023\Day08;
+namespace Year2023\Day10;
 
 $start = microtime(true);
 
