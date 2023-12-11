@@ -36,13 +36,14 @@ function growUniverse(array $galaxies, array $emptyCols, array $emptyRows, int $
 {
     $universe = $galaxies;
     foreach ($galaxies as $galNum => &$galaxy) {
+        $compUniverse = $universe[$galNum];
         foreach ($emptyRows as $emptyRow) {
-            if ($universe[$galNum]['y'] > $emptyRow) {
+            if ($compUniverse['y'] > $emptyRow) {
                 $galaxy['y'] += $by;
             }
         }
         foreach ($emptyCols as $emptyCol) {
-            if ($universe[$galNum]['x'] > $emptyCol) {
+            if ($compUniverse['x'] > $emptyCol) {
                 $galaxy['x'] += $by;
             }
         }
