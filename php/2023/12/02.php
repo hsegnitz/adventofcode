@@ -2,13 +2,19 @@
 
 namespace Year2023\Day12;
 
+use common\ArrayKeyCache;
+
+require_once __DIR__ . '/../../common/ArrayKeyCache.php';
+
 $start = microtime(true);
 
 #$lines = file('example.txt', FILE_IGNORE_NEW_LINES);
-$lines = file('example2.txt', FILE_IGNORE_NEW_LINES);
-#$lines = file('input.txt', FILE_IGNORE_NEW_LINES);
+#$lines = file('example2.txt', FILE_IGNORE_NEW_LINES);
+$lines = file('input.txt', FILE_IGNORE_NEW_LINES);
 
 class Arrangement {
+
+    private static ?ArrayKeyCache $cache = null;
 
     private string $springs;
     private array $pattern;
@@ -21,11 +27,25 @@ class Arrangement {
         $rawPattern = implode(",", array_fill(0, 5, $rawPattern));
         $this->pattern = explode(",", $rawPattern);
         array_walk($this->pattern, static function (&$value) {$value = (int)$value;});
+        if (null === self::$cache) {
+            self::$cache = new ArrayKeyCache();
+        }
     }
 
     public function getCountOfValidPermutations(): int
     {
-        return $this->permutateAndCount($this->springs, $this->pattern);
+        return $this->permutateAndCountCacheWrapper($this->springs, $this->pattern);
+    }
+
+    private function permutateAndCountCacheWrapper(string $springs, array $pattern): int
+    {
+        $key = $pattern;
+        $key[] = $springs;
+        if (null === ($result = self::$cache->retrieve($key))) {
+            $result = $this->permutateAndCount($springs, $pattern);
+            self::$cache->store($key, $result);
+        }
+        return $result;
     }
 
     private function permutateAndCount(string $springs, array $pattern): int
@@ -62,7 +82,7 @@ class Arrangement {
         $count = 0;
         # if the next one is not a broken fountain - or is a wildcard - we move on with just a shorter string
         if ($springs[0] !== '#') {
-            $count += $this->permutateAndCount(substr($springs, 1), $pattern);
+            $count += $this->permutateAndCountCacheWrapper(substr($springs, 1), $pattern);
         }
 
         # if there is a block exactly the size of the next pattern that does not contain a separator, we recurse on
@@ -75,7 +95,7 @@ class Arrangement {
         }
 
         if ($next !== '#' && !str_contains($sub, '.')) {
-            $count += $this->permutateAndCount(substr($springs, $nextPattern + 1), $pattern);
+            $count += $this->permutateAndCountCacheWrapper(substr($springs, $nextPattern + 1), $pattern);
         }
 
         return $count;
