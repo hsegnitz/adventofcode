@@ -22,4 +22,9 @@ class ArrayKeyCache {
     {
         return $this->cache[$this->makeKey($key)] ?? null;
     }
+
+    public function has(array $key): bool
+    {
+        return isset($this->cache[$this->makeKey($key)]);
+    }
 }
