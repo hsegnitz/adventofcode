@@ -44,5 +44,18 @@ class math {
         return $lcm;
     }
 
+    public static function taxiDelta(int $startX, int $endX, ?int $startY = null, ?int $endY = null, ?int $startZ = null, ?int $endZ = null): array
+    {
+        $ret = [
+            $endX - $startX,
+        ];
+        if ($startY !== null && $endY !== null) {
+            $ret[] = $endY - $startY;
+        }
+        if ($startZ !== null && $endZ !== null) {
+            $ret[] = $endZ - $startZ;
+        }
+        return $ret;
+    }
 
 }

@@ -1,7 +1,7 @@
 <?php
 
 namespace common;
-class ArrayKeyCache {
+class ArrayKeyCache implements \Countable{
 
     public function __construct(private readonly string $separator = ':')
     {}
@@ -26,5 +26,10 @@ class ArrayKeyCache {
     public function has(array $key): bool
     {
         return isset($this->cache[$this->makeKey($key)]);
+    }
+
+    public function count(): int
+    {
+        return count($this->cache);
     }
 }

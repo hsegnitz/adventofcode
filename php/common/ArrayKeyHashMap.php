@@ -7,7 +7,7 @@ use Override;
 /** not done yet */
 
 
-class ArrayKeyHashMap implements \ArrayAccess
+class ArrayKeyHashMap implements \ArrayAccess, \Countable
 {
     private array $internalState = [];
     public function __construct(private readonly int $dimensions = 1, private readonly array $separators = [""])
@@ -45,6 +45,11 @@ class ArrayKeyHashMap implements \ArrayAccess
     #[Override] public function offsetUnset(mixed $offset): void
     {
         unset($this->internalState[$this->transformKey($offset)]);
+    }
+
+    public function count(): int
+    {
+        return count($this->internalState);
     }
 }
 
