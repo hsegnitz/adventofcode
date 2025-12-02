@@ -4,50 +4,59 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a77206099dc7b28536c80ddc1a2ac2cf",
+    "content-hash": "6bf728912c6ad7d526835e476d5c3a0b",
     "packages": [
         {
-            "name": "fastbill/parallel-process-dispatcher",
-            "version": "1.2.1",
+            "name": "soarce/parallel-process-dispatcher",
+            "version": "1.2.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/fastbill/parallel-process-dispatcher.git",
-                "reference": "9f4d0b91695e7a5940732d639eaea0c2f984be9c"
+                "url": "https://github.com/soarce-qa/parallel-process-dispatcher.git",
+                "reference": "3385819b19d20e11a667f6a1f96c7897fe38fd0b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fastbill/parallel-process-dispatcher/zipball/9f4d0b91695e7a5940732d639eaea0c2f984be9c",
-                "reference": "9f4d0b91695e7a5940732d639eaea0c2f984be9c",
+                "url": "https://api.github.com/repos/soarce-qa/parallel-process-dispatcher/zipball/3385819b19d20e11a667f6a1f96c7897fe38fd0b",
+                "reference": "3385819b19d20e11a667f6a1f96c7897fe38fd0b",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4,<8.0-DEV"
+                "php": ">=5.3"
+            },
+            "replace": {
+                "fastbill/parallel-process-dispatcher": "*"
             },
             "require-dev": {
                 "jakub-onderka/php-parallel-lint": "*",
-                "pdepend/pdepend": "*",
-                "phploc/phploc": "*",
+                "pdepend/pdepend": "^2.5",
+                "phploc/phploc": "^2.1",
                 "phpmd/phpmd": "*",
-                "phpunit/phpunit": "*",
-                "sebastian/phpcpd": "*",
+                "phpunit/phpunit": "^4.8",
+                "sebastian/phpcpd": "^2.0",
                 "squizlabs/php_codesniffer": "*",
-                "theseer/phpdox": "*"
+                "theseer/phpdox": "0.8.1.1"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "FastBill\\ParallelProcessDispatcher\\": "src/FastBill/ParallelProcessDispatcher"
+                    "Soarce\\ParallelProcessDispatcher\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
             "authors": [
                 {
                     "name": "Holger Segnitz",
-                    "email": "hsegnitz@fastbill.com"
+                    "email": "holger@segnitz.net"
                 }
             ],
-            "description": "module for running cli-processes in parallel",
-            "time": "2017-12-05T19:26:08+00:00"
+            "description": "Tiny PHP library for running jobs in background and/or in parallel",
+            "support": {
+                "source": "https://github.com/soarce-qa/parallel-process-dispatcher/tree/1.2.2"
+            },
+            "time": "2020-02-29T16:06:59+00:00"
         }
     ],
     "packages-dev": [],
@@ -57,5 +66,6 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
 }

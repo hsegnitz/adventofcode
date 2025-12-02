@@ -1,5 +1,5 @@
 {
     "require": {
-        "fastbill/parallel-process-dispatcher": "^1.2"
+        "soarce/parallel-process-dispatcher": "^1.2"
     }
 }

@@ -58,4 +58,12 @@ class math {
         return $ret;
     }
 
+    public static function integerDivisors(int $number): \Generator
+    {
+        for ($i = 1; $i <= ceil($number/2); $i++) {
+            if ($number % $i === 0) {
+                yield $i;
+            }
+        }
+    }
 }
